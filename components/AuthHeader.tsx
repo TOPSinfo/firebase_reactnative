@@ -3,7 +3,6 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native'
 import { useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getDefaultHeaderHeight } from '@react-navigation/elements'
 import { horizontalScale } from '@/utils/matrix';
-import { Colors } from '@/constants/Colors';
 import SvgImage from './SvgImage';
 import { Images } from '@/constants/Images';
 import { useRouter } from 'expo-router';
@@ -17,10 +16,13 @@ const AuthHeader = () => {
 
     const router = useRouter()
 
+    /**
+     * Navigates the user to the previous page in the browser history.
+     * This function is typically used as a callback for a back button.
+     */
     const onBack = () => {
         router.back()
     }
-
 
     return (
         <View style={[styles.container, { height: defaultHeight }]}>

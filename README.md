@@ -1,6 +1,6 @@
 
 # React Native Astrology App
-![](https://github.com/TOPSinfo/firebase_reactnative/blob/main/SimulatorScreenRecording_new.gif)
+![](https://github.com/TOPSinfo/firebase_reactnative/blob/main/Simulator%20Screen%20Recording%20-%20iPhone.gif)
 
 ## User Guide
 User Authentication

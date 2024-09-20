@@ -6,11 +6,12 @@ import { View, Text, StyleSheet } from 'react-native'
 import SvgImage from './SvgImage'
 import { Images } from '@/constants/Images'
 import { Fonts } from '@/constants/Fonts'
+import moment from 'moment'
 
 const ReviewCard = ({ item }: { item: any }) => {
     return (
         <View style={styles.container}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ flexDirection: 'row', justifyContent: "space-between" }}>
                 <View>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <View style={[styles.colorContainer, { backgroundColor: getRandomColor() }]}>
@@ -24,6 +25,9 @@ const ReviewCard = ({ item }: { item: any }) => {
                         }
                         )}
                     </View>
+                </View>
+                <View style={{ marginTop: horizontalScale(5) }}>
+                    <Text style={styles.date}>{moment(item.createdAt.seconds * 1000).format('DD MMMM YYYY')}</Text>
                 </View>
             </View>
             <Text style={[styles.skills, { marginTop: horizontalScale(15), marginLeft: 0 }]}>{item.description}</Text>
@@ -66,7 +70,12 @@ const styles = StyleSheet.create({
         height: horizontalScale(13),
         width: horizontalScale(13),
         marginRight: horizontalScale(5)
-    }
+    },
+    date: {
+        fontFamily: Fonts.PoppinsRegular,
+        fontSize: moderateScale(10),
+        color: Colors.black1
+    },
 })
 
 export default ReviewCard

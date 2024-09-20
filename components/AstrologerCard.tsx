@@ -21,6 +21,11 @@ const AstrologerCard = ({ id, index, name, ratings, skills }: AstrologerCardProp
     const onBookNow = () => {
     }
 
+    /**
+     * Retrieves the profile image based on the astrologer's name.
+     *
+     * @returns {string} The URL or path of the profile image. Returns an empty string if the name does not match any predefined astrologers.
+     */
     const getProfileImage = () => {
         if (name == 'Ritu')
             return Images.ritu
@@ -33,6 +38,12 @@ const AstrologerCard = ({ id, index, name, ratings, skills }: AstrologerCardProp
         return ''
     }
 
+    /**
+     * Handles the press event on the astrologer card.
+     * Navigates to the details page with the specified astrologer ID.
+     *
+     * @returns {void}
+     */
     const onCardPress = () => {
         router.push({ pathname: '/(home)/details', params: { id } })
     }

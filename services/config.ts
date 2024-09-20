@@ -10,13 +10,13 @@ import { getStorage } from 'firebase/storage';
 
 // Initialize Firebase
 const firebaseConfig = {
-    apiKey: "",
+    apiKey: process.env.EXPO_PUBLIC_API_KEY,
     authDomain: "sales-astrology-reactnative.firebaseapp.com",
     projectId: "sales-astrology-reactnative",
     storageBucket: "sales-astrology-reactnative.appspot.com",
-    messagingSenderId: "",
-    appId: "",
-    measurementId: ""
+    messagingSenderId: process.env.EXPO_PUBLIC_SENDER_ID,
+    appId: process.env.EXPO_PUBLIC_APP_ID,
+    measurementId: process.env.EXPO_PUBLIC_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);

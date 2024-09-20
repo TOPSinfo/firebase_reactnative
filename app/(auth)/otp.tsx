@@ -76,7 +76,7 @@ const Otp = () => {
                     <Text style={styles.optVerification}>OTP Verification</Text>
                 </View>
                 <View style={{ marginBottom: horizontalScale(35) }}>
-                    <Text style={{ fontFamily: Fonts.PoppinsRegular, fontSize: moderateScale(12), textAlign: 'center', color: Colors.grey }}>Enter OTP Code sent to +91 90xxxxxx67.</Text>
+                    <Text style={{ fontFamily: Fonts.PoppinsRegular, fontSize: moderateScale(12), textAlign: 'center', color: Colors.grey }}>Enter OTP Code sent to +91 {phone}.</Text>
                 </View>
                 <OTPInput
                     onChangeOTP={onChangeOtp}

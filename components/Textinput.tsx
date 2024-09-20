@@ -46,10 +46,18 @@ const Textinput = ({ name, control, rules, placeholder, icon, ...rest }: Textinp
         }
     });
 
+    /**
+     * Handles the focus event on the text input.
+     * Sets the `isFocused` state to `true` when the input gains focus.
+     */
     const onFocus = () => {
         setIsFocused(true);
     }
 
+    /**
+     * Handles the blur event for the text input.
+     * Sets the `isFocused` state to `false` when the input loses focus.
+     */
     const onBlur = () => {
         setIsFocused(false);
     }

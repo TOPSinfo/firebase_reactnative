@@ -16,6 +16,15 @@ const OTPInput: React.FC<OTPInputProps> = ({
     const [otp, setOtp] = useState(Array(length).fill(''));
     const inputsRef = useRef<Array<TextInput | null>>([]);
 
+    /**
+     * Handles the change in text for the OTP input fields.
+     *
+     * @param text - The text entered in the OTP input field.
+     * @param index - The index of the OTP input field being updated.
+     *
+     * Updates the OTP state with the new text, triggers the onChangeOTP callback with the updated OTP string,
+     * and focuses the next input field if the current input field is not the last one and has text.
+     */
     const handleChangeText = (text: string, index: number) => {
         const updatedOtp = [...otp];
         updatedOtp[index] = text;
@@ -28,6 +37,15 @@ const OTPInput: React.FC<OTPInputProps> = ({
         }
     };
 
+    /**
+     * Handles the key press event for the OTP input fields.
+     *
+     * @param e - The key press event.
+     * @param index - The index of the OTP input field where the key press event occurred.
+     *
+     * If the backspace key is pressed on an empty input field and the current input field is not the first one,
+     * it focuses the previous input field.
+     */
     const handleKeyPress = (e: any, index: number) => {
         if (e.nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
             // Focus the previous input if backspace is pressed on an empty input

@@ -18,6 +18,10 @@ const DetailsHeader = ({ title, rightIcon, onRight }: { title: string, rightIcon
 
     const router = useRouter()
 
+    /**
+     * Navigates the user to the previous page in the browser history.
+     * This function uses the router's `back` method to perform the navigation.
+     */
     const onBack = () => {
         router.back()
     }
