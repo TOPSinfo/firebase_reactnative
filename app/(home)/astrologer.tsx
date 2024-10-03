@@ -1,16 +1,21 @@
 import AstrologersList from '@/components/AstrologersList'
 import DetailsHeader from '@/components/DetailsHeader'
+import FilterModal from '@/components/FilterModal'
 import { Colors } from '@/constants/Colors'
 import { Images } from '@/constants/Images'
 import { horizontalScale } from '@/utils/matrix'
-import React from 'react'
+import React, { useState } from 'react'
 import { View, Text } from 'react-native'
 
 const SelectAstrologer = () => {
-
+    const [filterVisible, setFilterVisible] = useState(false)
 
     const onFilter = () => {
+        setFilterVisible(true)
+    }
 
+    const onCloseFilter = () => {
+        setFilterVisible(false)
     }
 
     return (
@@ -19,6 +24,7 @@ const SelectAstrologer = () => {
             <View style={{ padding: horizontalScale(20), backgroundColor: Colors.white }}>
                 <AstrologersList scrollable={true} />
             </View>
+            <FilterModal visible={filterVisible} onClose={onCloseFilter} />
         </View>
     )
 }

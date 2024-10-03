@@ -32,4 +32,7 @@ export const Images = {
     rupee: require('../assets/images/rupee.svg'),
     language: require('../assets/images/language.svg'),
     skills: require('../assets/images/skills.svg'),
+    radio: require('../assets/images/radio.svg'),
+    radioChecked: require('../assets/images/radioChecked.svg'),
+    radioSelected: require('../assets/images/radioSelected.svg'),
 }

@@ -36,7 +36,7 @@ export default function RootLayout() {
         </Stack>
         <Loading />
         <FlashMessage position="top" />
-        <StatusBar style='dark' />
+        <StatusBar style='dark' translucent={true} />
       </PersistGate>
     </Provider>
   );
