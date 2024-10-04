@@ -9,43 +9,49 @@ import SvgImage from './SvgImage'
 import { Images } from '@/constants/Images'
 
 type FilterModalProps = {
-    visible: boolean
-    onClose: () => void
-}
+    visible: boolean;
+    onApplyFilter: (sort: string, skills: string[], language: string[], gender: string) => void;
+    onResetFilter: () => void;
+};
 
 const filterOptions: {
     title: string,
+    id: string,
     options: string[],
     selectMultiple: boolean,
     selected: string | string[]
 }[] = [
         {
             title: 'Sort by',
+            id: 'sort',
             options: ['Popularity', 'Experience: High to Low', 'Experience: Low to High', 'Price: High to Low', 'Price: Low to High'],
             selectMultiple: false,
             selected: ''
         },
         {
             title: 'Skill',
-            options: ['All', 'Cartomancy', 'Counselor', 'Face Reading', 'Horary', 'KP', 'Lal Kitab', 'Life Coach'],
+            id: 'skills',
+            options: ['Cartomancy', 'Counselor', 'Face Reading', 'Horary', 'KP', 'Lal Kitab', 'Life Coach'],
             selectMultiple: true,
             selected: []
         },
         {
             title: 'Language',
+            id: 'language',
             options: ['English', 'Hindi', 'Gujarati', 'Marathi', 'Tamil', 'Telugu', 'Kannada', 'Malayalam'],
             selectMultiple: true,
             selected: []
         },
         {
             title: 'Gender',
+            id: 'gender',
             options: ['Male', 'Female'],
             selectMultiple: false,
             selected: ''
         }
     ]
 
-const FilterModal = ({ visible, onClose }: FilterModalProps) => {
+const FilterModal = ({ visible, onApplyFilter, onResetFilter }: FilterModalProps) => {
     const [currentOption, setCurrentOption] = useState(0)
     const [options, setOptions] = useState(filterOptions)
 
@@ -56,12 +62,16 @@ const FilterModal = ({ visible, onClose }: FilterModalProps) => {
     const defaultHeight = getDefaultHeaderHeight(frame, false, statusBarHeight)
 
     const onReset = () => {
-        setOptions(filterOptions)
-        onClose()
+        setOptions(options.map((option) => ({ ...option, selected: option.selectMultiple ? [] : '' })))
+        onResetFilter()
     }
 
     const onApply = () => {
-        onClose()
+        const sort = options[0].selected as string
+        const skills = options[1].selected as string[]
+        const language = options[2].selected as string[]
+        const gender = options[3].selected as string
+        onApplyFilter(sort, skills, language, gender)
     }
 
     const onChangeOption = (index: number) => {
@@ -99,9 +109,8 @@ const FilterModal = ({ visible, onClose }: FilterModalProps) => {
             <SvgImage url={options[currentOption].selected.includes(option) ? Images.radioSelected : Images.radio} style={{ height: verticalScale(20), width: verticalScale(20), marginRight: horizontalScale(10) }} />
         )
     }
-
     return (
-        <Modal visible={visible} onRequestClose={onClose} animationType='fade'>
+        <Modal visible={visible} onRequestClose={onResetFilter} animationType='fade' statusBarTranslucent>
             <View style={{ height: defaultHeight + 10, borderBottomWidth: 1, borderBottomColor: Colors.white1 }}>
                 <View pointerEvents="none" style={{ height: statusBarHeight }} />
                 <View style={styles.container}>
@@ -113,8 +122,9 @@ const FilterModal = ({ visible, onClose }: FilterModalProps) => {
             <View style={{ flex: 1, flexDirection: 'row' }}>
                 <View style={{ width: '35%', backgroundColor: Colors.white3 }}>
                     {options.map((option, index) => (
-                        <TouchableOpacity onPress={() => onChangeOption(index)} key={index} style={{ padding: horizontalScale(20), backgroundColor: index == currentOption ? Colors.orange1 : Colors.white3 }}>
+                        <TouchableOpacity key={index} onPress={() => onChangeOption(index)} style={{ padding: horizontalScale(20), backgroundColor: index == currentOption ? Colors.orange1 : Colors.white3 }}>
                             <Text style={{ fontSize: moderateScale(12), color: index == currentOption ? Colors.orange : Colors.black2, fontFamily: Fonts.PoppinsMedium }}>{option.title}</Text>
+                            {option.selected.length ? <View style={{ position: 'absolute', right: horizontalScale(15), top: verticalScale(30), height: verticalScale(10), width: verticalScale(10), borderRadius: verticalScale(10), backgroundColor: Colors.orange }} /> : null}
                         </TouchableOpacity>
                     ))}
                 </View>

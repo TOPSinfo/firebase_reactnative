@@ -2,12 +2,9 @@ import React from 'react'
 import { FlatList } from 'react-native'
 import AstrologerCard from './AstrologerCard'
 import { horizontalScale } from '@/utils/matrix'
-import { astrologersSelector } from '@/redux/selector'
 
 
-const AstrologersList = ({ scrollable = false }) => {
-
-    const data = astrologersSelector()
+const AstrologersList = ({ data, scrollable = false }: { data: [], scrollable?: boolean }) => {
 
     const renderItem = ({ item, index }: { item: any, index: number }) => {
         return <AstrologerCard id={item.id} index={index} name={item.name} ratings={item.ratings} skills={item.skills} />

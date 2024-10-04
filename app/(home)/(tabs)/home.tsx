@@ -11,9 +11,11 @@ import AstrologersList from '@/components/AstrologersList'
 import Banner from '@/components/Banner'
 import Upcoming from '@/components/Upcoming'
 import { getAstrologers } from '@/services/db'
+import { astrologersSelector } from '@/redux/selector'
 
 const Home = () => {
 
+    const astrologers = astrologersSelector()
     /**
      * Navigates to the astrologer page.
      */
@@ -46,7 +48,7 @@ const Home = () => {
                             <Text onPress={onViewAll} style={styles.viewAll}>View All</Text>
                         </TouchableOpacity>
                     </View>
-                    <AstrologersList />
+                    <AstrologersList data={astrologers} />
                     <Banner />
                     <View style={{ marginTop: horizontalScale(28) }}>
                         <Text style={styles.label}>Upcoming</Text>
