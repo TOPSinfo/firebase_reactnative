@@ -4,9 +4,9 @@ import { Colors } from '@/constants/Colors'
 import { Fonts } from '@/constants/Fonts'
 import { Images } from '@/constants/Images'
 import { setLoading } from '@/redux/loadingSlice'
-import { getAstrologer } from '@/services/db'
+import { createBooking, getAstrologer } from '@/services/db'
 import { horizontalScale, moderateScale } from '@/utils/matrix'
-import { useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, FlatList } from 'react-native'
@@ -15,6 +15,7 @@ import { MaterialIcons } from '@expo/vector-icons'
 import Button from '@/components/Button'
 import ReviewCard from '@/components/ReviewCard'
 import Ratings from '@/components/Ratings'
+import { showSuccessMessage } from '@/utils/helper'
 
 const appoinmentTime = ['08:30 AM', '09:30 AM', '10:30 AM', '11:30 AM', '01:30 PM', '02:30 PM', '03:30 PM', '04:30 PM', '05:30 PM', '06:30 PM', '07:30 PM']
 
@@ -22,6 +23,8 @@ const Details = () => {
     const [details, setDetails] = useState<any>(null)
     const [reviews, setReviews] = useState<any>([])
     const [showReadMore, setShowReadMore] = useState(false)
+    const [bookingDate, setBookingDate] = useState(moment().format('DD MMMM'))
+    const [bookingTime, setBookingTime] = useState('08:30 AM')
     const { id } = useLocalSearchParams<{ id: string }>()
 
     const disptach = useDispatch()
@@ -68,7 +71,7 @@ const Details = () => {
      * @returns {string} The URL or path of the profile image corresponding to the name in the details.
      *                   Returns an empty string if the name does not match any predefined names.
      */
-    const getProfileImage = () => {
+    const getProfileImage = (): string => {
         if (details?.name == 'Ritu')
             return Images.ritu
         if (details?.name == 'Prashanta')
@@ -80,10 +83,14 @@ const Details = () => {
         return ''
     }
 
+    const onChangeTime = (item: string) => {
+        setBookingTime(item)
+    }
+
     const renderTiming = ({ item, index }: any) => {
         return (
-            <TouchableOpacity style={{ height: horizontalScale(25), borderRadius: horizontalScale(12.5), paddingHorizontal: horizontalScale(15), alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.orange1, marginRight: horizontalScale(10) }}>
-                <Text style={{ fontSize: horizontalScale(10), fontFamily: Fonts.PoppinsRegular, color: Colors.orange }}>{item}</Text>
+            <TouchableOpacity onPress={() => onChangeTime(item)} style={[styles.timeContainer, { backgroundColor: item == bookingTime ? Colors.white : Colors.orange1, borderWidth: item == bookingTime ? 1 : 0 }]}>
+                <Text style={styles.time}>{item}</Text>
             </TouchableOpacity>
         )
     }
@@ -96,12 +103,35 @@ const Details = () => {
         setShowReadMore(false)
     }
 
-    const onBookNow = () => {
-
+    const onBookNow = async () => {
+        const data = {
+            astrologerId: details?.id,
+            name: details?.name,
+            rate: details?.rate,
+            date: bookingDate,
+            time: bookingTime
+        }
+        console.log('Book Now', data)
+        disptach(setLoading(true))
+        const res = await createBooking(data)
+        if (res) {
+            disptach(setLoading(false))
+            showSuccessMessage('Your booking request successfully created.')
+            router.back()
+        }
     }
 
     const renderReview = ({ item, index }: any) => {
         return <ReviewCard key={item.id} item={item} />
+    }
+
+    const onNext = () => {
+        setBookingDate(moment(bookingDate, 'DD MMM').add(1, 'days').format('DD MMMM'))
+    }
+
+    const onPrev = () => {
+        if (moment(bookingDate, 'DD MMM').format('DD MMMM') == moment().format('DD MMMM')) return
+        setBookingDate(moment(bookingDate, 'DD MMM').subtract(1, 'days').format('DD MMMM'))
     }
 
     if (!details) return null
@@ -155,12 +185,16 @@ const Details = () => {
                         <View style={{ padding: horizontalScale(20) }}>
                             <Text style={styles.name}>Book an appointment</Text>
                             <View style={{ flexDirection: 'row', marginTop: horizontalScale(15), justifyContent: 'space-between', alignItems: 'center', padding: horizontalScale(10) }}>
-                                <MaterialIcons name='arrow-back-ios' size={horizontalScale(15)} color={Colors.grey} />
+                                <TouchableOpacity onPress={onPrev}>
+                                    <MaterialIcons name='arrow-back-ios' size={horizontalScale(15)} color={Colors.grey} />
+                                </TouchableOpacity>
                                 <View style={{ alignItems: "center" }}>
                                     <SvgImage url={Images.calendar} style={{ height: horizontalScale(20), width: horizontalScale(20), tintColor: Colors.orange }} />
-                                    <Text style={styles.date}>Today,{moment().format('DD MMMM')}</Text>
+                                    <Text style={styles.date}>{`${moment().format('DD MMMM') == bookingDate ? 'Today,' : ''} ${bookingDate}`}</Text>
                                 </View>
-                                <MaterialIcons name='arrow-forward-ios' size={horizontalScale(15)} color={Colors.grey} />
+                                <TouchableOpacity onPress={onNext}>
+                                    <MaterialIcons name='arrow-forward-ios' size={horizontalScale(15)} color={Colors.grey} />
+                                </TouchableOpacity>
                             </View>
                         </View>
                         <FlatList
@@ -241,6 +275,21 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.PoppinsRegular,
         color: Colors.black1,
         marginTop: horizontalScale(10)
+    },
+    timeContainer: {
+        height: horizontalScale(25),
+        borderRadius: horizontalScale(12.5),
+        paddingHorizontal: horizontalScale(15),
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: Colors.orange1,
+        marginRight: horizontalScale(10),
+        borderColor: Colors.orange,
+    },
+    time: {
+        fontSize: horizontalScale(10),
+        fontFamily: Fonts.PoppinsRegular,
+        color: Colors.orange
     }
 })
 

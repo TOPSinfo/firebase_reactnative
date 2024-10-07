@@ -97,9 +97,29 @@ export const getAstrologer = async (id: string) => {
             reviews.forEach((doc) => {
                 reviewsData.push({ ...doc.data(), id: doc.id })
             });
-            return { astrologer: astrologer.data(), reviews: reviewsData }
+            return { astrologer: { ...astrologer.data(), id: astrologer.id }, reviews: reviewsData }
         }
     } catch (error: any) {
         handleError(error)
+    }
+}
+
+export const createBooking = async (data: any) => {
+    try {
+        store.dispatch(setLoading(true))
+        const bookingRef = collection(db, "bookings");
+        const bookingData = {
+            userId: auth.currentUser?.uid,
+            status: 'pending',
+            createdAt: serverTimestamp(),
+            ...data
+        }
+
+        await setDoc(doc(bookingRef), bookingData);
+        store.dispatch(setLoading(false))
+        return true
+    } catch (error: any) {
+        handleError(error)
+
     }
 }

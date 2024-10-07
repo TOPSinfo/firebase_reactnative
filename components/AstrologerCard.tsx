@@ -19,6 +19,7 @@ type AstrologerCardProps = {
 const AstrologerCard = ({ id, index, name, ratings, skills }: AstrologerCardProps) => {
 
     const onBookNow = () => {
+        router.push({ pathname: '/(home)/details', params: { id } })
     }
 
     /**
