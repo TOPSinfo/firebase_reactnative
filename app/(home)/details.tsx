@@ -23,7 +23,7 @@ const Details = () => {
     const [details, setDetails] = useState<any>(null)
     const [reviews, setReviews] = useState<any>([])
     const [showReadMore, setShowReadMore] = useState(false)
-    const [bookingDate, setBookingDate] = useState(moment().format('DD MMMM'))
+    const [bookingDate, setBookingDate] = useState(moment().format('DD MMM YYYY'))
     const [bookingTime, setBookingTime] = useState('08:30 AM')
     const { id } = useLocalSearchParams<{ id: string }>()
 
@@ -126,12 +126,12 @@ const Details = () => {
     }
 
     const onNext = () => {
-        setBookingDate(moment(bookingDate, 'DD MMM').add(1, 'days').format('DD MMMM'))
+        setBookingDate(moment(bookingDate, 'DD MMM').add(1, 'days').format('DD MMM YYYY'))
     }
 
     const onPrev = () => {
-        if (moment(bookingDate, 'DD MMM').format('DD MMMM') == moment().format('DD MMMM')) return
-        setBookingDate(moment(bookingDate, 'DD MMM').subtract(1, 'days').format('DD MMMM'))
+        if (moment(bookingDate, 'DD MMM').format('DD MMM YYYY') == moment().format('DD MMM YYYY')) return
+        setBookingDate(moment(bookingDate, 'DD MMM YYYY').subtract(1, 'days').format('DD MMM YYYY'))
     }
 
     if (!details) return null
@@ -190,7 +190,7 @@ const Details = () => {
                                 </TouchableOpacity>
                                 <View style={{ alignItems: "center" }}>
                                     <SvgImage url={Images.calendar} style={{ height: horizontalScale(20), width: horizontalScale(20), tintColor: Colors.orange }} />
-                                    <Text style={styles.date}>{`${moment().format('DD MMMM') == bookingDate ? 'Today,' : ''} ${bookingDate}`}</Text>
+                                    <Text style={styles.date}>{`${moment().format('DD MMM') == bookingDate ? 'Today,' : ''} ${bookingDate}`}</Text>
                                 </View>
                                 <TouchableOpacity onPress={onNext}>
                                     <MaterialIcons name='arrow-forward-ios' size={horizontalScale(15)} color={Colors.grey} />

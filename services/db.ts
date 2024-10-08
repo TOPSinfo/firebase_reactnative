@@ -1,7 +1,7 @@
 import { setLoading } from "@/redux/loadingSlice"
 import { store } from "@/redux/store"
 import { showErrorMessage } from "@/utils/helper"
-import { collection, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where } from "firebase/firestore"
+import { collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, where } from "firebase/firestore"
 import { auth, db } from "./config"
 import { setAstrologers, setUser } from "@/redux/userSlice"
 
@@ -110,7 +110,7 @@ export const createBooking = async (data: any) => {
         const bookingRef = collection(db, "bookings");
         const bookingData = {
             userId: auth.currentUser?.uid,
-            status: 'pending',
+            status: 'waiting',
             createdAt: serverTimestamp(),
             ...data
         }
@@ -121,5 +121,19 @@ export const createBooking = async (data: any) => {
     } catch (error: any) {
         handleError(error)
 
+    }
+}
+
+export const getMyBookings = async () => {
+    try {
+        const q = query(collection(db, "bookings"), where("userId", "==", auth.currentUser?.uid), orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const bookings: any = []
+        querySnapshot.forEach((doc) => {
+            bookings.push({ ...doc.data(), id: doc.id })
+        });
+        return bookings
+    } catch (error: any) {
+        handleError(error)
     }
 }
