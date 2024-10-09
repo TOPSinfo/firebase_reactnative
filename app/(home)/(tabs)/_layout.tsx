@@ -16,7 +16,7 @@ const TabLayout = () => {
                 }}
             />
             <Tabs.Screen
-                name="myBookings"
+                name="(myBookings)"
                 options={{
                     title: 'My Bookings',
                     tabBarIcon: ({ color }) => <SvgImage url={Images.calendar} style={{ height: verticalScale(20), width: verticalScale(20), tintColor: color }} />,

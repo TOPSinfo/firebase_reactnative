@@ -11,12 +11,14 @@ import { useDispatch } from 'react-redux'
 import { setLoading } from '@/redux/loadingSlice'
 import { getMyBookings } from '@/services/db'
 import moment from 'moment'
+import { useRouter } from 'expo-router'
 
 const MyBookings = () => {
     const [tab, setTab] = useState(1)
     const [bookings, setBookings] = useState<{ id: string; date: string }[]>([])
 
     const disatch = useDispatch()
+    const router = useRouter()
 
     const fetchBookings = async () => {
         disatch(setLoading(true))
@@ -29,10 +31,14 @@ const MyBookings = () => {
         fetchBookings()
     }, [])
 
+    const onCalendarPress = () => {
+        router.push('/(tabs)/(myBookings)/calendar')
+    }
+
     const renderRight = () => {
         return (
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <TouchableOpacity hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ width: horizontalScale(25), alignItems: 'center' }}>
+                <TouchableOpacity onPress={onCalendarPress} hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ width: horizontalScale(25), alignItems: 'center' }}>
                     <SvgImage url={Images.calendar} style={{ height: verticalScale(18), width: verticalScale(18), tintColor: Colors.black1 }} />
                 </TouchableOpacity>
                 <TouchableOpacity hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ width: horizontalScale(25), alignItems: 'center', marginLeft: horizontalScale(10) }}>

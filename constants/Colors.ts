@@ -32,6 +32,7 @@ export const Colors = {
   white1: '#DCDCDC',
   white2: '#CCCCCC',
   white3: '#FAFAFA',
+  white4: '#E7E7E7',
   grey: '#999999',
   blue: '#27AAE1',
   lightBlue: '#E1F3FF',
