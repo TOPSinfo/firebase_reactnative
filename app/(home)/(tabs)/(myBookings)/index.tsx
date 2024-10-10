@@ -12,18 +12,21 @@ import { setLoading } from '@/redux/loadingSlice'
 import { getMyBookings } from '@/services/db'
 import moment from 'moment'
 import { useRouter } from 'expo-router'
+import { setMyBookings } from '@/redux/userSlice'
+import { myBookingsSelector } from '@/redux/selector'
 
 const MyBookings = () => {
     const [tab, setTab] = useState(1)
-    const [bookings, setBookings] = useState<{ id: string; date: string }[]>([])
-
+    const bookings = myBookingsSelector()
     const disatch = useDispatch()
     const router = useRouter()
 
     const fetchBookings = async () => {
         disatch(setLoading(true))
         const res = await getMyBookings()
-        setBookings(res)
+        if (res) {
+            disatch(setMyBookings(res))
+        }
         disatch(setLoading(false))
     }
 

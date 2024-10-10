@@ -83,15 +83,11 @@ const Details = () => {
         return ''
     }
 
-    const onChangeTime = (item: string) => {
-        setBookingTime(item)
-    }
-
     const renderTiming = ({ item, index }: any) => {
         return (
-            <TouchableOpacity onPress={() => onChangeTime(item)} style={[styles.timeContainer, { backgroundColor: item == bookingTime ? Colors.white : Colors.orange1, borderWidth: item == bookingTime ? 1 : 0 }]}>
+            <View style={styles.timeContainer}>
                 <Text style={styles.time}>{item}</Text>
-            </TouchableOpacity>
+            </View>
         )
     }
 
@@ -104,21 +100,21 @@ const Details = () => {
     }
 
     const onBookNow = async () => {
-        const data = {
-            astrologerId: details?.id,
-            name: details?.name,
-            rate: details?.rate,
-            date: bookingDate,
-            time: bookingTime
-        }
-        console.log('Book Now', data)
-        disptach(setLoading(true))
-        const res = await createBooking(data)
-        if (res) {
-            disptach(setLoading(false))
-            showSuccessMessage('Your booking request successfully created.')
-            router.back()
-        }
+        // const data = {
+        //     astrologerId: details?.id,
+        //     name: details?.name,
+        //     rate: details?.rate,
+        //     date: bookingDate,
+        //     time: bookingTime
+        // }
+        // console.log('Book Now', data)
+        // disptach(setLoading(true))
+        // const res = await createBooking(data)
+        // if (res) {
+        //     disptach(setLoading(false))
+        //     showSuccessMessage('Your booking request successfully created.')
+        //     router.back()
+        // }
     }
 
     const renderReview = ({ item, index }: any) => {

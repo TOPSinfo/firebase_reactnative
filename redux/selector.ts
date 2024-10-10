@@ -11,3 +11,7 @@ export const userSelector = () => {
 export const astrologersSelector = () => {
     return useSelector((state: any) => state.user.astrologers)
 }
+
+export const myBookingsSelector = () => {
+    return useSelector((state: any) => state.user.myBookings)
+}

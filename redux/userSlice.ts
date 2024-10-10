@@ -5,6 +5,7 @@ export const userSlice = createSlice({
     initialState: {
         userData: null,
         astrologers: [],
+        myBookings: []
     },
     reducers: {
         setUser: (state, actions) => {
@@ -12,10 +13,13 @@ export const userSlice = createSlice({
         },
         setAstrologers: (state, actions) => {
             state.astrologers = actions.payload
+        },
+        setMyBookings: (state, actions) => {
+            state.myBookings = actions.payload
         }
     },
 })
 
-export const { setUser, setAstrologers } = userSlice.actions
+export const { setUser, setAstrologers, setMyBookings } = userSlice.actions
 
 export default userSlice.reducer
