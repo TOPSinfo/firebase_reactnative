@@ -40,4 +40,10 @@ export const Images = {
     close: require('../assets/images/close.svg'),
     clock: require('../assets/images/clock.svg'),
     delete: require('../assets/images/delete.svg'),
+    all_details: require('../assets/images/all_details.svg'),
+    time: require('../assets/images/time.svg'),
+    bell: require('../assets/images/bell.svg'),
+    photo: require('../assets/images/photo.svg'),
+    place: require('../assets/images/place.svg'),
+
 }

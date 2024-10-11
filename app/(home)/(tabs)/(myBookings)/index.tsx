@@ -38,13 +38,17 @@ const MyBookings = () => {
         router.push('/(tabs)/(myBookings)/calendar')
     }
 
+    const onAddPress = () => {
+        router.navigate('/(home)/astrologer')
+    }
+
     const renderRight = () => {
         return (
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <TouchableOpacity onPress={onCalendarPress} hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ width: horizontalScale(25), alignItems: 'center' }}>
                     <SvgImage url={Images.calendar} style={{ height: verticalScale(18), width: verticalScale(18), tintColor: Colors.black1 }} />
                 </TouchableOpacity>
-                <TouchableOpacity hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ width: horizontalScale(25), alignItems: 'center', marginLeft: horizontalScale(10) }}>
+                <TouchableOpacity onPress={onAddPress} hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ width: horizontalScale(25), alignItems: 'center', marginLeft: horizontalScale(10) }}>
                     <SvgImage url={Images.plus} style={{ height: verticalScale(18), width: verticalScale(18), tintColor: Colors.black1 }} />
                 </TouchableOpacity>
             </View>

@@ -16,6 +16,7 @@ import Button from '@/components/Button'
 import ReviewCard from '@/components/ReviewCard'
 import Ratings from '@/components/Ratings'
 import { showSuccessMessage } from '@/utils/helper'
+import EventModal from '@/components/Event'
 
 const appoinmentTime = ['08:30 AM', '09:30 AM', '10:30 AM', '11:30 AM', '01:30 PM', '02:30 PM', '03:30 PM', '04:30 PM', '05:30 PM', '06:30 PM', '07:30 PM']
 
@@ -25,11 +26,13 @@ const Details = () => {
     const [showReadMore, setShowReadMore] = useState(false)
     const [bookingDate, setBookingDate] = useState(moment().format('DD MMM YYYY'))
     const [bookingTime, setBookingTime] = useState('08:30 AM')
+    const [showEvent, setShowEvent] = useState(false)
     const { id } = useLocalSearchParams<{ id: string }>()
 
     const disptach = useDispatch()
 
     const onPlus = () => {
+        setShowEvent(true)
     }
 
     /**
@@ -130,6 +133,10 @@ const Details = () => {
         setBookingDate(moment(bookingDate, 'DD MMM YYYY').subtract(1, 'days').format('DD MMM YYYY'))
     }
 
+    const onEventModalClose = () => {
+        setShowEvent(false)
+    }
+
     if (!details) return null
 
     return (
@@ -218,6 +225,7 @@ const Details = () => {
                     </View>
                 </ScrollView>
             </View>
+            <EventModal visible={showEvent} onClose={onEventModalClose} astrologerName={details.name} />
         </View>
     )
 }
