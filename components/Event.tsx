@@ -1,5 +1,5 @@
 import { horizontalScale, moderateScale } from '@/utils/matrix'
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, TextInput } from 'react-native'
 import SvgImage from './SvgImage';
 import { Images } from '@/constants/Images';
@@ -9,6 +9,8 @@ import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
 import Button from './Button';
+import RNModal from './RNModal';
+import RadioOpion from './RadioOpion';
 
 const Header = ({ title, right, onClose }: { title: string, right?: ReactElement, onClose: () => void }) => {
     const insets = useSafeAreaInsets();
@@ -42,7 +44,7 @@ type EventModalProps = {
 }
 
 const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
-
+    const [notificationModal, setNotificationModal] = useState(false)
     const renderRight = () => {
         return (
             <TouchableOpacity hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ paddingHorizontal: horizontalScale(10), alignItems: 'center', justifyContent: 'center' }}>
@@ -53,6 +55,27 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
 
     const onBookNow = () => {
         onClose()
+    }
+
+    const onSelectNotification = () => {
+        setNotificationModal(true)
+    }
+
+    const onNotificaitonModalClose = () => {
+        setNotificationModal(false)
+    }
+
+    const renderNotificationModal = () => {
+        return <RNModal visible={notificationModal} onClose={onNotificaitonModalClose} >
+            <View style={{ backgroundColor: Colors.white, borderTopLeftRadius: horizontalScale(7), borderTopRightRadius: horizontalScale(7), padding: horizontalScale(25) }}>
+                <RadioOpion label='No notification' isSelected={false} />
+                <RadioOpion label='5 minutes before' isSelected={false} />
+                <RadioOpion label='10 minutes before' isSelected={true} />
+                <RadioOpion label='15 minutes before' isSelected={false} />
+                <RadioOpion label='1 hour before' isSelected={false} />
+                <RadioOpion label='1 day before' isSelected={false} />
+            </View>
+        </RNModal>
     }
 
     return (
@@ -99,7 +122,7 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.bell} style={styles.fieldIcon} />
-                            <TouchableOpacity style={{ justifyContent: 'center' }}>
+                            <TouchableOpacity onPress={onSelectNotification} style={{ justifyContent: 'center' }}>
                                 <Text style={[styles.input, { height: undefined }]}>10 Minutes before</Text>
                             </TouchableOpacity>
                         </View>
@@ -165,6 +188,7 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
                         <Button title='Book Now' onPress={onBookNow} />
                     </View>
                 </ScrollView>
+                {renderNotificationModal()}
             </View>
         </Modal>
     )
