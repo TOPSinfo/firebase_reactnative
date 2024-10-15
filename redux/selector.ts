@@ -15,3 +15,7 @@ export const astrologersSelector = () => {
 export const myBookingsSelector = () => {
     return useSelector((state: any) => state.user.myBookings)
 }
+
+export const selectedEventSelector = () => {
+    return useSelector((state: any) => state.event.selectedEvent)
+}

@@ -1,6 +1,6 @@
 import { horizontalScale, moderateScale } from '@/utils/matrix'
 import React, { ReactElement, useState } from 'react'
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, TextInput } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, TextInput, TouchableWithoutFeedback } from 'react-native'
 import SvgImage from './SvgImage';
 import { Images } from '@/constants/Images';
 import { useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,6 +11,13 @@ import { Fonts } from '@/constants/Fonts';
 import Button from './Button';
 import RNModal from './RNModal';
 import RadioOpion from './RadioOpion';
+import DateTimePicker from './DateTimePicker';
+import * as DocumentPicker from 'expo-document-picker';
+import { useDispatch } from 'react-redux';
+import { onChangeEventData } from '@/redux/eventSlice';
+import moment from 'moment';
+import { selectedEventSelector } from '@/redux/selector';
+
 
 const Header = ({ title, right, onClose }: { title: string, right?: ReactElement, onClose: () => void }) => {
     const insets = useSafeAreaInsets();
@@ -45,6 +52,10 @@ type EventModalProps = {
 
 const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
     const [notificationModal, setNotificationModal] = useState(false)
+    const disptach = useDispatch()
+
+    const selectedEvent = selectedEventSelector()
+
     const renderRight = () => {
         return (
             <TouchableOpacity hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ paddingHorizontal: horizontalScale(10), alignItems: 'center', justifyContent: 'center' }}>
@@ -65,17 +76,87 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
         setNotificationModal(false)
     }
 
+    const onNotificationSelect = (notification: string) => {
+        disptach(onChangeEventData({ notification }))
+        setNotificationModal(false)
+    }
+
     const renderNotificationModal = () => {
         return <RNModal visible={notificationModal} onClose={onNotificaitonModalClose} >
-            <View style={{ backgroundColor: Colors.white, borderTopLeftRadius: horizontalScale(7), borderTopRightRadius: horizontalScale(7), padding: horizontalScale(25) }}>
-                <RadioOpion label='No notification' isSelected={false} />
-                <RadioOpion label='5 minutes before' isSelected={false} />
-                <RadioOpion label='10 minutes before' isSelected={true} />
-                <RadioOpion label='15 minutes before' isSelected={false} />
-                <RadioOpion label='1 hour before' isSelected={false} />
-                <RadioOpion label='1 day before' isSelected={false} />
-            </View>
+            <TouchableWithoutFeedback>
+                <View style={{ backgroundColor: Colors.white, borderTopLeftRadius: horizontalScale(7), borderTopRightRadius: horizontalScale(7), padding: horizontalScale(25) }}>
+                    <RadioOpion label='No notification' onSelect={() => onNotificationSelect('1')} isSelected={selectedEvent.notification == '1'} />
+                    <RadioOpion label='5 minutes before' onSelect={() => onNotificationSelect('2')} isSelected={selectedEvent.notification == '2'} />
+                    <RadioOpion label='10 minutes before' onSelect={() => onNotificationSelect('3')} isSelected={selectedEvent.notification == '3'} />
+                    <RadioOpion label='15 minutes before' onSelect={() => onNotificationSelect('4')} isSelected={selectedEvent.notification == '4'} />
+                    <RadioOpion label='1 hour before' onSelect={() => onNotificationSelect('5')} isSelected={selectedEvent.notification == '5'} />
+                    <RadioOpion label='1 day before' onSelect={() => onNotificationSelect('6')} isSelected={selectedEvent.notification == '6'} />
+                </View>
+            </TouchableWithoutFeedback>
         </RNModal>
+    }
+
+    const onUploadPhoto = async () => {
+        DocumentPicker.getDocumentAsync().then((res) => {
+            console.log('document picker res', res)
+        })
+    }
+
+    const onUploadKundali = async () => {
+        DocumentPicker.getDocumentAsync().then((res) => {
+            console.log('document picker res', res)
+        })
+    }
+
+    const onChangeDetails = (text: string) => {
+        disptach(onChangeEventData({ description: text }))
+    }
+
+    const onSelectDate = (date: Date) => {
+        disptach(onChangeEventData({ date: moment(date).format('DD MMM YYYY') }))
+    }
+
+    const onSelectStartTime = (date: Date) => {
+        disptach(onChangeEventData({ startTime: moment(date).format('hh:mm A') }))
+    }
+
+    const onSelectEndTime = (date: Date) => {
+        disptach(onChangeEventData({ endTime: moment(date).format('hh:mm A') }))
+    }
+
+    const onChangeFullName = (text: string) => {
+        disptach(onChangeEventData({ fullName: text }))
+    }
+
+    const onSelectDateOfBirth = (date: Date) => {
+        disptach(onChangeEventData({ dob: moment(date).format('DD MMM YYYY') }))
+    }
+
+    const onSelectTimeOfBirth = (date: Date) => {
+        disptach(onChangeEventData({ tob: moment(date).format('hh:mm A') }))
+    }
+
+    const onChangePlaceOfBirth = (text: string) => {
+        disptach(onChangeEventData({ place: text }))
+    }
+
+    const notificationLabel = () => {
+        switch (selectedEvent.notification) {
+            case '1':
+                return 'No notification'
+            case '2':
+                return '5 minutes before'
+            case '3':
+                return '10 minutes before'
+            case '4':
+                return '15 minutes before'
+            case '5':
+                return '1 hour before'
+            case '6':
+                return '1 day before'
+            default:
+                return '10 minutes before'
+        }
     }
 
     return (
@@ -94,7 +175,9 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
                                 numberOfLines={3}
                                 multiline placeholder='All details'
                                 placeholderTextColor={Colors.grey}
+                                onChangeText={onChangeDetails}
                                 textAlignVertical='top'
+                                value={selectedEvent.description}
                                 style={[styles.input, { height: horizontalScale(55) }]}
                             />
                         </View>
@@ -102,28 +185,22 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.calendar} style={styles.fieldIcon} />
-                            <TouchableOpacity style={{ justifyContent: 'center' }}>
-                                <Text style={[styles.input, { height: undefined }]}>Select Date</Text>
-                            </TouchableOpacity>
+                            <DateTimePicker label='Select Date' value={selectedEvent.date} onSelect={onSelectDate} />
                         </View>
                     </View>
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.time} style={styles.fieldIcon} />
-                            <TouchableOpacity style={{ justifyContent: 'center', width: '45%' }}>
-                                <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.black1, fontSize: moderateScale(12) }}>Start Time</Text>
-                            </TouchableOpacity>
+                            <DateTimePicker label='Start Time' mode={'time'} value={selectedEvent.startTime} onSelect={onSelectStartTime} />
                             <View style={{ borderLeftWidth: 1, borderLeftColor: Colors.grey, height: horizontalScale(55) }} />
-                            <TouchableOpacity style={{ justifyContent: 'center', width: '45%', alignItems: 'center' }}>
-                                <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.black1, fontSize: moderateScale(12) }}>End Time</Text>
-                            </TouchableOpacity>
+                            <DateTimePicker label='End Time' mode={'time'} value={selectedEvent.endTime} onSelect={onSelectEndTime} style={{ alignItems: 'center' }} />
                         </View>
                     </View>
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.bell} style={styles.fieldIcon} />
                             <TouchableOpacity onPress={onSelectNotification} style={{ justifyContent: 'center' }}>
-                                <Text style={[styles.input, { height: undefined }]}>10 Minutes before</Text>
+                                <Text style={[styles.input, { height: undefined }]}>{notificationLabel()}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -133,7 +210,7 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
                     <View style={[styles.fieldContainer, { height: horizontalScale(70), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.photo} style={styles.fieldIcon} />
-                            <TouchableOpacity style={{ justifyContent: 'center' }}>
+                            <TouchableOpacity onPress={onUploadPhoto} style={{ justifyContent: 'center' }}>
                                 <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.orange, fontSize: moderateScale(12) }}>Upload your photo</Text>
                                 <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.grey, fontSize: moderateScale(9) }}>Only JPEG, PNG, and PDF Files</Text>
                             </TouchableOpacity>
@@ -145,24 +222,22 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
                             <TextInput
                                 placeholder='Full Name'
                                 placeholderTextColor={Colors.grey}
+                                onChangeText={onChangeFullName}
                                 style={styles.input}
+                                value={selectedEvent.fullName}
                             />
                         </View>
                     </View>
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.calendar} style={styles.fieldIcon} />
-                            <TouchableOpacity style={{ justifyContent: 'center' }}>
-                                <Text style={[styles.input, { height: undefined }]}>Date of Birth</Text>
-                            </TouchableOpacity>
+                            <DateTimePicker label='Date of Birth' value={selectedEvent.dob} onSelect={onSelectDateOfBirth} />
                         </View>
                     </View>
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.time} style={styles.fieldIcon} />
-                            <TouchableOpacity style={{ justifyContent: 'center' }}>
-                                <Text style={[styles.input, { height: undefined }]}>Time of Birth</Text>
-                            </TouchableOpacity>
+                            <DateTimePicker label='Time of Birth' mode={'time'} value={selectedEvent.tob} onSelect={onSelectTimeOfBirth} />
                         </View>
                     </View>
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
@@ -171,6 +246,8 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
                             <TextInput
                                 placeholder='Place of Birth'
                                 placeholderTextColor={Colors.grey}
+                                onChangeText={onChangePlaceOfBirth}
+                                value={selectedEvent.place}
                                 style={styles.input}
                             />
                         </View>
@@ -178,7 +255,7 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
                     <View style={[styles.fieldContainer, { height: horizontalScale(70), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.kundali} style={styles.fieldIcon} />
-                            <TouchableOpacity style={{ justifyContent: 'center' }}>
+                            <TouchableOpacity onPress={onUploadKundali} style={{ justifyContent: 'center' }}>
                                 <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.orange, fontSize: moderateScale(12) }}>Upload your kundali</Text>
                                 <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.grey, fontSize: moderateScale(9) }}>Only JPEG, PNG, and PDF Files</Text>
                             </TouchableOpacity>
