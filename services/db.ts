@@ -2,8 +2,9 @@ import { setLoading } from "@/redux/loadingSlice"
 import { store } from "@/redux/store"
 import { showErrorMessage } from "@/utils/helper"
 import { collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, where } from "firebase/firestore"
-import { auth, db } from "./config"
+import { auth, db, storage } from "./config"
 import { setAstrologers, setUser } from "@/redux/userSlice"
+import { getDownloadURL, ref, uploadBytesResumable } from "@firebase/storage"
 
 const handleError = (error: object) => {
     console.log('Error', error)
@@ -104,23 +105,46 @@ export const getAstrologer = async (id: string) => {
     }
 }
 
+export const uploadImage = async (uri: string) => {
+    try {
+        store.dispatch(setLoading(true));
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        const storageRef = ref(storage, 'images/' + Date.now() + '.jpg');
+        const snapshot = await uploadBytesResumable(storageRef, blob);
+        console.log('Uploaded a blob or file!', snapshot);
+        const URL = await getDownloadURL(snapshot.ref);
+        console.log('URL', URL);
+        return URL;
+    } catch (error: any) {
+        handleError(error)
+    }
+}
+
 export const createBooking = async (data: any) => {
     try {
-        store.dispatch(setLoading(true))
+        const uploadIfNeeded = async (field: string) => {
+            if (data[field]) {
+                data[field] = await uploadImage(data[field]);
+            }
+        };
+
+        await Promise.all([uploadIfNeeded('image'), uploadIfNeeded('kundali')]);
+
+        store.dispatch(setLoading(true));
         const bookingRef = collection(db, "bookings");
         const bookingData = {
             userId: auth.currentUser?.uid,
             status: 'waiting',
             createdAt: serverTimestamp(),
             ...data
-        }
+        };
 
         await setDoc(doc(bookingRef), bookingData);
-        store.dispatch(setLoading(false))
-        return true
+        store.dispatch(setLoading(false));
+        return true;
     } catch (error: any) {
-        handleError(error)
-
+        handleError(error);
     }
 }
 

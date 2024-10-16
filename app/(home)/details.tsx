@@ -17,6 +17,7 @@ import ReviewCard from '@/components/ReviewCard'
 import Ratings from '@/components/Ratings'
 import { showSuccessMessage } from '@/utils/helper'
 import EventModal from '@/components/Event'
+import { resetSelectedEvent } from '@/redux/eventSlice'
 
 const appoinmentTime = ['08:30 AM', '09:30 AM', '10:30 AM', '11:30 AM', '01:30 PM', '02:30 PM', '03:30 PM', '04:30 PM', '05:30 PM', '06:30 PM', '07:30 PM']
 
@@ -24,8 +25,7 @@ const Details = () => {
     const [details, setDetails] = useState<any>(null)
     const [reviews, setReviews] = useState<any>([])
     const [showReadMore, setShowReadMore] = useState(false)
-    const [bookingDate, setBookingDate] = useState(moment().format('DD MMM YYYY'))
-    const [bookingTime, setBookingTime] = useState('08:30 AM')
+    const [date, setDate] = useState(moment().format('DD MMM YYYY'))
     const [showEvent, setShowEvent] = useState(false)
     const { id } = useLocalSearchParams<{ id: string }>()
 
@@ -66,6 +66,9 @@ const Details = () => {
 
     useEffect(() => {
         getDetails()
+        return () => {
+            disptach(resetSelectedEvent())
+        }
     }, [])
 
     /**
@@ -103,21 +106,7 @@ const Details = () => {
     }
 
     const onBookNow = async () => {
-        // const data = {
-        //     astrologerId: details?.id,
-        //     name: details?.name,
-        //     rate: details?.rate,
-        //     date: bookingDate,
-        //     time: bookingTime
-        // }
-        // console.log('Book Now', data)
-        // disptach(setLoading(true))
-        // const res = await createBooking(data)
-        // if (res) {
-        //     disptach(setLoading(false))
-        //     showSuccessMessage('Your booking request successfully created.')
-        //     router.back()
-        // }
+        setShowEvent(true)
     }
 
     const renderReview = ({ item, index }: any) => {
@@ -125,12 +114,11 @@ const Details = () => {
     }
 
     const onNext = () => {
-        setBookingDate(moment(bookingDate, 'DD MMM').add(1, 'days').format('DD MMM YYYY'))
+        setDate(moment(date, 'DD MMM').add(1, 'days').format('DD MMM YYYY'))
     }
 
     const onPrev = () => {
-        if (moment(bookingDate, 'DD MMM').format('DD MMM YYYY') == moment().format('DD MMM YYYY')) return
-        setBookingDate(moment(bookingDate, 'DD MMM YYYY').subtract(1, 'days').format('DD MMM YYYY'))
+        setDate(moment(date, 'DD MMM YYYY').subtract(1, 'days').format('DD MMM YYYY'))
     }
 
     const onEventModalClose = () => {
@@ -193,7 +181,7 @@ const Details = () => {
                                 </TouchableOpacity>
                                 <View style={{ alignItems: "center" }}>
                                     <SvgImage url={Images.calendar} style={{ height: horizontalScale(20), width: horizontalScale(20), tintColor: Colors.orange }} />
-                                    <Text style={styles.date}>{`${moment().format('DD MMM') == bookingDate ? 'Today,' : ''} ${bookingDate}`}</Text>
+                                    <Text style={styles.date}>{`${moment().format('DD MMM') == date ? 'Today,' : ''} ${date}`}</Text>
                                 </View>
                                 <TouchableOpacity onPress={onNext}>
                                     <MaterialIcons name='arrow-forward-ios' size={horizontalScale(15)} color={Colors.grey} />
@@ -225,7 +213,7 @@ const Details = () => {
                     </View>
                 </ScrollView>
             </View>
-            <EventModal visible={showEvent} onClose={onEventModalClose} astrologerName={details.name} />
+            <EventModal visible={showEvent} onClose={onEventModalClose} astrologerDetails={details} />
         </View>
     )
 }

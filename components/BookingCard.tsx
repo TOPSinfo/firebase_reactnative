@@ -22,7 +22,7 @@ const BookingCard = ({ data }: any) => {
         else {
             return Colors.green
         }
-    }, [])
+    }, [data.status])
 
 
     return (
@@ -32,7 +32,7 @@ const BookingCard = ({ data }: any) => {
                 <Text style={styles.date}>{data.date.slice(2, 6)}</Text>
             </View>
             <View style={{ padding: horizontalScale(10), paddingLeft: horizontalScale(15) }}>
-                <Text style={[styles.label, { color: Colors.black1, fontSize: moderateScale(12), lineHeight: moderateScale(20) }]}>With Astro {data.name}</Text>
+                <Text style={[styles.label, { color: Colors.black1, fontSize: moderateScale(12), lineHeight: moderateScale(20) }]}>With Astro {data.astrologerName}</Text>
                 <Text style={styles.label}>Time: {data.time}</Text>
                 <Text style={styles.label}>Rate: {data.rate}/min</Text>
                 <Text style={styles.label}>Status: <Text style={{ textTransform: 'capitalize', color }}>{data.status}</Text></Text>

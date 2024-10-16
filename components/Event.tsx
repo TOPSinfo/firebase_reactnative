@@ -1,4 +1,4 @@
-import { horizontalScale, moderateScale } from '@/utils/matrix'
+import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix'
 import React, { ReactElement, useState } from 'react'
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, TextInput, TouchableWithoutFeedback } from 'react-native'
 import SvgImage from './SvgImage';
@@ -13,10 +13,14 @@ import RNModal from './RNModal';
 import RadioOpion from './RadioOpion';
 import DateTimePicker from './DateTimePicker';
 import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
 import { useDispatch } from 'react-redux';
-import { onChangeEventData } from '@/redux/eventSlice';
+import { onChangeEventData, resetSelectedEvent } from '@/redux/eventSlice';
 import moment from 'moment';
 import { selectedEventSelector } from '@/redux/selector';
+import { setLoading } from '@/redux/loadingSlice';
+import { createBooking } from '@/services/db';
+import { showSuccessMessage } from '@/utils/helper';
 
 
 const Header = ({ title, right, onClose }: { title: string, right?: ReactElement, onClose: () => void }) => {
@@ -45,12 +49,12 @@ const Header = ({ title, right, onClose }: { title: string, right?: ReactElement
 }
 
 type EventModalProps = {
-    astrologerName: string,
+    astrologerDetails: any,
     visible: boolean
     onClose: () => void
 }
 
-const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
+const EventModal = ({ astrologerDetails, visible, onClose }: EventModalProps) => {
     const [notificationModal, setNotificationModal] = useState(false)
     const disptach = useDispatch()
 
@@ -64,8 +68,31 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
         )
     }
 
-    const onBookNow = () => {
+    const onBookNow = async () => {
+        const data = {
+            astrologerId: astrologerDetails?.id,
+            astrologerName: astrologerDetails?.name,
+            rate: astrologerDetails?.rate,
+            date: selectedEvent.date,
+            time: selectedEvent.startTime + ' - ' + selectedEvent.endTime,
+            description: selectedEvent.description,
+            notificationType: selectedEvent.notificationType,
+            image: selectedEvent.image,
+            fullName: selectedEvent.fullName,
+            dob: selectedEvent.dob,
+            tob: selectedEvent.tob,
+            place: selectedEvent.place,
+            kundali: selectedEvent.kundali
+        }
+        console.log('Book Now', data)
         onClose()
+        disptach(setLoading(true))
+        const res = await createBooking(data)
+        if (res) {
+            disptach(setLoading(false))
+            showSuccessMessage('Your booking request successfully created.')
+            disptach(resetSelectedEvent())
+        }
     }
 
     const onSelectNotification = () => {
@@ -76,8 +103,8 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
         setNotificationModal(false)
     }
 
-    const onNotificationSelect = (notification: string) => {
-        disptach(onChangeEventData({ notification }))
+    const onNotificationSelect = (notificationType: string) => {
+        disptach(onChangeEventData({ notificationType }))
         setNotificationModal(false)
     }
 
@@ -85,27 +112,45 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
         return <RNModal visible={notificationModal} onClose={onNotificaitonModalClose} >
             <TouchableWithoutFeedback>
                 <View style={{ backgroundColor: Colors.white, borderTopLeftRadius: horizontalScale(7), borderTopRightRadius: horizontalScale(7), padding: horizontalScale(25) }}>
-                    <RadioOpion label='No notification' onSelect={() => onNotificationSelect('1')} isSelected={selectedEvent.notification == '1'} />
-                    <RadioOpion label='5 minutes before' onSelect={() => onNotificationSelect('2')} isSelected={selectedEvent.notification == '2'} />
-                    <RadioOpion label='10 minutes before' onSelect={() => onNotificationSelect('3')} isSelected={selectedEvent.notification == '3'} />
-                    <RadioOpion label='15 minutes before' onSelect={() => onNotificationSelect('4')} isSelected={selectedEvent.notification == '4'} />
-                    <RadioOpion label='1 hour before' onSelect={() => onNotificationSelect('5')} isSelected={selectedEvent.notification == '5'} />
-                    <RadioOpion label='1 day before' onSelect={() => onNotificationSelect('6')} isSelected={selectedEvent.notification == '6'} />
+                    <RadioOpion label='No notification' onSelect={() => onNotificationSelect('1')} isSelected={selectedEvent.notificationType == '1'} />
+                    <RadioOpion label='5 minutes before' onSelect={() => onNotificationSelect('2')} isSelected={selectedEvent.notificationType == '2'} />
+                    <RadioOpion label='10 minutes before' onSelect={() => onNotificationSelect('3')} isSelected={selectedEvent.notificationType == '3'} />
+                    <RadioOpion label='15 minutes before' onSelect={() => onNotificationSelect('4')} isSelected={selectedEvent.notificationType == '4'} />
+                    <RadioOpion label='1 hour before' onSelect={() => onNotificationSelect('5')} isSelected={selectedEvent.notificationType == '5'} />
+                    <RadioOpion label='1 day before' onSelect={() => onNotificationSelect('6')} isSelected={selectedEvent.notificationType == '6'} />
                 </View>
             </TouchableWithoutFeedback>
         </RNModal>
     }
 
     const onUploadPhoto = async () => {
-        DocumentPicker.getDocumentAsync().then((res) => {
-            console.log('document picker res', res)
-        })
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.canceled) {
+            disptach(onChangeEventData({ image: result.assets[0].uri }))
+        }
     }
 
     const onUploadKundali = async () => {
-        DocumentPicker.getDocumentAsync().then((res) => {
-            console.log('document picker res', res)
-        })
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.canceled) {
+            disptach(onChangeEventData({ kundali: result.assets[0].uri }))
+        }
     }
 
     const onChangeDetails = (text: string) => {
@@ -141,7 +186,7 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
     }
 
     const notificationLabel = () => {
-        switch (selectedEvent.notification) {
+        switch (selectedEvent.notificationType) {
             case '1':
                 return 'No notification'
             case '2':
@@ -166,7 +211,7 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: horizontalScale(20) }}>
                     <View style={[styles.fieldContainer, { marginTop: horizontalScale(10), padding: horizontalScale(15) }]}>
                         <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.grey, fontSize: moderateScale(12) }}>Astrologer Name</Text>
-                        <Text style={{ fontFamily: Fonts.PoppinsBold, color: Colors.black1, fontSize: moderateScale(16) }}>{astrologerName}</Text>
+                        <Text style={{ fontFamily: Fonts.PoppinsBold, color: Colors.black1, fontSize: moderateScale(16) }}>{astrologerDetails.name}</Text>
                     </View>
                     <View style={[styles.fieldContainer, { padding: horizontalScale(10) }]}>
                         <View style={{ flexDirection: 'row' }}>
@@ -185,7 +230,7 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.calendar} style={styles.fieldIcon} />
-                            <DateTimePicker label='Select Date' value={selectedEvent.date} onSelect={onSelectDate} />
+                            <DateTimePicker label='Select Date' value={selectedEvent.date} onSelect={onSelectDate} minDate={new Date()} />
                         </View>
                     </View>
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
@@ -210,9 +255,10 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
                     <View style={[styles.fieldContainer, { height: horizontalScale(70), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.photo} style={styles.fieldIcon} />
+                            {selectedEvent.image ? <SvgImage url={selectedEvent.image} style={{ height: horizontalScale(65), width: horizontalScale(65), marginRight: horizontalScale(10) }} /> : null}
                             <TouchableOpacity onPress={onUploadPhoto} style={{ justifyContent: 'center' }}>
                                 <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.orange, fontSize: moderateScale(12) }}>Upload your photo</Text>
-                                <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.grey, fontSize: moderateScale(9) }}>Only JPEG, PNG, and PDF Files</Text>
+                                <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.grey, fontSize: moderateScale(9) }}>Only JPEG or PNG</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -231,7 +277,7 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.calendar} style={styles.fieldIcon} />
-                            <DateTimePicker label='Date of Birth' value={selectedEvent.dob} onSelect={onSelectDateOfBirth} />
+                            <DateTimePicker label='Date of Birth' value={selectedEvent.dob} onSelect={onSelectDateOfBirth} maxDate={new Date()} />
                         </View>
                     </View>
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
@@ -255,9 +301,10 @@ const EventModal = ({ astrologerName, visible, onClose }: EventModalProps) => {
                     <View style={[styles.fieldContainer, { height: horizontalScale(70), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.kundali} style={styles.fieldIcon} />
+                            {selectedEvent.kundali ? <SvgImage url={selectedEvent.kundali} style={{ height: horizontalScale(65), width: horizontalScale(65), marginRight: horizontalScale(10) }} /> : null}
                             <TouchableOpacity onPress={onUploadKundali} style={{ justifyContent: 'center' }}>
                                 <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.orange, fontSize: moderateScale(12) }}>Upload your kundali</Text>
-                                <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.grey, fontSize: moderateScale(9) }}>Only JPEG, PNG, and PDF Files</Text>
+                                <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.grey, fontSize: moderateScale(9) }}>Only JPEG or PNG</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

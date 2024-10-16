@@ -8,7 +8,7 @@ export const eventSlice = createSlice({
             date: '',
             startTime: '',
             endTime: '',
-            notification: '3',
+            notificationType: '3',
             image: '',
             fullName: '',
             dob: '',
@@ -23,10 +23,25 @@ export const eventSlice = createSlice({
         },
         onChangeEventData: (state, actions) => {
             state.selectedEvent = { ...state.selectedEvent, ...actions.payload }
+        },
+        resetSelectedEvent: (state) => {
+            state.selectedEvent = {
+                description: '',
+                date: '',
+                startTime: '',
+                endTime: '',
+                notificationType: '3',
+                image: '',
+                fullName: '',
+                dob: '',
+                tob: '',
+                place: '',
+                kundali: ''
+            }
         }
     },
 })
 
-export const { setSelectedEvent, onChangeEventData } = eventSlice.actions
+export const { setSelectedEvent, onChangeEventData, resetSelectedEvent } = eventSlice.actions
 
 export default eventSlice.reducer

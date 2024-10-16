@@ -11,9 +11,11 @@ type DateTimePickerProps = {
     style?: ViewStyle;
     onSelect: (date: Date) => void;
     mode?: 'date' | 'time';
+    minDate?: Date;
+    maxDate?: Date;
 };
 
-const DateTimePicker = ({ label, value, style, onSelect, mode = 'date' }: DateTimePickerProps) => {
+const DateTimePicker = ({ label, value, style, onSelect, mode = 'date', minDate = undefined, maxDate = undefined, }: DateTimePickerProps) => {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
     const showDatePicker = () => {
@@ -34,12 +36,13 @@ const DateTimePicker = ({ label, value, style, onSelect, mode = 'date' }: DateTi
     return (
         <View style={{ flex: 1 }}>
             <TouchableOpacity onPress={showDatePicker} style={style}>
-                <Text style={styles.label}>{value ? value : label}</Text>
+                <Text style={[styles.label, { color: value ? Colors.black1 : Colors.grey }]}>{value ? value : label}</Text>
             </TouchableOpacity>
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}
                 mode={mode}
-                maximumDate={mode == 'date' ? new Date() : undefined}
+                minimumDate={minDate}
+                maximumDate={maxDate}
                 onConfirm={handleConfirm}
                 onCancel={hideDatePicker}
             />
