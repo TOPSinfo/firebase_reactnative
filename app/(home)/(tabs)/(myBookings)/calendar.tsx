@@ -11,6 +11,8 @@ import dayjs from 'dayjs';
 import { Fonts } from '@/constants/Fonts'
 import { myBookingsSelector } from '@/redux/selector'
 import moment from 'moment'
+import { useDispatch } from 'react-redux'
+import { setSelectedEvent } from '@/redux/eventSlice'
 
 const Calendar = () => {
     const [date, setDate] = useState(dayjs());
@@ -31,6 +33,7 @@ const Calendar = () => {
     ])
     const flatlistRef = useRef<FlatList<any>>(null)
     const router = useRouter()
+    const dispatch = useDispatch()
 
     const bookings = myBookingsSelector()
 
@@ -39,7 +42,7 @@ const Calendar = () => {
         const bookingTime = [...time.map((item: any) => ({ ...item, booking: [] }))]
         myBookings.forEach((item: any) => {
             const index = bookingTime.findIndex((time: any) => {
-                const diff = moment.duration(moment(item.time, 'hh:mm A').diff(moment(time.timing, 'hh:mm A')));
+                const diff = moment.duration(moment(item.startTime, 'hh:mm A').diff(moment(time.timing, 'hh:mm A')));
                 return diff.asHours() >= 0 && diff.asHours() < 1
             })
             if (index !== -1) {
@@ -105,9 +108,14 @@ const Calendar = () => {
         )
     }
 
+    const onEventPress = (item: any) => {
+        dispatch(setSelectedEvent(item.booking[0]))
+        router.navigate('/(home)/eventscreen')
+    }
+
     const renderTime = ({ item }: any) => {
         return (
-            <View style={{ height: verticalScale(80), paddingHorizontal: horizontalScale(25), borderBottomWidth: 1, borderBottomColor: Colors.white4, flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity onPress={() => onEventPress(item)} style={{ height: verticalScale(80), paddingHorizontal: horizontalScale(25), borderBottomWidth: 1, borderBottomColor: Colors.white4, flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={{ fontFamily: Fonts.PoppinsRegular, fontSize: moderateScale(12), color: Colors.grey }}>{item.label}</Text>
                 {item.booking.map((booking: any, index: number) => {
                     return <View key={index} style={{ marginLeft: horizontalScale(15), height: verticalScale(48), backgroundColor: Colors.white, width: horizontalScale(255), borderRadius: horizontalScale(5), flexDirection: 'row', overflow: 'hidden' }}>
@@ -115,12 +123,12 @@ const Calendar = () => {
                             <SvgImage url={getIcon(booking.status)} style={{ height: verticalScale(16), width: verticalScale(16) }} />
                         </View>
                         <View style={{ paddingLeft: horizontalScale(10), justifyContent: 'center' }}>
-                            <Text style={{ fontFamily: Fonts.PoppinsBold, fontSize: moderateScale(10), color: Colors.black1 }}>Your appointment with {booking.name}</Text>
-                            <Text style={{ fontFamily: Fonts.PoppinsRegular, fontSize: moderateScale(12), color: Colors.grey }}>{booking.time}</Text>
+                            <Text style={{ fontFamily: Fonts.PoppinsBold, fontSize: moderateScale(10), color: Colors.black1 }}>Your appointment with {booking.astrologerName}</Text>
+                            <Text style={{ fontFamily: Fonts.PoppinsRegular, fontSize: moderateScale(12), color: Colors.grey }}>{booking.startTime} - {booking.endTime}</Text>
                         </View>
                     </View>
                 })}
-            </View>
+            </TouchableOpacity>
         )
     }
 
@@ -131,7 +139,7 @@ const Calendar = () => {
             </View>
         )
     }
-    console.log('Time', time)
+
     return (
         <View style={styles.container}>
             <TabHeader title='Calendar' right={renderRight()} />
@@ -159,6 +167,17 @@ const Calendar = () => {
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={renderTime}
                 showsVerticalScrollIndicator={false}
+                onScrollToIndexFailed={({
+                    index,
+                    averageItemLength,
+                }) => {
+                    // Layout doesn't know the exact location of the requested element.
+                    // Falling back to calculating the destination manually
+                    flatlistRef.current?.scrollToOffset({
+                        offset: index * averageItemLength,
+                        animated: true,
+                    });
+                }}
             />
         </View>
     )

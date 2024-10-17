@@ -17,7 +17,7 @@ import ReviewCard from '@/components/ReviewCard'
 import Ratings from '@/components/Ratings'
 import { showSuccessMessage } from '@/utils/helper'
 import EventModal from '@/components/Event'
-import { resetSelectedEvent } from '@/redux/eventSlice'
+import { onChangeEventData, resetSelectedEvent } from '@/redux/eventSlice'
 
 const appoinmentTime = ['08:30 AM', '09:30 AM', '10:30 AM', '11:30 AM', '01:30 PM', '02:30 PM', '03:30 PM', '04:30 PM', '05:30 PM', '06:30 PM', '07:30 PM']
 
@@ -26,13 +26,13 @@ const Details = () => {
     const [reviews, setReviews] = useState<any>([])
     const [showReadMore, setShowReadMore] = useState(false)
     const [date, setDate] = useState(moment().format('DD MMM YYYY'))
-    const [showEvent, setShowEvent] = useState(false)
     const { id } = useLocalSearchParams<{ id: string }>()
 
     const disptach = useDispatch()
 
     const onPlus = () => {
-        setShowEvent(true)
+        disptach(onChangeEventData({ astrologerId: details?.id, astrologerName: details?.name, rate: details?.rate }))
+        router.navigate('/(home)/eventscreen')
     }
 
     /**
@@ -66,9 +66,6 @@ const Details = () => {
 
     useEffect(() => {
         getDetails()
-        return () => {
-            disptach(resetSelectedEvent())
-        }
     }, [])
 
     /**
@@ -106,7 +103,8 @@ const Details = () => {
     }
 
     const onBookNow = async () => {
-        setShowEvent(true)
+        disptach(onChangeEventData({ astrologerId: details?.id, astrologerName: details?.name, rate: details?.rate }))
+        router.navigate('/(home)/eventscreen')
     }
 
     const renderReview = ({ item, index }: any) => {
@@ -121,9 +119,6 @@ const Details = () => {
         setDate(moment(date, 'DD MMM YYYY').subtract(1, 'days').format('DD MMM YYYY'))
     }
 
-    const onEventModalClose = () => {
-        setShowEvent(false)
-    }
 
     if (!details) return null
 
@@ -213,7 +208,6 @@ const Details = () => {
                     </View>
                 </ScrollView>
             </View>
-            <EventModal visible={showEvent} onClose={onEventModalClose} astrologerDetails={details} />
         </View>
     )
 }

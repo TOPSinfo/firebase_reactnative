@@ -1,6 +1,7 @@
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
 import { moderateScale } from '@/utils/matrix';
+import moment from 'moment';
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -41,6 +42,7 @@ const DateTimePicker = ({ label, value, style, onSelect, mode = 'date', minDate 
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}
                 mode={mode}
+                date={value ? moment(value, mode == 'date' ? 'DD MMM YYYY' : 'hh:mm A').toDate() : new Date()}
                 minimumDate={minDate}
                 maximumDate={maxDate}
                 onConfirm={handleConfirm}

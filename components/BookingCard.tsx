@@ -33,7 +33,7 @@ const BookingCard = ({ data }: any) => {
             </View>
             <View style={{ padding: horizontalScale(10), paddingLeft: horizontalScale(15) }}>
                 <Text style={[styles.label, { color: Colors.black1, fontSize: moderateScale(12), lineHeight: moderateScale(20) }]}>With Astro {data.astrologerName}</Text>
-                <Text style={styles.label}>Time: {data.time}</Text>
+                <Text style={styles.label}>Time: {data.startTime} - {data.endTime}</Text>
                 <Text style={styles.label}>Rate: {data.rate}/min</Text>
                 <Text style={styles.label}>Status: <Text style={{ textTransform: 'capitalize', color }}>{data.status}</Text></Text>
             </View>

@@ -1,6 +1,6 @@
 import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix'
 import React, { ReactElement, useState } from 'react'
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, TextInput, TouchableWithoutFeedback } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native'
 import SvgImage from './SvgImage';
 import { Images } from '@/constants/Images';
 import { useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,7 +20,7 @@ import moment from 'moment';
 import { selectedEventSelector } from '@/redux/selector';
 import { setLoading } from '@/redux/loadingSlice';
 import { createBooking } from '@/services/db';
-import { showSuccessMessage } from '@/utils/helper';
+import { showErrorMessage, showSuccessMessage } from '@/utils/helper';
 
 
 const Header = ({ title, right, onClose }: { title: string, right?: ReactElement, onClose: () => void }) => {
@@ -48,17 +48,16 @@ const Header = ({ title, right, onClose }: { title: string, right?: ReactElement
     )
 }
 
-type EventModalProps = {
-    astrologerDetails: any,
-    visible: boolean
-    onClose: () => void
-}
-
-const EventModal = ({ astrologerDetails, visible, onClose }: EventModalProps) => {
+const Event = () => {
     const [notificationModal, setNotificationModal] = useState(false)
     const disptach = useDispatch()
-
     const selectedEvent = selectedEventSelector()
+    const router = useRouter()
+
+    console.log('Selected event', selectedEvent)
+    const onClose = () => {
+        router.back()
+    }
 
     const renderRight = () => {
         return (
@@ -69,12 +68,22 @@ const EventModal = ({ astrologerDetails, visible, onClose }: EventModalProps) =>
     }
 
     const onBookNow = async () => {
+        if (!selectedEvent.date || !selectedEvent.startTime || !selectedEvent.endTime || !selectedEvent.description || !selectedEvent.image || !selectedEvent.fullName || !selectedEvent.dob || !selectedEvent.tob || !selectedEvent.place || !selectedEvent.kundali) {
+            showErrorMessage('Please fill all the details.')
+            return
+        }
+        if (selectedEvent.startTime >= selectedEvent.endTime) {
+            showErrorMessage('Start time should be less than end time.')
+            return
+        }
+
         const data = {
-            astrologerId: astrologerDetails?.id,
-            astrologerName: astrologerDetails?.name,
-            rate: astrologerDetails?.rate,
+            astrologerId: selectedEvent?.astrologerId,
+            astrologerName: selectedEvent?.astrologerName,
+            rate: selectedEvent?.rate,
             date: selectedEvent.date,
-            time: selectedEvent.startTime + ' - ' + selectedEvent.endTime,
+            startTime: selectedEvent.startTime,
+            endTime: selectedEvent.endTime,
             description: selectedEvent.description,
             notificationType: selectedEvent.notificationType,
             image: selectedEvent.image,
@@ -85,13 +94,12 @@ const EventModal = ({ astrologerDetails, visible, onClose }: EventModalProps) =>
             kundali: selectedEvent.kundali
         }
         console.log('Book Now', data)
-        onClose()
         disptach(setLoading(true))
         const res = await createBooking(data)
         if (res) {
             disptach(setLoading(false))
             showSuccessMessage('Your booking request successfully created.')
-            disptach(resetSelectedEvent())
+            onClose()
         }
     }
 
@@ -205,13 +213,13 @@ const EventModal = ({ astrologerDetails, visible, onClose }: EventModalProps) =>
     }
 
     return (
-        <Modal visible={visible} onRequestClose={onClose} style={{ flex: 1 }} animationType='slide' statusBarTranslucent>
+        <KeyboardAvoidingView style={styles.container} behavior='padding'>
             <Header title='Add Event' onClose={onClose} right={renderRight()} />
             <View style={styles.container}>
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: horizontalScale(20) }}>
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: horizontalScale(20) }} keyboardShouldPersistTaps='handled'>
                     <View style={[styles.fieldContainer, { marginTop: horizontalScale(10), padding: horizontalScale(15) }]}>
                         <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.grey, fontSize: moderateScale(12) }}>Astrologer Name</Text>
-                        <Text style={{ fontFamily: Fonts.PoppinsBold, color: Colors.black1, fontSize: moderateScale(16) }}>{astrologerDetails.name}</Text>
+                        <Text style={{ fontFamily: Fonts.PoppinsBold, color: Colors.black1, fontSize: moderateScale(16) }}>{selectedEvent.astrologerName}</Text>
                     </View>
                     <View style={[styles.fieldContainer, { padding: horizontalScale(10) }]}>
                         <View style={{ flexDirection: 'row' }}>
@@ -314,7 +322,7 @@ const EventModal = ({ astrologerDetails, visible, onClose }: EventModalProps) =>
                 </ScrollView>
                 {renderNotificationModal()}
             </View>
-        </Modal>
+        </KeyboardAvoidingView>
     )
 }
 
@@ -355,4 +363,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default EventModal
+export default Event
