@@ -45,5 +45,5 @@ export const Images = {
     bell: require('../assets/images/bell.svg'),
     photo: require('../assets/images/photo.svg'),
     place: require('../assets/images/place.svg'),
-
+    edit: require('../assets/images/edit.svg'),
 }

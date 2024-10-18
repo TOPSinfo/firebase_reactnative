@@ -1,5 +1,5 @@
 import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix'
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native'
 import SvgImage from './SvgImage';
 import { Images } from '@/constants/Images';
@@ -30,8 +30,6 @@ const Header = ({ title, right, onClose }: { title: string, right?: ReactElement
     const statusBarHeight = insets.top;
     const defaultHeight = getDefaultHeaderHeight(frame, false, statusBarHeight)
 
-    const router = useRouter()
-
     return (
         <View style={{ height: defaultHeight + 10 }}>
             <View pointerEvents="none" style={{ height: statusBarHeight }} />
@@ -50,18 +48,52 @@ const Header = ({ title, right, onClose }: { title: string, right?: ReactElement
 
 const Event = () => {
     const [notificationModal, setNotificationModal] = useState(false)
+    const [editable, setEditable] = useState(true)
     const disptach = useDispatch()
     const selectedEvent = selectedEventSelector()
     const router = useRouter()
 
     console.log('Selected event', selectedEvent)
+
+    useEffect(() => {
+        if (selectedEvent.id) {
+            setEditable(false)
+        }
+    }, [])
+
     const onClose = () => {
         router.back()
     }
 
+    const onEditPress = () => {
+        setEditable(true)
+    }
+
     const renderRight = () => {
+        if (selectedEvent.id && (selectedEvent.status == 'completed' || selectedEvent.status == 'rejected')) return null
+
+        if (selectedEvent.id) {
+            if (editable) {
+                return (
+                    <TouchableOpacity hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ paddingHorizontal: horizontalScale(10), alignItems: 'center', justifyContent: 'center' }}>
+                        <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.white, fontSize: moderateScale(16) }}>Update</Text>
+                    </TouchableOpacity>
+                )
+
+            }
+            return (
+                <View style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity onPress={onEditPress} hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ paddingHorizontal: horizontalScale(10), alignItems: 'center', justifyContent: 'center' }} >
+                        <SvgImage url={Images.edit} style={{ height: horizontalScale(16), width: horizontalScale(16) }} />
+                    </TouchableOpacity>
+                    <TouchableOpacity hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ paddingHorizontal: horizontalScale(10), alignItems: 'center', justifyContent: 'center' }} >
+                        <SvgImage url={Images.delete} style={{ height: horizontalScale(16), width: horizontalScale(16) }} />
+                    </TouchableOpacity>
+                </View>
+            )
+        }
         return (
-            <TouchableOpacity hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ paddingHorizontal: horizontalScale(10), alignItems: 'center', justifyContent: 'center' }}>
+            <TouchableOpacity onPress={onBookNow} hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ paddingHorizontal: horizontalScale(10), alignItems: 'center', justifyContent: 'center' }}>
                 <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.white, fontSize: moderateScale(16) }}>Save</Text>
             </TouchableOpacity>
         )
@@ -212,9 +244,54 @@ const Event = () => {
         }
     }
 
+    const getColor = () => {
+        switch (selectedEvent.status) {
+            case 'approved':
+                return Colors.blue;
+            case 'waiting':
+                return Colors.yellow;
+            case 'rejected':
+                return Colors.orange;
+            case 'deleted':
+                return Colors.red;
+            default:
+                return Colors.green;
+        }
+    }
+
+    const getIcon = () => {
+        switch (selectedEvent.status) {
+            case 'approved':
+                return Images.check;
+            case 'waiting':
+                return Images.clock;
+            case 'rejected':
+                return Images.close;
+            case 'deleted':
+                return Images.delete;
+            default:
+                return Images.double_check;
+        }
+    }
+
+    const statusLabel = () => {
+        switch (selectedEvent.status) {
+            case 'approved':
+                return 'Approved'
+            case 'waiting':
+                return 'Pending Approval'
+            case 'rejected':
+                return 'Rejected'
+            case 'deleted':
+                return 'Deleted'
+            default:
+                return 'Completed'
+        }
+    }
+
     return (
         <KeyboardAvoidingView style={styles.container} behavior='padding'>
-            <Header title='Add Event' onClose={onClose} right={renderRight()} />
+            <Header title={selectedEvent.id ? 'View Event' : 'Add Event'} onClose={onClose} right={renderRight()} />
             <View style={styles.container}>
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: horizontalScale(20) }} keyboardShouldPersistTaps='handled'>
                     <View style={[styles.fieldContainer, { marginTop: horizontalScale(10), padding: horizontalScale(15) }]}>
@@ -225,6 +302,7 @@ const Event = () => {
                         <View style={{ flexDirection: 'row' }}>
                             <SvgImage url={Images.all_details} style={{ ...styles.fieldIcon, marginTop: horizontalScale(5) }} />
                             <TextInput
+                                editable={editable}
                                 numberOfLines={3}
                                 multiline placeholder='All details'
                                 placeholderTextColor={Colors.grey}
@@ -238,25 +316,33 @@ const Event = () => {
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.calendar} style={styles.fieldIcon} />
-                            <DateTimePicker label='Select Date' value={selectedEvent.date} onSelect={onSelectDate} minDate={new Date()} />
+                            <DateTimePicker editable={!editable} label='Select Date' value={selectedEvent.date} onSelect={onSelectDate} minDate={new Date()} />
                         </View>
                     </View>
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.time} style={styles.fieldIcon} />
-                            <DateTimePicker label='Start Time' mode={'time'} value={selectedEvent.startTime} onSelect={onSelectStartTime} />
+                            <DateTimePicker editable={!editable} label='Start Time' mode={'time'} value={selectedEvent.startTime} onSelect={onSelectStartTime} />
                             <View style={{ borderLeftWidth: 1, borderLeftColor: Colors.grey, height: horizontalScale(55) }} />
-                            <DateTimePicker label='End Time' mode={'time'} value={selectedEvent.endTime} onSelect={onSelectEndTime} style={{ alignItems: 'center' }} />
+                            <DateTimePicker editable={!editable} label='End Time' mode={'time'} value={selectedEvent.endTime} onSelect={onSelectEndTime} style={{ alignItems: 'center' }} />
                         </View>
                     </View>
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.bell} style={styles.fieldIcon} />
-                            <TouchableOpacity onPress={onSelectNotification} style={{ justifyContent: 'center' }}>
+                            <TouchableOpacity disabled={!editable} onPress={onSelectNotification} style={{ justifyContent: 'center' }}>
                                 <Text style={[styles.input, { height: undefined }]}>{notificationLabel()}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
+                    {selectedEvent.status ? <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <SvgImage url={getIcon()} style={{ ...styles.fieldIcon, tintColor: getColor() }} />
+                            <View style={{ justifyContent: 'center' }}>
+                                <Text style={[styles.input, { height: undefined, color: getColor() }]}>{statusLabel()}</Text>
+                            </View>
+                        </View>
+                    </View> : null}
                     <View style={{ ...styles.fieldContainer, height: horizontalScale(50), backgroundColor: Colors.white3, alignItems: 'center', justifyContent: 'center' }}>
                         <Text style={{ fontFamily: Fonts.PoppinsBold, color: Colors.black1, fontSize: moderateScale(12) }} >Personal Details</Text>
                     </View>
@@ -264,7 +350,7 @@ const Event = () => {
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.photo} style={styles.fieldIcon} />
                             {selectedEvent.image ? <SvgImage url={selectedEvent.image} style={{ height: horizontalScale(65), width: horizontalScale(65), marginRight: horizontalScale(10) }} /> : null}
-                            <TouchableOpacity onPress={onUploadPhoto} style={{ justifyContent: 'center' }}>
+                            <TouchableOpacity disabled={!editable} onPress={onUploadPhoto} style={{ justifyContent: 'center' }}>
                                 <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.orange, fontSize: moderateScale(12) }}>Upload your photo</Text>
                                 <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.grey, fontSize: moderateScale(9) }}>Only JPEG or PNG</Text>
                             </TouchableOpacity>
@@ -274,6 +360,7 @@ const Event = () => {
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.user} style={styles.fieldIcon} />
                             <TextInput
+                                editable={editable}
                                 placeholder='Full Name'
                                 placeholderTextColor={Colors.grey}
                                 onChangeText={onChangeFullName}
@@ -285,19 +372,20 @@ const Event = () => {
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.calendar} style={styles.fieldIcon} />
-                            <DateTimePicker label='Date of Birth' value={selectedEvent.dob} onSelect={onSelectDateOfBirth} maxDate={new Date()} />
+                            <DateTimePicker editable={!editable} label='Date of Birth' value={selectedEvent.dob} onSelect={onSelectDateOfBirth} maxDate={new Date()} />
                         </View>
                     </View>
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.time} style={styles.fieldIcon} />
-                            <DateTimePicker label='Time of Birth' mode={'time'} value={selectedEvent.tob} onSelect={onSelectTimeOfBirth} />
+                            <DateTimePicker editable={!editable} label='Time of Birth' mode={'time'} value={selectedEvent.tob} onSelect={onSelectTimeOfBirth} />
                         </View>
                     </View>
                     <View style={[styles.fieldContainer, { height: horizontalScale(55), justifyContent: 'center' }]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.place} style={styles.fieldIcon} />
                             <TextInput
+                                editable={editable}
                                 placeholder='Place of Birth'
                                 placeholderTextColor={Colors.grey}
                                 onChangeText={onChangePlaceOfBirth}
@@ -310,15 +398,15 @@ const Event = () => {
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <SvgImage url={Images.kundali} style={styles.fieldIcon} />
                             {selectedEvent.kundali ? <SvgImage url={selectedEvent.kundali} style={{ height: horizontalScale(65), width: horizontalScale(65), marginRight: horizontalScale(10) }} /> : null}
-                            <TouchableOpacity onPress={onUploadKundali} style={{ justifyContent: 'center' }}>
+                            <TouchableOpacity disabled={!editable} onPress={onUploadKundali} style={{ justifyContent: 'center' }}>
                                 <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.orange, fontSize: moderateScale(12) }}>Upload your kundali</Text>
                                 <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.grey, fontSize: moderateScale(9) }}>Only JPEG or PNG</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={{ paddingHorizontal: horizontalScale(20), marginTop: horizontalScale(20) }}>
+                    {selectedEvent.id ? null : <View style={{ paddingHorizontal: horizontalScale(20), marginTop: horizontalScale(20) }}>
                         <Button title='Book Now' onPress={onBookNow} />
-                    </View>
+                    </View>}
                 </ScrollView>
                 {renderNotificationModal()}
             </View>

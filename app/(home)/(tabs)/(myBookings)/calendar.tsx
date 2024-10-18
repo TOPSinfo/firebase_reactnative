@@ -62,36 +62,32 @@ const Calendar = () => {
     }
 
     const getColor = (status: string) => {
-        if (status === 'approved') {
-            return Colors.blue
-        } else if (status === 'waiting') {
-            return Colors.yellow
-        }
-        else if (status === 'rejected') {
-            return Colors.orange
-        }
-        else if (status === 'deleted') {
-            return Colors.red
-        }
-        else {
-            return Colors.green
+        switch (status) {
+            case 'approved':
+                return Colors.blue;
+            case 'waiting':
+                return Colors.yellow;
+            case 'rejected':
+                return Colors.orange;
+            case 'deleted':
+                return Colors.red;
+            default:
+                return Colors.green;
         }
     }
 
     const getIcon = (status: string) => {
-        if (status === 'approved') {
-            return Images.check
-        } else if (status === 'waiting') {
-            return Images.clock
-        }
-        else if (status === 'rejected') {
-            return Images.close
-        }
-        else if (status === 'deleted') {
-            return Images.delete
-        }
-        else {
-            return Images.double_check
+        switch (status) {
+            case 'approved':
+                return Images.check;
+            case 'waiting':
+                return Images.clock;
+            case 'rejected':
+                return Images.close;
+            case 'deleted':
+                return Images.delete;
+            default:
+                return Images.double_check;
         }
     }
 
@@ -108,27 +104,27 @@ const Calendar = () => {
         )
     }
 
-    const onEventPress = (item: any) => {
-        dispatch(setSelectedEvent(item.booking[0]))
+    const onEventPress = (booking: any) => {
+        dispatch(setSelectedEvent(booking))
         router.navigate('/(home)/eventscreen')
     }
 
     const renderTime = ({ item }: any) => {
         return (
-            <TouchableOpacity onPress={() => onEventPress(item)} style={{ height: verticalScale(80), paddingHorizontal: horizontalScale(25), borderBottomWidth: 1, borderBottomColor: Colors.white4, flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ height: verticalScale(80), paddingHorizontal: horizontalScale(25), borderBottomWidth: 1, borderBottomColor: Colors.white4, flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={{ fontFamily: Fonts.PoppinsRegular, fontSize: moderateScale(12), color: Colors.grey }}>{item.label}</Text>
                 {item.booking.map((booking: any, index: number) => {
-                    return <View key={index} style={{ marginLeft: horizontalScale(15), height: verticalScale(48), backgroundColor: Colors.white, width: horizontalScale(255), borderRadius: horizontalScale(5), flexDirection: 'row', overflow: 'hidden' }}>
+                    return <TouchableOpacity onPress={() => onEventPress(booking)} key={index} style={{ marginLeft: horizontalScale(15), height: verticalScale(48), backgroundColor: Colors.white, width: horizontalScale(255), borderRadius: horizontalScale(5), flexDirection: 'row', overflow: 'hidden' }}>
                         <View style={{ backgroundColor: getColor(booking.status), width: horizontalScale(38), justifyContent: 'center', alignItems: 'center' }}>
                             <SvgImage url={getIcon(booking.status)} style={{ height: verticalScale(16), width: verticalScale(16) }} />
                         </View>
                         <View style={{ paddingLeft: horizontalScale(10), justifyContent: 'center' }}>
-                            <Text style={{ fontFamily: Fonts.PoppinsBold, fontSize: moderateScale(10), color: Colors.black1 }}>Your appointment with {booking.astrologerName}</Text>
+                            <Text style={{ fontFamily: Fonts.PoppinsBold, fontSize: moderateScale(9), color: Colors.black1 }}>Your appointment with {booking.astrologerName}</Text>
                             <Text style={{ fontFamily: Fonts.PoppinsRegular, fontSize: moderateScale(12), color: Colors.grey }}>{booking.startTime} - {booking.endTime}</Text>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 })}
-            </TouchableOpacity>
+            </View>
         )
     }
 
