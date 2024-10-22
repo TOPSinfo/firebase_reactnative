@@ -35,6 +35,12 @@ const DateTimePicker = ({ label, value, style, onSelect, mode = 'date', minDate 
         hideDatePicker();
     };
 
+    const handleMinimumDate = () => {
+        if (minDate && value && moment(value, 'DD MMM YYYY').toDate() < minDate)
+            return moment(value, 'DD MMM YYYY').toDate()
+        return minDate
+    }
+
     return (
         <View style={{ flex: 1 }}>
             <TouchableOpacity disabled={editable} onPress={showDatePicker} style={style}>
@@ -44,7 +50,7 @@ const DateTimePicker = ({ label, value, style, onSelect, mode = 'date', minDate 
                 isVisible={isDatePickerVisible}
                 mode={mode}
                 date={value ? moment(value, mode == 'date' ? 'DD MMM YYYY' : 'hh:mm A').toDate() : new Date()}
-                minimumDate={minDate}
+                minimumDate={handleMinimumDate()}
                 maximumDate={maxDate}
                 onConfirm={handleConfirm}
                 onCancel={hideDatePicker}

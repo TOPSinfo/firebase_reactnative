@@ -17,7 +17,7 @@ const BookingCard = ({ data }: any) => {
             return Colors.orange
         }
         else if (status === 'deleted') {
-            return Colors.red
+            return Colors.red1
         }
         else {
             return Colors.green

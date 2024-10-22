@@ -51,7 +51,7 @@ const Calendar = () => {
             }
         })
         setTime(bookingTime)
-    }, [date])
+    }, [date, bookings])
 
     const onCalendarPress = () => {
         router.back()
@@ -70,7 +70,7 @@ const Calendar = () => {
             case 'rejected':
                 return Colors.orange;
             case 'deleted':
-                return Colors.red;
+                return Colors.red1;
             default:
                 return Colors.green;
         }

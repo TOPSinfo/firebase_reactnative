@@ -1,9 +1,9 @@
 import { setLoading } from "@/redux/loadingSlice"
 import { store } from "@/redux/store"
 import { showErrorMessage } from "@/utils/helper"
-import { collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, where } from "firebase/firestore"
+import { collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore"
 import { auth, db, storage } from "./config"
-import { setAstrologers, setUser } from "@/redux/userSlice"
+import { setAstrologers, setMyBookings, setUser } from "@/redux/userSlice"
 import { getDownloadURL, ref, uploadBytesResumable } from "@firebase/storage"
 
 const handleError = (error: object) => {
@@ -156,8 +156,42 @@ export const getMyBookings = async () => {
         querySnapshot.forEach((doc) => {
             bookings.push({ ...doc.data(), id: doc.id })
         });
-        return bookings
+        store.dispatch((setMyBookings(bookings)))
     } catch (error: any) {
         handleError(error)
+    }
+}
+
+export const updateBooking = async (data: any) => {
+    try {
+        const uploadIfNeeded = async (field: string) => {
+            if (!data[field].includes('firebasestorage.googleapis.com')) {
+                data[field] = await uploadImage(data[field]);
+            }
+        };
+
+        await Promise.all([uploadIfNeeded('image'), uploadIfNeeded('kundali')]);
+
+        store.dispatch(setLoading(true));
+        const bookingRef = doc(db, "bookings", data.id);
+        await updateDoc(bookingRef, data);
+        await getMyBookings()
+        store.dispatch(setLoading(false));
+        return true;
+    } catch (error: any) {
+        handleError(error);
+    }
+}
+
+export const deleteBooking = async (id: string) => {
+    try {
+        store.dispatch(setLoading(true));
+        const bookingRef = doc(db, "bookings", id);
+        await updateDoc(bookingRef, { status: 'deleted' });
+        await getMyBookings()
+        store.dispatch(setLoading(false));
+        return true;
+    } catch (error: any) {
+        handleError(error);
     }
 }

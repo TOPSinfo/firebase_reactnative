@@ -1,6 +1,6 @@
 import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix'
 import React, { ReactElement, useEffect, useState } from 'react'
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, TouchableWithoutFeedback, KeyboardAvoidingView, Alert } from 'react-native'
 import SvgImage from './SvgImage';
 import { Images } from '@/constants/Images';
 import { useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,7 +19,7 @@ import { onChangeEventData, resetSelectedEvent } from '@/redux/eventSlice';
 import moment from 'moment';
 import { selectedEventSelector } from '@/redux/selector';
 import { setLoading } from '@/redux/loadingSlice';
-import { createBooking } from '@/services/db';
+import { createBooking, deleteBooking, updateBooking } from '@/services/db';
 import { showErrorMessage, showSuccessMessage } from '@/utils/helper';
 
 
@@ -69,13 +69,36 @@ const Event = () => {
         setEditable(true)
     }
 
+    const onDelete = async () => {
+        disptach(setLoading(true))
+        const res = await deleteBooking(selectedEvent.id)
+        if (res) {
+            disptach(setLoading(false))
+            showSuccessMessage('Your booking request deleted successfully.')
+            onClose()
+        }
+    }
+
+    const onDeletePress = () => {
+        Alert.alert('Delete', 'Are you sure you want to delete this booking request?', [
+            {
+                text: 'No',
+            },
+            {
+                text: 'Yes',
+                onPress: onDelete
+            }
+        ])
+
+    }
+
     const renderRight = () => {
-        if (selectedEvent.id && (selectedEvent.status == 'completed' || selectedEvent.status == 'rejected')) return null
+        if (selectedEvent.id && (selectedEvent.status == 'completed' || selectedEvent.status == 'rejected' || selectedEvent.status == 'deleted')) return null
 
         if (selectedEvent.id) {
             if (editable) {
                 return (
-                    <TouchableOpacity hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ paddingHorizontal: horizontalScale(10), alignItems: 'center', justifyContent: 'center' }}>
+                    <TouchableOpacity onPress={() => onBookNow(true)} hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ paddingHorizontal: horizontalScale(10), alignItems: 'center', justifyContent: 'center' }}>
                         <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.white, fontSize: moderateScale(16) }}>Update</Text>
                     </TouchableOpacity>
                 )
@@ -86,20 +109,20 @@ const Event = () => {
                     <TouchableOpacity onPress={onEditPress} hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ paddingHorizontal: horizontalScale(10), alignItems: 'center', justifyContent: 'center' }} >
                         <SvgImage url={Images.edit} style={{ height: horizontalScale(16), width: horizontalScale(16) }} />
                     </TouchableOpacity>
-                    <TouchableOpacity hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ paddingHorizontal: horizontalScale(10), alignItems: 'center', justifyContent: 'center' }} >
+                    <TouchableOpacity onPress={onDeletePress} hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ paddingHorizontal: horizontalScale(10), alignItems: 'center', justifyContent: 'center' }} >
                         <SvgImage url={Images.delete} style={{ height: horizontalScale(16), width: horizontalScale(16) }} />
                     </TouchableOpacity>
                 </View>
             )
         }
         return (
-            <TouchableOpacity onPress={onBookNow} hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ paddingHorizontal: horizontalScale(10), alignItems: 'center', justifyContent: 'center' }}>
+            <TouchableOpacity onPress={() => onBookNow(false)} hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ paddingHorizontal: horizontalScale(10), alignItems: 'center', justifyContent: 'center' }}>
                 <Text style={{ fontFamily: Fonts.PoppinsRegular, color: Colors.white, fontSize: moderateScale(16) }}>Save</Text>
             </TouchableOpacity>
         )
     }
 
-    const onBookNow = async () => {
+    const onBookNow = async (isUpdate = false) => {
         if (!selectedEvent.date || !selectedEvent.startTime || !selectedEvent.endTime || !selectedEvent.description || !selectedEvent.image || !selectedEvent.fullName || !selectedEvent.dob || !selectedEvent.tob || !selectedEvent.place || !selectedEvent.kundali) {
             showErrorMessage('Please fill all the details.')
             return
@@ -109,7 +132,23 @@ const Event = () => {
             return
         }
 
-        const data = {
+        const data: {
+            id?: string;
+            astrologerId: any;
+            astrologerName: any;
+            rate: any;
+            date: any;
+            startTime: any;
+            endTime: any;
+            description: any;
+            notificationType: any;
+            image: any;
+            fullName: any;
+            dob: any;
+            tob: any;
+            place: any;
+            kundali: any;
+        } = {
             astrologerId: selectedEvent?.astrologerId,
             astrologerName: selectedEvent?.astrologerName,
             rate: selectedEvent?.rate,
@@ -126,11 +165,14 @@ const Event = () => {
             kundali: selectedEvent.kundali
         }
         console.log('Book Now', data)
+        if (isUpdate) {
+            data.id = selectedEvent.id
+        }
         disptach(setLoading(true))
-        const res = await createBooking(data)
+        const res = isUpdate ? await updateBooking(data) : await createBooking(data)
         if (res) {
             disptach(setLoading(false))
-            showSuccessMessage('Your booking request successfully created.')
+            showSuccessMessage(isUpdate ? 'Your booking request updated successfully.' : 'Your booking request successfully created.')
             onClose()
         }
     }
@@ -253,7 +295,7 @@ const Event = () => {
             case 'rejected':
                 return Colors.orange;
             case 'deleted':
-                return Colors.red;
+                return Colors.red1;
             default:
                 return Colors.green;
         }

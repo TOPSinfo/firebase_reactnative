@@ -12,7 +12,6 @@ import { setLoading } from '@/redux/loadingSlice'
 import { getMyBookings } from '@/services/db'
 import moment from 'moment'
 import { useRouter } from 'expo-router'
-import { setMyBookings } from '@/redux/userSlice'
 import { myBookingsSelector } from '@/redux/selector'
 
 const MyBookings = () => {
@@ -24,9 +23,6 @@ const MyBookings = () => {
     const fetchBookings = async () => {
         disatch(setLoading(true))
         const res = await getMyBookings()
-        if (res) {
-            disatch(setMyBookings(res))
-        }
         disatch(setLoading(false))
     }
 
