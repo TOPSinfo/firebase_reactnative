@@ -46,4 +46,12 @@ export const Images = {
     photo: require('../assets/images/photo.svg'),
     place: require('../assets/images/place.svg'),
     edit: require('../assets/images/edit.svg'),
+    booking_history: require('../assets/images/booking_history.svg'),
+    transaction_history: require('../assets/images/transaction_history.svg'),
+    help: require('../assets/images/help.svg'),
+    rate: require('../assets/images/rate.svg'),
+    share: require('../assets/images/share.svg'),
+    logout: require('../assets/images/logout.svg'),
+    date_of_birth: require('../assets/images/date_of_birth.svg'),
+    sun_sign: require('../assets/images/sun_sign.svg'),
 }

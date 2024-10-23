@@ -33,6 +33,8 @@ export const Colors = {
   white2: '#CCCCCC',
   white3: '#FAFAFA',
   white4: '#E7E7E7',
+  white5: '#F3F3F3',
+  white6: '#C4C4C4',
   grey: '#999999',
   blue: '#27AAE1',
   lightBlue: '#E1F3FF',
