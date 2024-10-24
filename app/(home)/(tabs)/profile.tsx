@@ -28,7 +28,7 @@ const Profile = () => {
     }
 
     const onBookingHistory = () => {
-
+        router.navigate('/(home)/bookinghistory')
     }
 
     const onTransactionHistory = () => {

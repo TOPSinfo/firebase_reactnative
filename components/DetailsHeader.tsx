@@ -9,7 +9,7 @@ import { getDefaultHeaderHeight } from '@react-navigation/elements'
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
 
-const DetailsHeader = ({ title, rightIcon, onRight }: { title: string, rightIcon: string, onRight: () => void }) => {
+const DetailsHeader = ({ title, rightIcon, onRight }: { title: string, rightIcon?: string, onRight?: () => void }) => {
     const insets = useSafeAreaInsets();
     const frame = useSafeAreaFrame();
 
@@ -36,9 +36,9 @@ const DetailsHeader = ({ title, rightIcon, onRight }: { title: string, rightIcon
                 <View style={{ flex: 1, justifyContent: 'center' }}>
                     <Text style={styles.title}>{title}</Text>
                 </View>
-                <TouchableOpacity onPress={onRight} style={{ width: '10%', justifyContent: 'center', alignItems: 'flex-end' }}>
+                {rightIcon && onRight ? <TouchableOpacity onPress={onRight} style={{ width: '10%', justifyContent: 'center', alignItems: 'flex-end' }}>
                     <SvgImage url={rightIcon} style={{ height: horizontalScale(16), width: horizontalScale(16) }} />
-                </TouchableOpacity>
+                </TouchableOpacity> : null}
             </View>
         </View>
     )

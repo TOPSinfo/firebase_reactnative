@@ -14,12 +14,16 @@ const ProfileCard = () => {
 
     const sunSign = getSunSign(user.fullName)
 
+    const onEditPress = () => {
+
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.profileContainer}>
                 <View style={styles.profile}>
                     <SvgImage url={Images.user} style={{ height: verticalScale(40), width: verticalScale(40) }} />
-                    <TouchableOpacity style={styles.edit}>
+                    <TouchableOpacity onPress={onEditPress} style={styles.edit}>
                         <SvgImage url={Images.edit} style={{ height: verticalScale(8), width: verticalScale(8) }} />
                     </TouchableOpacity>
                 </View>

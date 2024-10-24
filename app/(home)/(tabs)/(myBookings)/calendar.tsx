@@ -169,10 +169,13 @@ const Calendar = () => {
                 }) => {
                     // Layout doesn't know the exact location of the requested element.
                     // Falling back to calculating the destination manually
-                    flatlistRef.current?.scrollToOffset({
-                        offset: index * averageItemLength,
-                        animated: true,
-                    });
+                    console.log('Failed to scroll to index ', index, averageItemLength);
+                    setTimeout(() => {
+                        flatlistRef.current?.scrollToOffset({
+                            offset: index * verticalScale(90),
+                            animated: true,
+                        });
+                    }, 500)
                 }}
             />
         </View>
