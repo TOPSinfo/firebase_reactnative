@@ -195,3 +195,26 @@ export const deleteBooking = async (id: string) => {
         handleError(error);
     }
 }
+
+export const updateProfile = async (data: any) => {
+    try {
+        store.dispatch(setLoading(true));
+        const uid = auth.currentUser?.uid;
+        if (!uid) {
+            throw new Error("User is not authenticated");
+        }
+        const uploadIfNeeded = async (field: string) => {
+            if (!data[field].includes('firebasestorage.googleapis.com')) {
+                data[field] = await uploadImage(data[field]);
+            }
+        };
+        await uploadIfNeeded('image');
+        const userRef = doc(db, "users", uid);
+        await updateDoc(userRef, data);
+        await getUser()
+        store.dispatch(setLoading(false));
+        return true;
+    } catch (error: any) {
+        handleError(error);
+    }
+}

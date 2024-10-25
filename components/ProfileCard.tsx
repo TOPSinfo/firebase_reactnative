@@ -7,22 +7,41 @@ import { Images } from '@/constants/Images'
 import { userSelector } from '@/redux/selector'
 import { Fonts } from '@/constants/Fonts'
 import { getSunSign } from '@/utils/helper'
+import { useRouter } from 'expo-router'
+import * as ImagePicker from 'expo-image-picker';
+import { useDispatch } from 'react-redux'
+import { updateProfileImage } from '@/redux/userSlice'
 
-const ProfileCard = () => {
+const ProfileCard = ({ isEdit = false }) => {
 
+    const router = useRouter()
     const user = userSelector()
+    const dispatch = useDispatch()
 
     const sunSign = getSunSign(user.fullName)
 
-    const onEditPress = () => {
+    const onEditPress = async () => {
+        if (isEdit) {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
 
+            if (!result.canceled) {
+                dispatch(updateProfileImage({ image: result.assets[0].uri }))
+            }
+        } else {
+            router.navigate('/(home)/editprofile')
+        }
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.profileContainer}>
+        <View style={[styles.container, { height: isEdit ? verticalScale(210) : verticalScale(320) }]}>
+            <View style={[styles.profileContainer]}>
                 <View style={styles.profile}>
-                    <SvgImage url={Images.user} style={{ height: verticalScale(40), width: verticalScale(40) }} />
+                    {user.image ? <SvgImage url={user.image} style={{ height: verticalScale(105), width: verticalScale(105), borderRadius: verticalScale(105) }} resizeMode='cover' /> : <SvgImage url={Images.user} style={{ height: verticalScale(40), width: verticalScale(40) }} />}
                     <TouchableOpacity onPress={onEditPress} style={styles.edit}>
                         <SvgImage url={Images.edit} style={{ height: verticalScale(8), width: verticalScale(8) }} />
                     </TouchableOpacity>
@@ -31,18 +50,18 @@ const ProfileCard = () => {
                     <Text style={styles.name}>{user.fullName}</Text>
                 </View>
             </View>
-            <View style={styles.optionContainer}>
+            {!isEdit ? <View style={styles.optionContainer}>
                 <View style={styles.option}>
                     <SvgImage url={Images.date_of_birth} style={{ height: verticalScale(16), width: verticalScale(16), tintColor: Colors.blue }} />
                     <Text style={styles.optionLabel}>Date of Birth</Text>
-                    <Text style={styles.value}>{user.dob ?? 'DD MMM YYYY'}</Text>
+                    <Text style={styles.value}>{user.dateOfBirth ?? 'DD MMM YYYY'}</Text>
                 </View>
                 <View style={styles.option}>
                     <SvgImage url={Images.sun_sign} style={{ height: verticalScale(16), width: verticalScale(16) }} />
                     <Text style={styles.optionLabel}>Sun sign</Text>
                     <Text style={styles.value}>{sunSign}</Text>
                 </View>
-            </View>
+            </View> : null}
         </View>
     )
 }

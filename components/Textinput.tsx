@@ -68,7 +68,7 @@ const Textinput = ({ name, control, rules, placeholder, icon, ...rest }: Textinp
                 <SvgImage url={icon} style={{ height: horizontalScale(15), width: horizontalScale(15) }} />
             </View>
             <View style={styles.labelContainer}>
-                {isFocused ? <Animated.Text style={[styles.label, labelStyle]}>
+                {isFocused || value ? <Animated.Text style={[styles.label, labelStyle]}>
                     {placeholder}
                 </Animated.Text> : null}
             </View>
@@ -79,6 +79,7 @@ const Textinput = ({ name, control, rules, placeholder, icon, ...rest }: Textinp
                 onFocus={onFocus}
                 onBlur={onBlur}
                 onChangeText={onChange}
+                value={value}
                 {...rest}
             />
         </Animated.View>

@@ -23,7 +23,7 @@ import { createBooking, deleteBooking, updateBooking } from '@/services/db';
 import { showErrorMessage, showSuccessMessage } from '@/utils/helper';
 
 
-const Header = ({ title, right, onClose }: { title: string, right?: ReactElement, onClose: () => void }) => {
+const Header = ({ title, right, onClose }: { title: string, right?: ReactElement | null, onClose: () => void }) => {
     const insets = useSafeAreaInsets();
     const frame = useSafeAreaFrame();
 
@@ -49,7 +49,7 @@ const Header = ({ title, right, onClose }: { title: string, right?: ReactElement
 const Event = () => {
     const [notificationModal, setNotificationModal] = useState(false)
     const [editable, setEditable] = useState(true)
-    const disptach = useDispatch()
+    const dispatch = useDispatch()
     const selectedEvent = selectedEventSelector()
     const router = useRouter()
 
@@ -70,10 +70,10 @@ const Event = () => {
     }
 
     const onDelete = async () => {
-        disptach(setLoading(true))
+        dispatch(setLoading(true))
         const res = await deleteBooking(selectedEvent.id)
         if (res) {
-            disptach(setLoading(false))
+            dispatch(setLoading(false))
             showSuccessMessage('Your booking request deleted successfully.')
             onClose()
         }
@@ -168,10 +168,10 @@ const Event = () => {
         if (isUpdate) {
             data.id = selectedEvent.id
         }
-        disptach(setLoading(true))
+        dispatch(setLoading(true))
         const res = isUpdate ? await updateBooking(data) : await createBooking(data)
         if (res) {
-            disptach(setLoading(false))
+            dispatch(setLoading(false))
             showSuccessMessage(isUpdate ? 'Your booking request updated successfully.' : 'Your booking request successfully created.')
             onClose()
         }
@@ -186,7 +186,7 @@ const Event = () => {
     }
 
     const onNotificationSelect = (notificationType: string) => {
-        disptach(onChangeEventData({ notificationType }))
+        dispatch(onChangeEventData({ notificationType }))
         setNotificationModal(false)
     }
 
@@ -216,7 +216,7 @@ const Event = () => {
         console.log(result);
 
         if (!result.canceled) {
-            disptach(onChangeEventData({ image: result.assets[0].uri }))
+            dispatch(onChangeEventData({ image: result.assets[0].uri }))
         }
     }
 
@@ -231,40 +231,40 @@ const Event = () => {
         console.log(result);
 
         if (!result.canceled) {
-            disptach(onChangeEventData({ kundali: result.assets[0].uri }))
+            dispatch(onChangeEventData({ kundali: result.assets[0].uri }))
         }
     }
 
     const onChangeDetails = (text: string) => {
-        disptach(onChangeEventData({ description: text }))
+        dispatch(onChangeEventData({ description: text }))
     }
 
     const onSelectDate = (date: Date) => {
-        disptach(onChangeEventData({ date: moment(date).format('DD MMM YYYY') }))
+        dispatch(onChangeEventData({ date: moment(date).format('DD MMM YYYY') }))
     }
 
     const onSelectStartTime = (date: Date) => {
-        disptach(onChangeEventData({ startTime: moment(date).format('hh:mm A') }))
+        dispatch(onChangeEventData({ startTime: moment(date).format('hh:mm A') }))
     }
 
     const onSelectEndTime = (date: Date) => {
-        disptach(onChangeEventData({ endTime: moment(date).format('hh:mm A') }))
+        dispatch(onChangeEventData({ endTime: moment(date).format('hh:mm A') }))
     }
 
     const onChangeFullName = (text: string) => {
-        disptach(onChangeEventData({ fullName: text }))
+        dispatch(onChangeEventData({ fullName: text }))
     }
 
     const onSelectDateOfBirth = (date: Date) => {
-        disptach(onChangeEventData({ dob: moment(date).format('DD MMM YYYY') }))
+        dispatch(onChangeEventData({ dob: moment(date).format('DD MMM YYYY') }))
     }
 
     const onSelectTimeOfBirth = (date: Date) => {
-        disptach(onChangeEventData({ tob: moment(date).format('hh:mm A') }))
+        dispatch(onChangeEventData({ tob: moment(date).format('hh:mm A') }))
     }
 
     const onChangePlaceOfBirth = (text: string) => {
-        disptach(onChangeEventData({ place: text }))
+        dispatch(onChangeEventData({ place: text }))
     }
 
     const notificationLabel = () => {
