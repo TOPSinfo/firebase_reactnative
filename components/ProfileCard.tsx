@@ -18,7 +18,7 @@ const ProfileCard = ({ isEdit = false }) => {
     const user = userSelector()
     const dispatch = useDispatch()
 
-    const sunSign = getSunSign(user.fullName)
+    const sunSign = getSunSign(user?.fullName)
 
     const onEditPress = async () => {
         if (isEdit) {
