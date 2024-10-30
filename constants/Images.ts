@@ -54,4 +54,5 @@ export const Images = {
     logout: require('../assets/images/logout.svg'),
     date_of_birth: require('../assets/images/date_of_birth.svg'),
     sun_sign: require('../assets/images/sun_sign.svg'),
+    launching_soon: require('../assets/images/launching_soon.svg'),
 }

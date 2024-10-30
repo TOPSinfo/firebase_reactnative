@@ -5,8 +5,16 @@ import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix'
 import { Images } from '@/constants/Images'
 import { Colors } from '@/constants/Colors'
 import { Fonts } from '@/constants/Fonts'
+import { useRouter } from 'expo-router'
 
 const Banner = () => {
+    const router = useRouter()
+
+    const onPress = () => {
+        router.navigate('/(home)/astrologer')
+    }
+
+
     return (
         <View>
             <SvgImage url={Images.banner} style={styles.banner} />
@@ -14,7 +22,7 @@ const Banner = () => {
                 <Text style={styles.appointment}>Appointment</Text>
                 <Text style={styles.label}>Connect with astrologer by booking an appointment.</Text>
                 <View style={{ alignItems: 'flex-start' }}>
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity onPress={onPress} style={styles.button}>
                         <Text style={[styles.appointment, { color: Colors.orange, fontSize: moderateScale(9) }]}>Book Appointment</Text>
                     </TouchableOpacity>
                 </View>

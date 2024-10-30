@@ -1,7 +1,8 @@
 import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { Text, StyleSheet, TouchableOpacity } from 'react-native'
 import SvgImage from './SvgImage'
 import { horizontalScale } from '@/utils/matrix'
+import { useRouter } from 'expo-router'
 
 type UpcomingProps = {
     logo: string,
@@ -10,11 +11,16 @@ type UpcomingProps = {
 }
 
 const Upcoming = ({ logo, title, color }: UpcomingProps) => {
+    const router = useRouter()
+    const onPress = () => {
+        router.push('/(home)/comingsoon')
+    }
+
     return (
-        <View style={[styles.container, { borderColor: color }]}>
+        <TouchableOpacity onPress={onPress} style={[styles.container, { borderColor: color }]}>
             <SvgImage url={logo} style={{ height: horizontalScale(32), width: horizontalScale(32) }} />
             <Text style={[styles.title, { color }]}>{title}</Text>
-        </View>
+        </TouchableOpacity>
     )
 }
 

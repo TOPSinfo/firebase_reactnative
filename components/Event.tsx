@@ -1,4 +1,4 @@
-import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix'
+import { horizontalScale, moderateScale } from '@/utils/matrix'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, TouchableWithoutFeedback, KeyboardAvoidingView, Alert } from 'react-native'
 import SvgImage from './SvgImage';
@@ -15,7 +15,7 @@ import DateTimePicker from './DateTimePicker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useDispatch } from 'react-redux';
-import { onChangeEventData, resetSelectedEvent } from '@/redux/eventSlice';
+import { onChangeEventData } from '@/redux/eventSlice';
 import moment from 'moment';
 import { selectedEventSelector } from '@/redux/selector';
 import { setLoading } from '@/redux/loadingSlice';

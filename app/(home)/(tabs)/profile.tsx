@@ -32,11 +32,13 @@ const Profile = () => {
     }
 
     const onTransactionHistory = () => {
-        router.navigate('/(home)/transactionshistory')
+        // router.navigate('/(home)/transactionshistory')
+        router.navigate('/(home)/comingsoon')
     }
 
     const onHelp = () => {
-        router.navigate('/(home)/faq')
+        // router.navigate('/(home)/faq')
+        router.navigate('/(home)/comingsoon')
     }
 
     const onRate = () => {

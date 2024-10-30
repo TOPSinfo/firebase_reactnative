@@ -1,7 +1,7 @@
 import DetailsHeader from '@/components/DetailsHeader'
 import { Colors } from '@/constants/Colors'
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 
 const faq = () => {
     return (

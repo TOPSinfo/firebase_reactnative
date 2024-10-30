@@ -15,7 +15,7 @@ const TabBarButton = ({ title, icon, onPress, focused }: any) => {
     const color = focused ? Colors.orange : Colors.grey
     const indicatorColor = focused ? Colors.orange : 'transparent'
 
-    return <TouchableOpacity onPress={onPress} style={[styles.tab, { transform: [{ translateY: focused ? verticalScale(isIphoneX ? -36 : -18) : 1 }] }]}>
+    return <TouchableOpacity onPress={onPress} style={[styles.tab, { transform: [{ translateY: focused ? verticalScale(isIphoneX ? -40 : -22) : 1 }] }]}>
         <View style={styles.iconContainer}>
             <SvgImage url={icon} style={{ height: verticalScale(20), width: verticalScale(20), tintColor: color }} />
             <View style={{ position: 'absolute', top: horizontalScale(-10), height: 3.5, backgroundColor: indicatorColor, width: 3.5, borderRadius: 3.5 }} />

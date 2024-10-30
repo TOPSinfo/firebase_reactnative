@@ -1,15 +1,17 @@
-import React from 'react'
-import { View, Text } from 'react-native'
-import { Colors } from '@/constants/Colors'
+import AuthHeader from '@/components/AuthHeader'
 import LaunchingSoon from '@/components/LaunchingSoon'
+import { Colors } from '@/constants/Colors'
 import { horizontalScale } from '@/utils/matrix'
+import React from 'react'
+import { View } from 'react-native'
 
-const Wallet = () => {
+const ComingSoon = () => {
     return (
         <View style={{ flex: 1, backgroundColor: Colors.white, padding: horizontalScale(20) }}>
+            <AuthHeader />
             <LaunchingSoon />
         </View>
     )
 }
 
-export default Wallet
+export default ComingSoon
