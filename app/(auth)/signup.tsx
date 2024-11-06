@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { horizontalScale, moderateScale } from '@/utils/matrix';
@@ -16,25 +17,28 @@ import { Images } from '@/constants/Images';
 import Button from '@/components/Button';
 import SvgImage from '@/components/SvgImage';
 import { useRouter } from 'expo-router';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '@/redux/loadingSlice';
 import { useOTP } from '@/hooks/useOTPHook';
-import { showSuccessMessage } from '@/utils/helper';
+import { showErrorMessage } from '@/utils/helper';
 import { userAppColor } from '@/hooks/useAppColor';
+import { userTypeSelector } from '@/redux/selector';
 
 type FormData = {
   fullName: string;
   phone: string;
   email: string;
+  acceptTearms: boolean;
 };
 
 const SignUp = () => {
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, setValue, getValues } = useForm({
     defaultValues: {
       fullName: '',
       phone: '',
       email: '',
+      acceptTearms: false,
     },
   });
 
@@ -42,6 +46,7 @@ const SignUp = () => {
   const dispatch = useDispatch();
   const { sendOTP, recaptcha } = useOTP();
   const color = userAppColor();
+  const userType = userTypeSelector();
 
   /**
    * Creates an account with the provided data.
@@ -50,13 +55,21 @@ const SignUp = () => {
    * @returns A Promise that resolves to the verification response.
    */
   const onCreateAccount = async (data: FormData) => {
+    if (data.acceptTearms == false) {
+      showErrorMessage('Please accept tearms and conditions');
+      return;
+    }
     dispatch(setLoading(true));
     const res = await sendOTP('+91' + data.phone);
     if (res) {
       dispatch(setLoading(false));
       router.navigate({
         pathname: '/(auth)/otp',
-        params: { verification: res, ...data },
+        params: {
+          verification: res,
+          ...data,
+          acceptTearms: data.acceptTearms.toString(),
+        },
       });
     }
   };
@@ -66,6 +79,10 @@ const SignUp = () => {
    */
   const onLoginPress = () => {
     router.navigate('/(auth)/login');
+  };
+
+  const onTermsPress = () => {
+    setValue('acceptTearms', !getValues('acceptTearms'));
   };
 
   return (
@@ -122,14 +139,30 @@ const SignUp = () => {
         </View>
         <View
           style={{ marginVertical: horizontalScale(25), flexDirection: 'row' }}>
-          <SvgImage
-            url={Images.checkboxUncheck}
-            style={{
-              height: horizontalScale(12),
-              width: horizontalScale(12),
-              margin: horizontalScale(2.5),
-            }}
+          <Controller
+            control={control}
+            defaultValue={false}
+            render={({ field: { value } }) => (
+              <TouchableOpacity onPress={onTermsPress}>
+                <SvgImage
+                  url={
+                    value
+                      ? userType == 'user'
+                        ? Images.checkbox
+                        : Images.checkbox_blue
+                      : Images.checkboxUncheck
+                  }
+                  style={{
+                    height: horizontalScale(12),
+                    width: horizontalScale(12),
+                    margin: horizontalScale(2.5),
+                  }}
+                />
+              </TouchableOpacity>
+            )}
+            name="acceptTearms"
           />
+
           <Text
             style={{
               fontFamily: Fonts.PoppinsRegular,
