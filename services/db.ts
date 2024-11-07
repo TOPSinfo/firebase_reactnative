@@ -34,12 +34,24 @@ export const createUser = async (
     const table =
       store.getState().user.userType === 'user' ? 'users' : 'astrologers';
     const usersRef = collection(db, table);
-    const userData = {
+    const userData: any = {
       phoneNumber,
       email,
       fullName,
       uid: auth.currentUser?.uid,
     };
+
+    if (table === 'astrologers') {
+      userData.about = '';
+      userData.consults = 0;
+      userData.experience = 0;
+      userData.gender = '';
+      userData.image = '';
+      userData.language = [];
+      userData.rate = 0;
+      userData.ratings = 0;
+      userData.skills = [];
+    }
 
     await setDoc(doc(usersRef, auth.currentUser?.uid), {
       ...userData,
@@ -165,7 +177,7 @@ export const createBooking = async (data: any) => {
       createdAt: serverTimestamp(),
       ...data,
     };
-
+    console.log('bookingData', bookingData);
     await setDoc(doc(bookingRef), bookingData);
     store.dispatch(setLoading(false));
     return true;
@@ -175,10 +187,12 @@ export const createBooking = async (data: any) => {
 };
 
 export const getMyBookings = async () => {
+  const attribute =
+    store.getState().user.userType == 'user' ? 'userId' : 'astrologerId';
   try {
     const q = query(
       collection(db, 'bookings'),
-      where('userId', '==', auth.currentUser?.uid),
+      where(attribute, '==', auth.currentUser?.uid),
       orderBy('createdAt', 'desc')
     );
     const querySnapshot = await getDocs(q);

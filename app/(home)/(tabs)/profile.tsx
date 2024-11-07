@@ -19,6 +19,8 @@ import ProfileCard from '@/components/ProfileCard';
 import * as Application from 'expo-application';
 import { useDispatch } from 'react-redux';
 import { setUser } from '@/redux/userSlice';
+import { userAppColor } from '@/hooks/useAppColor';
+import { userTypeSelector } from '@/redux/selector';
 
 const Option = ({
   title,
@@ -31,11 +33,16 @@ const Option = ({
   onPress: () => void;
   style?: ViewStyle;
 }) => {
+  const color = userAppColor();
   return (
     <TouchableOpacity onPress={onPress} style={[styles.option, style]}>
       <SvgImage
         url={icon}
-        style={{ height: verticalScale(16), width: verticalScale(16) }}
+        style={{
+          height: verticalScale(16),
+          width: verticalScale(16),
+          tintColor: color,
+        }}
       />
       <Text style={styles.optionLabel}>{title}</Text>
     </TouchableOpacity>
@@ -44,7 +51,7 @@ const Option = ({
 
 const Profile = () => {
   const dispatch = useDispatch();
-
+  const userType = userTypeSelector();
   const onLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       {
@@ -91,12 +98,14 @@ const Profile = () => {
               onPress={onBookingHistory}
               style={{ marginBottom: verticalScale(3) }}
             />
-            <Option
-              icon={Images.transaction_history}
-              title={'Transaction History'}
-              onPress={onTransactionHistory}
-              style={{ marginBottom: verticalScale(3) }}
-            />
+            {userType == 'user' ? (
+              <Option
+                icon={Images.transaction_history}
+                title={'Transaction History'}
+                onPress={onTransactionHistory}
+                style={{ marginBottom: verticalScale(3) }}
+              />
+            ) : null}
             <Option
               icon={Images.help}
               title={'Help / FAQ'}

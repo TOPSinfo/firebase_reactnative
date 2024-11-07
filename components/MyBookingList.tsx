@@ -15,10 +15,12 @@ import moment from 'moment';
 import { Colors } from '@/constants/Colors';
 import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix';
 import { Fonts } from '@/constants/Fonts';
+import { userAppColor } from '@/hooks/useAppColor';
 
 const MyBookingList = () => {
   const [tab, setTab] = useState(1);
   const bookings = myBookingsSelector();
+  const color = userAppColor();
 
   const dispatch = useDispatch();
   const fetchBookings = async () => {
@@ -50,7 +52,7 @@ const MyBookingList = () => {
             style={[
               styles.tabLabel,
               {
-                color: tab == index ? Colors.orange : Colors.grey,
+                color: tab == index ? color : Colors.grey,
               },
             ]}>
             {label}
@@ -60,7 +62,7 @@ const MyBookingList = () => {
           style={[
             styles.tabIndicator,
             {
-              backgroundColor: tab === index ? Colors.orange : Colors.white3,
+              backgroundColor: tab === index ? color : Colors.white3,
             },
           ]}
         />

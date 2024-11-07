@@ -1,51 +1,78 @@
-import React from 'react'
-import { View, TouchableOpacity, StyleSheet } from 'react-native'
-import TabHeader from '@/components/TabHeader'
-import SvgImage from '@/components/SvgImage'
-import { Images } from '@/constants/Images'
-import { horizontalScale, verticalScale } from '@/utils/matrix'
-import { Colors } from '@/constants/Colors'
-import { useRouter } from 'expo-router'
-import MyBookingList from '@/components/MyBookingList'
+import React from 'react';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import TabHeader from '@/components/TabHeader';
+import SvgImage from '@/components/SvgImage';
+import { Images } from '@/constants/Images';
+import { horizontalScale, verticalScale } from '@/utils/matrix';
+import { Colors } from '@/constants/Colors';
+import { useRouter } from 'expo-router';
+import MyBookingList from '@/components/MyBookingList';
+import { userTypeSelector } from '@/redux/selector';
 
 const MyBookings = () => {
+  const router = useRouter();
+  const userType = userTypeSelector();
 
-    const router = useRouter()
+  const onCalendarPress = () => {
+    router.push('/(tabs)/(myBookings)/calendar');
+  };
 
-    const onCalendarPress = () => {
-        router.push('/(tabs)/(myBookings)/calendar')
-    }
+  const onAddPress = () => {
+    router.navigate('/(home)/astrologer');
+  };
 
-    const onAddPress = () => {
-        router.navigate('/(home)/astrologer')
-    }
-
-    const renderRight = () => {
-        return (
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <TouchableOpacity onPress={onCalendarPress} hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ width: horizontalScale(25), alignItems: 'center' }}>
-                    <SvgImage url={Images.calendar} style={{ height: verticalScale(18), width: verticalScale(18), tintColor: Colors.black1 }} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={onAddPress} hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }} style={{ width: horizontalScale(25), alignItems: 'center', marginLeft: horizontalScale(10) }}>
-                    <SvgImage url={Images.plus} style={{ height: verticalScale(18), width: verticalScale(18), tintColor: Colors.black1 }} />
-                </TouchableOpacity>
-            </View>
-        )
-    }
-
+  const renderRight = () => {
     return (
-        <View style={styles.container}>
-            <TabHeader title='My Bookings' right={renderRight()} />
-            <MyBookingList />
-        </View>
-    )
-}
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <TouchableOpacity
+          onPress={onCalendarPress}
+          hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
+          style={{ width: horizontalScale(25), alignItems: 'center' }}>
+          <SvgImage
+            url={Images.calendar}
+            style={{
+              height: verticalScale(18),
+              width: verticalScale(18),
+              tintColor: Colors.black1,
+            }}
+          />
+        </TouchableOpacity>
+        {userType == 'user' ? (
+          <TouchableOpacity
+            onPress={onAddPress}
+            hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
+            style={{
+              width: horizontalScale(25),
+              alignItems: 'center',
+              marginLeft: horizontalScale(10),
+            }}>
+            <SvgImage
+              url={Images.plus}
+              style={{
+                height: verticalScale(18),
+                width: verticalScale(18),
+                tintColor: Colors.black1,
+              }}
+            />
+          </TouchableOpacity>
+        ) : null}
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <TabHeader title="My Bookings" right={renderRight()} />
+      <MyBookingList />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.white
-    }
-})
+  container: {
+    flex: 1,
+    backgroundColor: Colors.white,
+  },
+});
 
-export default MyBookings
+export default MyBookings;

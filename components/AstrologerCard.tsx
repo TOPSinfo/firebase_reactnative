@@ -13,6 +13,7 @@ type AstrologerCardProps = {
   index: number;
   name: string;
   ratings: number;
+  image: string;
   skills: string[];
 };
 
@@ -21,23 +22,11 @@ const AstrologerCard = ({
   index,
   name,
   ratings,
+  image,
   skills,
 }: AstrologerCardProps) => {
   const onBookNow = () => {
     router.push({ pathname: '/(home)/details', params: { id } });
-  };
-
-  /**
-   * Retrieves the profile image based on the astrologer's name.
-   *
-   * @returns {string} The URL or path of the profile image. Returns an empty string if the name does not match any predefined astrologers.
-   */
-  const getProfileImage = () => {
-    if (name == 'Ritu') return Images.ritu;
-    if (name == 'Prashanta') return Images.prashanta;
-    if (name == 'Nikhil') return Images.nikhil;
-    if (name == 'Heena') return Images.heena;
-    return '';
   };
 
   /**
@@ -58,14 +47,25 @@ const AstrologerCard = ({
         { marginRight: index % 2 == 0 ? horizontalScale(15) : 0 },
       ]}>
       <View>
-        <SvgImage
-          url={getProfileImage()}
-          style={{
-            height: horizontalScale(82),
-            borderRadius: horizontalScale(6),
-          }}
-          resizeMode="cover"
-        />
+        {image ? (
+          <SvgImage
+            url={image}
+            style={{
+              height: horizontalScale(82),
+              borderRadius: horizontalScale(6),
+            }}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={styles.placeholderImageContainer}>
+            <SvgImage
+              url={Images.user}
+              style={{
+                height: horizontalScale(40),
+              }}
+            />
+          </View>
+        )}
       </View>
       <View
         style={{
@@ -121,7 +121,7 @@ const AstrologerCard = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width: horizontalScale(160),
     backgroundColor: Colors.white,
     marginBottom: horizontalScale(15),
     borderColor: Colors.white2,
@@ -138,6 +138,12 @@ const styles = StyleSheet.create({
     fontSize: horizontalScale(10),
     fontFamily: Fonts.PoppinsRegular,
     color: Colors.grey,
+  },
+  placeholderImageContainer: {
+    height: horizontalScale(82),
+    borderRadius: horizontalScale(6),
+    backgroundColor: Colors.white4,
+    justifyContent: 'center',
   },
 });
 
