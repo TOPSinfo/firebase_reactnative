@@ -16,8 +16,9 @@ import { Fonts } from '@/constants/Fonts';
 import AstrologersList from '@/components/AstrologersList';
 import Banner from '@/components/Banner';
 import Upcoming from '@/components/Upcoming';
-import { getAstrologers, getUser } from '@/services/db';
+import { getAstrologers, getMyBookings, getUser } from '@/services/db';
 import { astrologersSelector, userTypeSelector } from '@/redux/selector';
+import UserRequestList from '@/components/UserRequestList';
 
 const Home = () => {
   const astrologers = astrologersSelector();
@@ -26,7 +27,11 @@ const Home = () => {
    * Navigates to the astrologer page.
    */
   const onViewAll = () => {
-    router.push('/(home)/astrologer');
+    if (userType == 'user') {
+      router.push('/(home)/astrologer');
+    } else {
+      router.push('/(home)/users');
+    }
   };
 
   /**
@@ -36,7 +41,11 @@ const Home = () => {
    */
   const fetchAstrologers = async () => {
     await getUser();
-    await getAstrologers();
+    if (userType == 'user') {
+      await getAstrologers();
+    } else {
+      await getMyBookings();
+    }
   };
 
   useEffect(() => {
@@ -75,7 +84,11 @@ const Home = () => {
               </Text>
             </TouchableOpacity>
           </View>
-          {userType == 'user' ? <AstrologersList data={astrologers} /> : null}
+          {userType == 'user' ? (
+            <AstrologersList data={astrologers} />
+          ) : (
+            <UserRequestList />
+          )}
           <Banner />
           {userType == 'user' ? (
             <View style={{ marginTop: horizontalScale(28) }}>

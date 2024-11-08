@@ -5,7 +5,7 @@ export const userSlice = createSlice({
   initialState: {
     userData: null,
     astrologers: [],
-    myBookings: [],
+    myBookings: [] as any[],
     userType: '',
   },
   reducers: {
@@ -31,6 +31,17 @@ export const userSlice = createSlice({
     setUserType: (state, actions) => {
       state.userType = actions.payload;
     },
+    updateBookingStatus: (state, actions) => {
+      state.myBookings = state.myBookings.map((booking: any) => {
+        if (booking.id === actions.payload.id) {
+          return {
+            ...booking,
+            status: actions.payload.status,
+          };
+        }
+        return booking;
+      });
+    },
   },
 });
 
@@ -40,6 +51,7 @@ export const {
   setMyBookings,
   updateProfileImage,
   setUserType,
+  updateBookingStatus,
 } = userSlice.actions;
 
 export default userSlice.reducer;

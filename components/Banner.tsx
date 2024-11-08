@@ -15,7 +15,11 @@ const Banner = () => {
   const color = userAppColor();
 
   const onPress = () => {
-    router.navigate('/(home)/astrologer');
+    if (userType == 'user') {
+      router.navigate('/(home)/astrologer');
+    } else {
+      router.navigate('/(home)/users');
+    }
   };
 
   return (

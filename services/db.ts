@@ -262,3 +262,15 @@ export const updateProfile = async (data: any) => {
     handleError(error);
   }
 };
+
+export const updateEventStatus = async (id: string, status: string) => {
+  try {
+    store.dispatch(setLoading(true));
+    const eventRef = doc(db, 'bookings', id);
+    await updateDoc(eventRef, { status });
+    store.dispatch(setLoading(false));
+    return true;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
