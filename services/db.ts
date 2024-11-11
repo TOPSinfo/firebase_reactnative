@@ -16,6 +16,7 @@ import {
 import { auth, db, storage } from './config';
 import { setAstrologers, setMyBookings, setUser } from '@/redux/userSlice';
 import { getDownloadURL, ref, uploadBytesResumable } from '@firebase/storage';
+import { setSelectedEvent, updateSelectedEvent } from '@/redux/eventSlice';
 
 const handleError = (error: object) => {
   console.log('Error', error);
@@ -270,6 +271,19 @@ export const updateEventStatus = async (id: string, status: string) => {
     await updateDoc(eventRef, { status });
     store.dispatch(setLoading(false));
     return true;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const getUserPhoneNumber = async (id: string) => {
+  try {
+    const userRef = doc(db, 'users', id);
+    const querySnapshot = await getDoc(userRef);
+    if (querySnapshot.exists()) {
+      store.dispatch(updateSelectedEvent(querySnapshot.data().phoneNumber));
+    }
+    store.dispatch(setLoading(false));
   } catch (error: any) {
     handleError(error);
   }

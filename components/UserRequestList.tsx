@@ -5,9 +5,18 @@ import UserRequestCard from './UserRequestCard';
 import { myBookingsSelector } from '@/redux/selector';
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
+import { useDispatch } from 'react-redux';
+import { setSelectedEvent } from '@/redux/eventSlice';
+import { router } from 'expo-router';
 
 const UserRequestList = ({ scrollable = false }: { scrollable?: boolean }) => {
+  const dispatch = useDispatch();
   const myBookings = myBookingsSelector();
+
+  const onRequestPress = (item: any) => {
+    dispatch(setSelectedEvent(item));
+    router.navigate('/(home)/requestdetails');
+  };
   const renderItem = ({ item, index }: { item: any; index: number }) => {
     return (
       <UserRequestCard
@@ -17,6 +26,7 @@ const UserRequestList = ({ scrollable = false }: { scrollable?: boolean }) => {
         dob={item.dob}
         image={item.image}
         status={item.status}
+        onPress={() => onRequestPress(item)}
       />
     );
   };

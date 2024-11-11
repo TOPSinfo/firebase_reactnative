@@ -19,6 +19,7 @@ type UserRequestCardProps = {
   image: string;
   dob: string;
   status: string;
+  onPress?: () => void;
 };
 
 const UserRequestCard = ({
@@ -28,15 +29,18 @@ const UserRequestCard = ({
   image,
   dob,
   status,
+  onPress,
 }: UserRequestCardProps) => {
   const dispatch = useDispatch();
 
-  const onCardPress = () => {};
+  const onCardPress = () => {
+    onPress && onPress();
+  };
 
   const onAccept = async () => {
-    const res = await updateEventStatus(id, 'accepted');
+    const res = await updateEventStatus(id, 'approved');
     if (res) {
-      dispatch(updateBookingStatus({ id, status: 'accepted' }));
+      dispatch(updateBookingStatus({ id, status: 'approved' }));
       showSuccessMessage('Request Accepted');
     }
   };
