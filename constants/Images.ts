@@ -40,6 +40,7 @@ export const Images = {
   radio: require('../assets/images/radio.svg'),
   radioChecked: require('../assets/images/radioChecked.svg'),
   radioSelected: require('../assets/images/radioSelected.svg'),
+  radioSelected_blue: require('../assets/images/radioSelected_blue.svg'),
   check: require('../assets/images/check.svg'),
   double_check: require('../assets/images/double_check.svg'),
   close: require('../assets/images/close.svg'),
