@@ -17,7 +17,6 @@ import {
   useSafeAreaFrame,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import { getDefaultHeaderHeight } from '@react-navigation/elements';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
@@ -33,7 +32,11 @@ import moment from 'moment';
 import { selectedEventSelector } from '@/redux/selector';
 import { setLoading } from '@/redux/loadingSlice';
 import { createBooking, deleteBooking, updateBooking } from '@/services/db';
-import { showErrorMessage, showSuccessMessage } from '@/utils/helper';
+import {
+  getDefaultHeaderHeight,
+  showErrorMessage,
+  showSuccessMessage,
+} from '@/utils/helper';
 
 const Header = ({
   title,

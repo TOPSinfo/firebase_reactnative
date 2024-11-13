@@ -15,10 +15,10 @@ const AstrologersList = ({
       <AstrologerCard
         id={item.id}
         index={index}
-        name={item.fullName}
-        ratings={item.ratings}
+        name={item.fullname}
+        ratings={item.rating}
         skills={item.skills}
-        image={item.image}
+        image={item.profileimage}
       />
     );
   };

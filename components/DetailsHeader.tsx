@@ -8,10 +8,10 @@ import {
 import SvgImage from './SvgImage';
 import { horizontalScale, moderateScale } from '@/utils/matrix';
 import { Images } from '@/constants/Images';
-import { getDefaultHeaderHeight } from '@react-navigation/elements';
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
 import { userAppColor } from '@/hooks/useAppColor';
+import { getDefaultHeaderHeight } from '@/utils/helper';
 
 const DetailsHeader = ({
   title,

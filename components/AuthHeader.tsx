@@ -4,7 +4,6 @@ import {
   useSafeAreaFrame,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import { getDefaultHeaderHeight } from '@react-navigation/elements';
 import { horizontalScale } from '@/utils/matrix';
 import SvgImage from './SvgImage';
 import { Images } from '@/constants/Images';
@@ -12,6 +11,7 @@ import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { userTypeSelector } from '@/redux/selector';
 import { userAppColor } from '@/hooks/useAppColor';
+import { getDefaultHeaderHeight } from '@/utils/helper';
 
 const AuthHeader = () => {
   const insets = useSafeAreaInsets();

@@ -15,7 +15,7 @@ const index = () => {
     if (user) {
       router.replace('/(home)/(tabs)/home');
     } else {
-      router.replace('/(auth)/');
+      router.replace('/(auth)');
     }
   };
 

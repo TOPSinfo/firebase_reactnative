@@ -61,7 +61,7 @@ const Profile = () => {
         text: 'Yes',
         onPress: () => {
           auth.signOut();
-          router.replace('/(auth)/');
+          router.replace('/(auth)');
           dispatch(setUser(null));
         },
       },

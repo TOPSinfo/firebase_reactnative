@@ -80,7 +80,7 @@ const Details = () => {
     if (res) {
       setDetails(res.astrologer);
       setReviews(res.reviews);
-      if (res.astrologer?.about?.length > 325) {
+      if (res.astrologer?.aboutyou?.length > 325) {
         setShowReadMore(true);
       }
       disptach(setLoading(false));
@@ -152,9 +152,9 @@ const Details = () => {
               borderColor: Colors.white1,
             }}>
             <View>
-              {details?.image ? (
+              {details?.profileimage ? (
                 <SvgImage
-                  url={details?.image}
+                  url={details?.profileimage}
                   style={{
                     height: horizontalScale(200),
                     width: horizontalScale(335),
@@ -191,7 +191,7 @@ const Details = () => {
                 justifyContent: 'space-between',
               }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.name}>{details?.fullName}</Text>
+                <Text style={styles.name}>{details?.fullname}</Text>
                 <SvgImage
                   url={Images.verified}
                   style={{
@@ -209,7 +209,7 @@ const Details = () => {
                     width: horizontalScale(12),
                   }}
                 />
-                <Text style={styles.rate}>{`${details?.rate}/min`}</Text>
+                <Text style={styles.rate}>{`${details?.price}/min`}</Text>
               </TouchableOpacity>
             </View>
             <View
@@ -261,7 +261,7 @@ const Details = () => {
                 </Text>
               </View>
               <View style={styles.box}>
-                <Text style={styles.boxLabel}>{`${details?.ratings}`}</Text>
+                <Text style={styles.boxLabel}>{`${details?.rating}`}</Text>
                 <Text style={[styles.skills, { marginLeft: 0 }]}>Rating</Text>
               </View>
               <View style={styles.box}>
@@ -337,9 +337,9 @@ const Details = () => {
                 { marginTop: horizontalScale(10), textAlign: 'justify' },
               ]}>
               {showReadMore
-                ? details?.about.substring(0, 325)
-                : details?.about
-                ? details?.about
+                ? details?.aboutyou.substring(0, 325)
+                : details?.aboutyou
+                ? details?.aboutyou
                 : 'Astrologer has not provided any information about themselves.'}
               {showReadMore ? (
                 <Text
@@ -361,7 +361,7 @@ const Details = () => {
                 ]}>
                 98% of customers recommend Prasanta, based on reviews.
               </Text>
-              <Ratings rating={details?.ratings} />
+              <Ratings rating={details?.rating} />
               {reviews.map((review: any, index: number) =>
                 renderReview({ item: review, index })
               )}

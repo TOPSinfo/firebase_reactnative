@@ -18,7 +18,7 @@ const ProfileCard = ({ isEdit = false }) => {
   const user = userSelector();
   const dispatch = useDispatch();
 
-  const sunSign = getSunSign(user?.fullName);
+  const sunSign = getSunSign(user?.fullname);
   const userType = userTypeSelector();
   const color = userAppColor();
 
@@ -32,7 +32,7 @@ const ProfileCard = ({ isEdit = false }) => {
       });
 
       if (!result.canceled) {
-        dispatch(updateProfileImage({ image: result.assets[0].uri }));
+        dispatch(updateProfileImage({ profileimage: result.assets[0].uri }));
       }
     } else {
       router.navigate('/(home)/editprofile');
@@ -55,7 +55,7 @@ const ProfileCard = ({ isEdit = false }) => {
               />
               <Text style={styles.optionLabel}>Date of Birth</Text>
               <Text style={styles.value}>
-                {user.dateOfBirth ?? 'DD MMM YYYY'}
+                {user.birthdate ?? 'DD MMM YYYY'}
               </Text>
             </View>
             <View style={styles.option}>
@@ -73,7 +73,7 @@ const ProfileCard = ({ isEdit = false }) => {
           <View style={styles.optionContainer}>
             <View style={styles.option}>
               <Text style={[styles.value, { fontSize: moderateScale(16) }]}>
-                {user.ratings}
+                {user.rating}
               </Text>
               <Text
                 style={[styles.optionLabel, { fontSize: moderateScale(10) }]}>
@@ -104,9 +104,9 @@ const ProfileCard = ({ isEdit = false }) => {
       ]}>
       <View style={[styles.profileContainer]}>
         <View style={styles.profile}>
-          {user.image ? (
+          {user.profileimage ? (
             <SvgImage
-              url={user.image}
+              url={user.profileimage}
               style={{
                 height: verticalScale(105),
                 width: verticalScale(105),
@@ -130,7 +130,7 @@ const ProfileCard = ({ isEdit = false }) => {
           </TouchableOpacity>
         </View>
         <View style={{ marginTop: verticalScale(15) }}>
-          <Text style={styles.name}>{user.fullName}</Text>
+          <Text style={styles.name}>{user.fullname}</Text>
         </View>
       </View>
       {renderContent()}

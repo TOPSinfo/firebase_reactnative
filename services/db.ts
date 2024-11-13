@@ -26,38 +26,45 @@ const handleError = (error: object) => {
 };
 
 export const createUser = async (
-  phoneNumber: string,
+  phone: string,
   email: string,
-  fullName: string
+  fullname: string
 ) => {
   try {
     store.dispatch(setLoading(true));
-    const table =
-      store.getState().user.userType === 'user' ? 'users' : 'astrologers';
-    const usersRef = collection(db, table);
+    const usertype = store.getState().user.userType;
+    const usersRef = collection(db, 'users');
     const userData: any = {
-      phoneNumber,
+      phone,
       email,
-      fullName,
+      fullname,
+      usertype,
+      walletbalance: 0,
+      profileimage: '',
       uid: auth.currentUser?.uid,
+      devicedetails: '',
+      token: '',
+      isOnline: false,
+      lastupdatetime: serverTimestamp(),
+      createdat: serverTimestamp(),
     };
 
-    if (table === 'astrologers') {
-      userData.about = '';
+    if (usertype === 'astrologer') {
+      userData.aboutyou = '';
       userData.consults = 0;
       userData.experience = 0;
-      userData.gender = '';
-      userData.image = '';
-      userData.language = [];
-      userData.rate = 0;
-      userData.ratings = 0;
+      userData.languages = [];
+      userData.price = 0;
+      userData.rating = 0;
       userData.skills = [];
+      userData.speciality = [];
+    } else {
+      userData.birthdate = '';
+      userData.birthplace = '';
+      userData.birthtime = '';
     }
 
-    await setDoc(doc(usersRef, auth.currentUser?.uid), {
-      ...userData,
-      createdAt: serverTimestamp(),
-    });
+    await setDoc(doc(usersRef, auth.currentUser?.uid), userData);
     store.dispatch(setLoading(false));
     return true;
   } catch (e: any) {
@@ -67,9 +74,11 @@ export const createUser = async (
 
 export const isUserExist = async (phone: string) => {
   try {
-    const table =
-      store.getState().user.userType === 'user' ? 'users' : 'astrologers';
-    const q = query(collection(db, table), where('phoneNumber', '==', phone));
+    const q = query(
+      collection(db, 'users'),
+      where('phone', '==', phone),
+      where('usertype', '==', store.getState().user.userType)
+    );
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {
       store.dispatch(setLoading(false));
@@ -85,9 +94,7 @@ export const isUserExist = async (phone: string) => {
 
 export const getUser = async () => {
   try {
-    const table =
-      store.getState().user.userType === 'user' ? 'users' : 'astrologers';
-    const usersRef = collection(db, table);
+    const usersRef = collection(db, 'users');
     const docRef = doc(usersRef, auth.currentUser?.uid);
     const querySnapshot = await getDoc(docRef);
     if (!querySnapshot.exists()) {
@@ -104,7 +111,10 @@ export const getUser = async () => {
 
 export const getAstrologers = async () => {
   try {
-    const astrologersRef = collection(db, 'astrologers');
+    const astrologersRef = query(
+      collection(db, 'users'),
+      where('usertype', '==', 'astrologer')
+    );
     const querySnapshot = await getDocs(astrologersRef);
     const astrologers: any = [];
     querySnapshot.forEach(doc => {
@@ -118,9 +128,9 @@ export const getAstrologers = async () => {
 
 export const getAstrologer = async (id: string) => {
   try {
-    const astrologersRef = collection(db, 'astrologers');
+    const astrologersRef = collection(db, 'users');
     const docRef = doc(astrologersRef, id);
-    const reviewRef = collection(docRef, 'reviews');
+    const reviewRef = collection(docRef, 'rating');
     const [astrologer, reviews] = await Promise.all([
       getDoc(docRef),
       getDocs(reviewRef),
@@ -253,9 +263,12 @@ export const updateProfile = async (data: any) => {
         data[field] = await uploadImage(data[field]);
       }
     };
-    await uploadIfNeeded('image');
+    await uploadIfNeeded('profileimage');
     const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, data);
+    await updateDoc(userRef, {
+      ...data,
+      lastupdatetime: serverTimestamp(),
+    });
     await getUser();
     store.dispatch(setLoading(false));
     return true;
@@ -281,7 +294,7 @@ export const getUserPhoneNumber = async (id: string) => {
     const userRef = doc(db, 'users', id);
     const querySnapshot = await getDoc(userRef);
     if (querySnapshot.exists()) {
-      store.dispatch(updateSelectedEvent(querySnapshot.data().phoneNumber));
+      store.dispatch(updateSelectedEvent(querySnapshot.data().phone));
     }
     store.dispatch(setLoading(false));
   } catch (error: any) {
