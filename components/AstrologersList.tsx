@@ -17,7 +17,7 @@ const AstrologersList = ({
         index={index}
         name={item.fullname}
         ratings={item.rating}
-        skills={item.skills}
+        skills={item.speciality}
         image={item.profileimage}
       />
     );

@@ -23,3 +23,11 @@ export const selectedEventSelector = () => {
 export const userTypeSelector = () => {
   return useSelector((state: any) => state.user.userType);
 };
+
+export const languageListSelector = () => {
+  return useSelector((state: any) => state.app.languages);
+};
+
+export const specialityListSelector = () => {
+  return useSelector((state: any) => state.app.specialities);
+};

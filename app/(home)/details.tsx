@@ -23,6 +23,7 @@ import Button from '@/components/Button';
 import ReviewCard from '@/components/ReviewCard';
 import Ratings from '@/components/Ratings';
 import { onChangeEventData } from '@/redux/eventSlice';
+import { useLanguage, useSpeciality } from '@/hooks/useAppData';
 
 const appoinmentTime = [
   '08:30 AM',
@@ -46,6 +47,9 @@ const Details = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const disptach = useDispatch();
+
+  const languages = useLanguage(details?.languages);
+  const specialities = useSpeciality(details?.speciality);
 
   const onPlus = () => {
     disptach(
@@ -75,7 +79,7 @@ const Details = () => {
    */
   const getDetails = async () => {
     disptach(setLoading(true));
-    const res = await getAstrologer(id);
+    const res: any = await getAstrologer(id);
     console.log('Details', res);
     if (res) {
       setDetails(res.astrologer);
@@ -223,9 +227,7 @@ const Details = () => {
                     marginLeft: horizontalScale(3),
                   }}
                 />
-                <Text style={styles.skills}>
-                  {details?.language?.toString()}
-                </Text>
+                <Text style={styles.skills}>{languages.join(', ')}</Text>
               </View>
               <View
                 style={{
@@ -241,7 +243,7 @@ const Details = () => {
                     marginLeft: horizontalScale(3),
                   }}
                 />
-                <Text style={styles.skills}>{details?.skills?.toString()}</Text>
+                <Text style={styles.skills}>{specialities.join(', ')}</Text>
               </View>
             </View>
             <View

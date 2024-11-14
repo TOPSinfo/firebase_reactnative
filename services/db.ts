@@ -17,6 +17,7 @@ import { auth, db, storage } from './config';
 import { setAstrologers, setMyBookings, setUser } from '@/redux/userSlice';
 import { getDownloadURL, ref, uploadBytesResumable } from '@firebase/storage';
 import { setSelectedEvent, updateSelectedEvent } from '@/redux/eventSlice';
+import { setLanguages, setSpecialities } from '@/redux/appSlice';
 
 const handleError = (error: object) => {
   console.log('Error', error);
@@ -56,7 +57,6 @@ export const createUser = async (
       userData.languages = [];
       userData.price = 0;
       userData.rating = 0;
-      userData.skills = [];
       userData.speciality = [];
     } else {
       userData.birthdate = '';
@@ -297,6 +297,29 @@ export const getUserPhoneNumber = async (id: string) => {
       store.dispatch(updateSelectedEvent(querySnapshot.data().phone));
     }
     store.dispatch(setLoading(false));
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const getLanguagesAndSpecialities = async () => {
+  try {
+    const languagesRef = collection(db, 'language');
+    const specialitiesRef = collection(db, 'speciality');
+    const [languages, specialities] = await Promise.all([
+      getDocs(languagesRef),
+      getDocs(specialitiesRef),
+    ]);
+    const languagesData: any = [];
+    const specialitiesData: any = [];
+    languages.forEach(doc => {
+      languagesData.push({ ...doc.data() });
+    });
+    specialities.forEach(doc => {
+      specialitiesData.push({ ...doc.data() });
+    });
+    store.dispatch(setLanguages(languagesData));
+    store.dispatch(setSpecialities(specialitiesData));
   } catch (error: any) {
     handleError(error);
   }

@@ -16,13 +16,22 @@ import { Fonts } from '@/constants/Fonts';
 import AstrologersList from '@/components/AstrologersList';
 import Banner from '@/components/Banner';
 import Upcoming from '@/components/Upcoming';
-import { getAstrologers, getMyBookings, getUser } from '@/services/db';
+import {
+  getAstrologers,
+  getLanguagesAndSpecialities,
+  getMyBookings,
+  getUser,
+} from '@/services/db';
 import { astrologersSelector, userTypeSelector } from '@/redux/selector';
 import UserRequestList from '@/components/UserRequestList';
+import { useDispatch } from 'react-redux';
+import { setLoading } from '@/redux/loadingSlice';
 
 const Home = () => {
   const astrologers = astrologersSelector();
   const userType = userTypeSelector();
+  const dispatch = useDispatch();
+
   /**
    * Navigates to the astrologer page.
    */
@@ -40,12 +49,15 @@ const Home = () => {
    * @returns {Promise<void>} A promise that resolves when the astrologers are fetched.
    */
   const fetchAstrologers = async () => {
+    dispatch(setLoading(true));
     await getUser();
+    await getLanguagesAndSpecialities();
     if (userType == 'user') {
       await getAstrologers();
     } else {
       await getMyBookings();
     }
+    dispatch(setLoading(false));
   };
 
   useEffect(() => {

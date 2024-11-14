@@ -7,6 +7,7 @@ import SvgImage from './SvgImage';
 import { Images } from '@/constants/Images';
 import { Fonts } from '@/constants/Fonts';
 import { router } from 'expo-router';
+import { useSpeciality } from '@/hooks/useAppData';
 
 type AstrologerCardProps = {
   id: string;
@@ -25,6 +26,8 @@ const AstrologerCard = ({
   image,
   skills,
 }: AstrologerCardProps) => {
+  const specialities = useSpeciality(skills);
+
   const onBookNow = () => {
     router.push({ pathname: '/(home)/details', params: { id } });
   };
@@ -102,7 +105,7 @@ const AstrologerCard = ({
           marginBottom: horizontalScale(6),
         }}>
         <Text style={styles.skills} numberOfLines={1}>
-          {skills?.toString()}
+          {specialities?.join(', ')}
         </Text>
       </View>
       <Button
