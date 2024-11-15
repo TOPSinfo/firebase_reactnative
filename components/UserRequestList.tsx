@@ -22,9 +22,9 @@ const UserRequestList = ({ scrollable = false }: { scrollable?: boolean }) => {
       <UserRequestCard
         id={item.id}
         index={index}
-        name={item.fullName}
-        dob={item.dob}
-        image={item.image}
+        name={item.fullname}
+        dob={item.birthdate}
+        image={item.photo}
         status={item.status}
         onPress={() => onRequestPress(item)}
       />

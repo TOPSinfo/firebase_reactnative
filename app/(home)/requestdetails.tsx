@@ -22,7 +22,7 @@ const requestdetails = () => {
 
   const fetchUserPhone = async () => {
     dispatch(setLoading(true));
-    await getUserPhoneNumber(selectedEvent.userId);
+    await getUserPhoneNumber(selectedEvent.uid);
   };
 
   useEffect(() => {
@@ -86,7 +86,7 @@ const requestdetails = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ padding: horizontalScale(20) }}>
           <SvgImage
-            url={selectedEvent.image}
+            url={selectedEvent.photo}
             style={{
               height: verticalScale(225),
               borderRadius: horizontalScale(6),
@@ -100,28 +100,28 @@ const requestdetails = () => {
                 fontSize: moderateScale(18),
                 color: Colors.black2,
               }}>
-              {selectedEvent.fullName}
+              {selectedEvent.fullname}
             </Text>
           </View>
         </View>
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>
-            About {selectedEvent.fullName}
+            About {selectedEvent.fullname}
           </Text>
         </View>
         <View>
-          {renderInfo(Images.user, 'Full Name', selectedEvent.fullName)}
+          {renderInfo(Images.user, 'Full Name', selectedEvent.fullname)}
+          {renderInfo(Images.mobile, 'Mobile Number', selectedEvent.phone)}
           {renderInfo(
-            Images.mobile,
-            'Mobile Number',
-            selectedEvent.phoneNumber
+            Images.date_of_birth,
+            'Date of Birth',
+            selectedEvent.birthdate
           )}
-          {renderInfo(Images.date_of_birth, 'Date of Birth', selectedEvent.dob)}
-          {renderInfo(Images.time, 'Time of Birth', selectedEvent.tob)}
+          {renderInfo(Images.time, 'Time of Birth', selectedEvent.birthtime)}
           {renderInfo(
             Images.place,
             'Place of Birth',
-            selectedEvent.place,
+            selectedEvent.birthplace,
             false
           )}
         </View>
@@ -146,14 +146,14 @@ const requestdetails = () => {
                 <Text style={styles.label}>Start Time</Text>
                 <Text
                   style={[styles.value, { marginTop: horizontalScale(10) }]}>
-                  {selectedEvent.startTime}
+                  {selectedEvent.starttime}
                 </Text>
               </View>
               <View>
                 <Text style={styles.label}>End Time</Text>
                 <Text
                   style={[styles.value, { marginTop: horizontalScale(10) }]}>
-                  {selectedEvent.endTime}
+                  {selectedEvent.endtime}
                 </Text>
               </View>
             </View>

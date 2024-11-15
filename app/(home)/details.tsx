@@ -51,17 +51,6 @@ const Details = () => {
   const languages = useLanguage(details?.languages);
   const specialities = useSpeciality(details?.speciality);
 
-  const onPlus = () => {
-    disptach(
-      onChangeEventData({
-        astrologerId: details?.id,
-        astrologerName: details?.fullName,
-        rate: details?.rate,
-      })
-    );
-    router.navigate('/(home)/eventscreen');
-  };
-
   /**
    * Fetches the details of an astrologer and updates the state accordingly.
    *
@@ -114,9 +103,9 @@ const Details = () => {
   const onBookNow = async () => {
     disptach(
       onChangeEventData({
-        astrologerId: details?.id,
-        astrologerName: details?.fullName,
-        rate: details?.rate,
+        astrologerid: details?.id,
+        astrologername: details?.fullname,
+        astrologercharge: details?.price,
       })
     );
     router.navigate('/(home)/eventscreen');
@@ -143,7 +132,7 @@ const Details = () => {
       <DetailsHeader
         title={'Astrologer'}
         rightIcon={Images.plus}
-        onRight={onPlus}
+        onRight={onBookNow}
       />
       <View style={styles.container}>
         <ScrollView

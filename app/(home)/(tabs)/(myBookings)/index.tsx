@@ -14,7 +14,7 @@ const MyBookings = () => {
   const userType = userTypeSelector();
 
   const onCalendarPress = () => {
-    router.push('/(tabs)/(myBookings)/calendar');
+    router.push('/(home)/(tabs)/(myBookings)/calendar');
   };
 
   const onAddPress = () => {

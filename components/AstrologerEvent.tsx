@@ -214,25 +214,6 @@ const AstrologerEvent = () => {
     dispatch(onChangeEventData({ endTime: moment(date).format('hh:mm A') }));
   };
 
-  const notificationLabel = () => {
-    switch (selectedEvent.notificationType) {
-      case '1':
-        return 'No notification';
-      case '2':
-        return '5 minutes before';
-      case '3':
-        return '10 minutes before';
-      case '4':
-        return '15 minutes before';
-      case '5':
-        return '1 hour before';
-      case '6':
-        return '1 day before';
-      default:
-        return '10 minutes before';
-    }
-  };
-
   const getColor = () => {
     switch (selectedEvent.status) {
       case 'approved':
@@ -305,7 +286,7 @@ const AstrologerEvent = () => {
                 color: Colors.black1,
                 fontSize: moderateScale(16),
               }}>
-              {selectedEvent.fullName}
+              {selectedEvent.fullname}
             </Text>
           </View>
           <View style={styles.fieldContainer}>
@@ -385,7 +366,7 @@ const AstrologerEvent = () => {
                   editable={true}
                   label="Start Time"
                   mode={'time'}
-                  value={selectedEvent.startTime}
+                  value={selectedEvent.starttime}
                   onSelect={onSelectStartTime}
                 />
               </View>
@@ -412,7 +393,7 @@ const AstrologerEvent = () => {
                   editable={true}
                   label="End Time"
                   mode={'time'}
-                  value={selectedEvent.endTime}
+                  value={selectedEvent.endtime}
                   onSelect={onSelectEndTime}
                   style={{ alignItems: 'center' }}
                 />
@@ -428,7 +409,7 @@ const AstrologerEvent = () => {
               <SvgImage url={Images.bell} style={styles.fieldIcon} />
               <View style={{ justifyContent: 'center' }}>
                 <Text style={[styles.input, { height: undefined }]}>
-                  {notificationLabel()}
+                  {selectedEvent.notify}
                 </Text>
               </View>
             </View>

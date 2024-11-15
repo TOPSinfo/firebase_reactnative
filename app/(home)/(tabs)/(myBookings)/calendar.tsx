@@ -55,7 +55,7 @@ const Calendar = () => {
     myBookings.forEach((item: any) => {
       const index = bookingTime.findIndex((time: any) => {
         const diff = moment.duration(
-          moment(item.startTime, 'hh:mm A').diff(moment(time.timing, 'hh:mm A'))
+          moment(item.starttime, 'hh:mm A').diff(moment(time.timing, 'hh:mm A'))
         );
         return diff.asHours() >= 0 && diff.asHours() < 1;
       });
@@ -210,16 +210,17 @@ const Calendar = () => {
                   }}>
                   Your appointment with{' '}
                   {userType == 'user'
-                    ? booking.astrologerName
-                    : booking.fullName}
+                    ? booking.astrologername
+                    : booking.fullname}
                 </Text>
                 <Text
                   style={{
                     fontFamily: Fonts.PoppinsRegular,
                     fontSize: moderateScale(12),
                     color: Colors.grey,
+                    marginTop: horizontalScale(2),
                   }}>
-                  {booking.startTime} - {booking.endTime}
+                  {booking.starttime} - {booking.endtime}
                 </Text>
               </View>
             </TouchableOpacity>

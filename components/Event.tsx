@@ -84,7 +84,7 @@ const Event = () => {
   console.log('Selected event', selectedEvent);
 
   useEffect(() => {
-    if (selectedEvent.id) {
+    if (selectedEvent.bookingid) {
       setEditable(false);
     }
   }, []);
@@ -99,7 +99,7 @@ const Event = () => {
 
   const onDelete = async () => {
     dispatch(setLoading(true));
-    const res = await deleteBooking(selectedEvent.id);
+    const res = await deleteBooking(selectedEvent.bookingid);
     if (res) {
       dispatch(setLoading(false));
       showSuccessMessage('Your booking request deleted successfully.');
@@ -125,14 +125,14 @@ const Event = () => {
 
   const renderRight = () => {
     if (
-      selectedEvent.id &&
+      selectedEvent.bookingid &&
       (selectedEvent.status == 'completed' ||
         selectedEvent.status == 'rejected' ||
         selectedEvent.status == 'deleted')
     )
       return null;
 
-    if (selectedEvent.id) {
+    if (selectedEvent.bookingid) {
       if (editable) {
         return (
           <TouchableOpacity
@@ -215,66 +215,66 @@ const Event = () => {
   const onBookNow = async (isUpdate = false) => {
     if (
       !selectedEvent.date ||
-      !selectedEvent.startTime ||
-      !selectedEvent.endTime ||
+      !selectedEvent.starttime ||
+      !selectedEvent.endtime ||
       !selectedEvent.description ||
-      !selectedEvent.image ||
-      !selectedEvent.fullName ||
-      !selectedEvent.dob ||
-      !selectedEvent.tob ||
-      !selectedEvent.place ||
+      !selectedEvent.photo ||
+      !selectedEvent.fullname ||
+      !selectedEvent.birthdate ||
+      !selectedEvent.birthtime ||
+      !selectedEvent.birthplace ||
       !selectedEvent.kundali
     ) {
       showErrorMessage('Please fill all the details.');
       return;
     }
-    if (selectedEvent.startTime >= selectedEvent.endTime) {
+    if (selectedEvent.starttime >= selectedEvent.endtime) {
       showErrorMessage('Start time should be less than end time.');
       return;
     }
 
     const data: {
       id?: string;
-      astrologerId: any;
-      astrologerName: any;
-      rate: any;
+      astrologerid: any;
+      astrologername: any;
+      astrologercharge: any;
       date: any;
-      startTime: any;
-      endTime: any;
+      starttime: any;
+      endtime: any;
       description: any;
-      notificationType: any;
-      image: any;
-      fullName: any;
-      dob: any;
-      tob: any;
-      place: any;
+      notificationmin: any;
+      notify: any;
+      photo: any;
+      fullname: any;
+      birthdate: any;
+      birthtime: any;
+      birthplace: any;
       kundali: any;
     } = {
-      astrologerId: selectedEvent?.astrologerId,
-      astrologerName: selectedEvent?.astrologerName,
-      rate: selectedEvent?.rate,
+      astrologerid: selectedEvent?.astrologerid,
+      astrologername: selectedEvent?.astrologername,
+      astrologercharge: selectedEvent?.astrologercharge,
       date: selectedEvent.date,
-      startTime: selectedEvent.startTime,
-      endTime: selectedEvent.endTime,
+      starttime: selectedEvent.starttime,
+      endtime: selectedEvent.endtime,
       description: selectedEvent.description,
-      notificationType: selectedEvent.notificationType,
-      image: selectedEvent.image,
-      fullName: selectedEvent.fullName,
-      dob: selectedEvent.dob,
-      tob: selectedEvent.tob,
-      place: selectedEvent.place,
+      notificationmin: selectedEvent.notificationmin,
+      notify: selectedEvent.notify,
+      photo: selectedEvent.photo,
+      fullname: selectedEvent.fullname,
+      birthdate: selectedEvent.birthdate,
+      birthtime: selectedEvent.birthtime,
+      birthplace: selectedEvent.birthplace,
       kundali: selectedEvent.kundali,
     };
     if (isUpdate) {
-      data.id = selectedEvent.id;
+      data.id = selectedEvent.bookingid;
     }
     console.log('Book Now', data);
-    dispatch(setLoading(true));
     const res = isUpdate
       ? await updateBooking(data)
       : await createBooking(data);
     if (res) {
-      dispatch(setLoading(false));
       showSuccessMessage(
         isUpdate
           ? 'Your booking request updated successfully.'
@@ -292,8 +292,8 @@ const Event = () => {
     setNotificationModal(false);
   };
 
-  const onNotificationSelect = (notificationType: string) => {
-    dispatch(onChangeEventData({ notificationType }));
+  const onNotificationSelect = (notify: string, notificationmin: string) => {
+    dispatch(onChangeEventData({ notify, notificationmin }));
     setNotificationModal(false);
   };
 
@@ -310,33 +310,33 @@ const Event = () => {
             }}>
             <RadioOpion
               label="No notification"
-              onSelect={() => onNotificationSelect('1')}
-              isSelected={selectedEvent.notificationType == '1'}
+              onSelect={() => onNotificationSelect('No notification', '0')}
+              isSelected={selectedEvent.notificationmin == '0'}
             />
             <RadioOpion
               label="5 minutes before"
-              onSelect={() => onNotificationSelect('2')}
-              isSelected={selectedEvent.notificationType == '2'}
+              onSelect={() => onNotificationSelect('5 minutes before', '5')}
+              isSelected={selectedEvent.notificationmin == '5'}
             />
             <RadioOpion
               label="10 minutes before"
-              onSelect={() => onNotificationSelect('3')}
-              isSelected={selectedEvent.notificationType == '3'}
+              onSelect={() => onNotificationSelect('10 minutes before', '10')}
+              isSelected={selectedEvent.notificationmin == '10'}
             />
             <RadioOpion
               label="15 minutes before"
-              onSelect={() => onNotificationSelect('4')}
-              isSelected={selectedEvent.notificationType == '4'}
+              onSelect={() => onNotificationSelect('15 minutes before', '15')}
+              isSelected={selectedEvent.notificationmin == '15'}
             />
             <RadioOpion
               label="1 hour before"
-              onSelect={() => onNotificationSelect('5')}
-              isSelected={selectedEvent.notificationType == '5'}
+              onSelect={() => onNotificationSelect('1 hour before', '60')}
+              isSelected={selectedEvent.notificationmin == '60'}
             />
             <RadioOpion
               label="1 day before"
-              onSelect={() => onNotificationSelect('6')}
-              isSelected={selectedEvent.notificationType == '6'}
+              onSelect={() => onNotificationSelect('1 day before', '1440')}
+              isSelected={selectedEvent.notificationmin == '1440'}
             />
           </View>
         </TouchableWithoutFeedback>
@@ -355,7 +355,7 @@ const Event = () => {
     console.log(result);
 
     if (!result.canceled) {
-      dispatch(onChangeEventData({ image: result.assets[0].uri }));
+      dispatch(onChangeEventData({ photo: result.assets[0].uri }));
     }
   };
 
@@ -383,46 +383,29 @@ const Event = () => {
   };
 
   const onSelectStartTime = (date: Date) => {
-    dispatch(onChangeEventData({ startTime: moment(date).format('hh:mm A') }));
+    dispatch(onChangeEventData({ starttime: moment(date).format('hh:mm A') }));
   };
 
   const onSelectEndTime = (date: Date) => {
-    dispatch(onChangeEventData({ endTime: moment(date).format('hh:mm A') }));
+    dispatch(onChangeEventData({ endtime: moment(date).format('hh:mm A') }));
   };
 
   const onChangeFullName = (text: string) => {
-    dispatch(onChangeEventData({ fullName: text }));
+    dispatch(onChangeEventData({ fullname: text }));
   };
 
   const onSelectDateOfBirth = (date: Date) => {
-    dispatch(onChangeEventData({ dob: moment(date).format('DD MMM YYYY') }));
+    dispatch(
+      onChangeEventData({ birthdate: moment(date).format('DD MMM YYYY') })
+    );
   };
 
   const onSelectTimeOfBirth = (date: Date) => {
-    dispatch(onChangeEventData({ tob: moment(date).format('hh:mm A') }));
+    dispatch(onChangeEventData({ birthtime: moment(date).format('hh:mm A') }));
   };
 
   const onChangePlaceOfBirth = (text: string) => {
-    dispatch(onChangeEventData({ place: text }));
-  };
-
-  const notificationLabel = () => {
-    switch (selectedEvent.notificationType) {
-      case '1':
-        return 'No notification';
-      case '2':
-        return '5 minutes before';
-      case '3':
-        return '10 minutes before';
-      case '4':
-        return '15 minutes before';
-      case '5':
-        return '1 hour before';
-      case '6':
-        return '1 day before';
-      default:
-        return '10 minutes before';
-    }
+    dispatch(onChangeEventData({ birthplace: text }));
   };
 
   const getColor = () => {
@@ -473,7 +456,7 @@ const Event = () => {
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <Header
-        title={selectedEvent.id ? 'View Event' : 'Add Event'}
+        title={selectedEvent.bookingid ? 'View Event' : 'Add Event'}
         onClose={onClose}
         right={renderRight()}
       />
@@ -501,7 +484,7 @@ const Event = () => {
                 color: Colors.black1,
                 fontSize: moderateScale(16),
               }}>
-              {selectedEvent.astrologerName}
+              {selectedEvent.astrologername}
             </Text>
           </View>
           <View
@@ -551,7 +534,7 @@ const Event = () => {
                 editable={!editable}
                 label="Start Time"
                 mode={'time'}
-                value={selectedEvent.startTime}
+                value={selectedEvent.starttime}
                 onSelect={onSelectStartTime}
               />
               <View
@@ -565,7 +548,7 @@ const Event = () => {
                 editable={!editable}
                 label="End Time"
                 mode={'time'}
-                value={selectedEvent.endTime}
+                value={selectedEvent.endtime}
                 onSelect={onSelectEndTime}
                 style={{ alignItems: 'center' }}
               />
@@ -583,7 +566,7 @@ const Event = () => {
                 onPress={onSelectNotification}
                 style={{ justifyContent: 'center' }}>
                 <Text style={[styles.input, { height: undefined }]}>
-                  {notificationLabel()}
+                  {selectedEvent.notify}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -635,9 +618,9 @@ const Event = () => {
             ]}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <SvgImage url={Images.photo} style={styles.fieldIcon} />
-              {selectedEvent.image ? (
+              {selectedEvent.photo ? (
                 <SvgImage
-                  url={selectedEvent.image}
+                  url={selectedEvent.photo}
                   style={{
                     height: horizontalScale(65),
                     width: horizontalScale(65),
@@ -681,7 +664,7 @@ const Event = () => {
                 placeholderTextColor={Colors.grey}
                 onChangeText={onChangeFullName}
                 style={styles.input}
-                value={selectedEvent.fullName}
+                value={selectedEvent.fullname}
               />
             </View>
           </View>
@@ -695,7 +678,7 @@ const Event = () => {
               <DateTimePicker
                 editable={!editable}
                 label="Date of Birth"
-                value={selectedEvent.dob}
+                value={selectedEvent.birthdate}
                 onSelect={onSelectDateOfBirth}
                 maxDate={new Date()}
               />
@@ -712,7 +695,7 @@ const Event = () => {
                 editable={!editable}
                 label="Time of Birth"
                 mode={'time'}
-                value={selectedEvent.tob}
+                value={selectedEvent.birthtime}
                 onSelect={onSelectTimeOfBirth}
               />
             </View>
@@ -729,7 +712,7 @@ const Event = () => {
                 placeholder="Place of Birth"
                 placeholderTextColor={Colors.grey}
                 onChangeText={onChangePlaceOfBirth}
-                value={selectedEvent.place}
+                value={selectedEvent.birthplace}
                 style={styles.input}
               />
             </View>
@@ -774,7 +757,7 @@ const Event = () => {
               </TouchableOpacity>
             </View>
           </View>
-          {selectedEvent.id ? null : (
+          {selectedEvent.bookingid ? null : (
             <View
               style={{
                 paddingHorizontal: horizontalScale(20),

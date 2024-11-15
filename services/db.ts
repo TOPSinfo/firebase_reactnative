@@ -172,24 +172,24 @@ export const uploadImage = async (uri: string) => {
 
 export const createBooking = async (data: any) => {
   try {
+    store.dispatch(setLoading(true));
     const uploadIfNeeded = async (field: string) => {
       if (data[field]) {
         data[field] = await uploadImage(data[field]);
       }
     };
 
-    await Promise.all([uploadIfNeeded('image'), uploadIfNeeded('kundali')]);
-
-    store.dispatch(setLoading(true));
-    const bookingRef = collection(db, 'bookings');
+    await Promise.all([uploadIfNeeded('photo'), uploadIfNeeded('kundali')]);
+    const bookingRef = doc(collection(db, 'bookinghistory'));
     const bookingData = {
-      userId: auth.currentUser?.uid,
+      uid: auth.currentUser?.uid,
       status: 'waiting',
-      createdAt: serverTimestamp(),
+      createdat: serverTimestamp(),
+      bookingid: bookingRef.id,
       ...data,
     };
     console.log('bookingData', bookingData);
-    await setDoc(doc(bookingRef), bookingData);
+    await setDoc(bookingRef, bookingData);
     store.dispatch(setLoading(false));
     return true;
   } catch (error: any) {
@@ -199,12 +199,12 @@ export const createBooking = async (data: any) => {
 
 export const getMyBookings = async () => {
   const attribute =
-    store.getState().user.userType == 'user' ? 'userId' : 'astrologerId';
+    store.getState().user.userType == 'user' ? 'uid' : 'astrologerid';
   try {
     const q = query(
-      collection(db, 'bookings'),
+      collection(db, 'bookinghistory'),
       where(attribute, '==', auth.currentUser?.uid),
-      orderBy('createdAt', 'desc')
+      orderBy('createdat', 'desc')
     );
     const querySnapshot = await getDocs(q);
     const bookings: any = [];
@@ -225,10 +225,10 @@ export const updateBooking = async (data: any) => {
       }
     };
 
-    await Promise.all([uploadIfNeeded('image'), uploadIfNeeded('kundali')]);
+    await Promise.all([uploadIfNeeded('photo'), uploadIfNeeded('kundali')]);
 
     store.dispatch(setLoading(true));
-    const bookingRef = doc(db, 'bookings', data.id);
+    const bookingRef = doc(db, 'bookinghistory', data.id);
     await updateDoc(bookingRef, data);
     await getMyBookings();
     store.dispatch(setLoading(false));
@@ -241,7 +241,7 @@ export const updateBooking = async (data: any) => {
 export const deleteBooking = async (id: string) => {
   try {
     store.dispatch(setLoading(true));
-    const bookingRef = doc(db, 'bookings', id);
+    const bookingRef = doc(db, 'bookinghistory', id);
     await updateDoc(bookingRef, { status: 'deleted' });
     await getMyBookings();
     store.dispatch(setLoading(false));
@@ -280,7 +280,7 @@ export const updateProfile = async (data: any) => {
 export const updateEventStatus = async (id: string, status: string) => {
   try {
     store.dispatch(setLoading(true));
-    const eventRef = doc(db, 'bookings', id);
+    const eventRef = doc(db, 'bookinghistory', id);
     await updateDoc(eventRef, { status });
     store.dispatch(setLoading(false));
     return true;

@@ -43,7 +43,7 @@ const BookingCard = ({ data }: any) => {
                 lineHeight: moderateScale(20),
               },
             ]}>
-            With Astro {data.astrologerName}
+            With Astro {data.astrologername}
           </Text>
         ) : (
           <Text
@@ -59,10 +59,10 @@ const BookingCard = ({ data }: any) => {
           </Text>
         )}
         <Text style={styles.label}>
-          Time: {data.startTime} - {data.endTime}
+          Time: {data.starttime} - {data.endtime}
         </Text>
         {userType == 'user' ? (
-          <Text style={styles.label}>Rate: {data.rate}/min</Text>
+          <Text style={styles.label}>Rate: {data.astrologercharge}/min</Text>
         ) : null}
         <Text style={styles.label}>
           Status:{' '}
@@ -78,7 +78,6 @@ const BookingCard = ({ data }: any) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    height: verticalScale(90),
     backgroundColor: Colors.white3,
     marginBottom: verticalScale(15),
     borderRadius: horizontalScale(6),
