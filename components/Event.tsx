@@ -29,7 +29,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useDispatch } from 'react-redux';
 import { onChangeEventData } from '@/redux/eventSlice';
 import moment from 'moment';
-import { selectedEventSelector } from '@/redux/selector';
+import { selectedEventSelector, userSelector } from '@/redux/selector';
 import { setLoading } from '@/redux/loadingSlice';
 import { createBooking, deleteBooking, updateBooking } from '@/services/db';
 import {
@@ -80,6 +80,7 @@ const Event = () => {
   const dispatch = useDispatch();
   const selectedEvent = selectedEventSelector();
   const router = useRouter();
+  const userdata = userSelector();
 
   console.log('Selected event', selectedEvent);
 
@@ -250,6 +251,8 @@ const Event = () => {
       birthtime: any;
       birthplace: any;
       kundali: any;
+      username: any;
+      userprofileimage: any;
     } = {
       astrologerid: selectedEvent?.astrologerid,
       astrologername: selectedEvent?.astrologername,
@@ -266,6 +269,8 @@ const Event = () => {
       birthtime: selectedEvent.birthtime,
       birthplace: selectedEvent.birthplace,
       kundali: selectedEvent.kundali,
+      username: userdata.fullname,
+      userprofileimage: userdata.profileimage,
     };
     if (isUpdate) {
       data.id = selectedEvent.bookingid;
