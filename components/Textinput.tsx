@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TextInputProps,
-} from 'react-native';
+import { View, TextInput, StyleSheet, TextInputProps } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { horizontalScale, moderateScale } from '@/utils/matrix';
 import SvgImage from './SvgImage';
@@ -22,6 +16,7 @@ type TextinputProps = {
   icon: string | number;
   control: any;
   name: string;
+  multiline?: boolean;
   rules?: UseControllerProps['rules'];
 };
 
@@ -35,6 +30,7 @@ const Textinput = ({
   rules,
   placeholder,
   icon,
+  multiline,
   ...rest
 }: TextinputProps & TextInputProps) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -94,8 +90,13 @@ const Textinput = ({
   };
 
   return (
-    <Animated.View style={[styles.container, borderStyle]}>
-      <View>
+    <Animated.View
+      style={[
+        styles.container,
+        borderStyle,
+        { height: multiline ? horizontalScale(150) : horizontalScale(50) },
+      ]}>
+      <View style={{ paddingTop: horizontalScale(15) }}>
         <SvgImage
           url={icon}
           style={{ height: horizontalScale(15), width: horizontalScale(15) }}
@@ -129,7 +130,6 @@ const styles = StyleSheet.create({
     borderRadius: horizontalScale(8),
     height: horizontalScale(50),
     flexDirection: 'row',
-    alignItems: 'center',
     paddingHorizontal: horizontalScale(18),
     marginTop: horizontalScale(15),
   },

@@ -11,12 +11,28 @@ const RadioOpion = ({
   label,
   onSelect,
   isSelected,
+  isMultiple,
 }: {
   label: string;
   onSelect: () => void;
   isSelected: boolean;
+  isMultiple?: boolean;
 }) => {
   const userType = userTypeSelector();
+
+  const returnImage = () => {
+    if (isSelected) {
+      if (userType == 'user') {
+        if (isMultiple) return Images.radioChecked;
+        return Images.radioSelected;
+      } else {
+        if (isMultiple) return Images.radioChecked_blue;
+        return Images.radioSelected_blue;
+      }
+    } else {
+      return Images.radio;
+    }
+  };
 
   return (
     <TouchableOpacity
@@ -28,13 +44,7 @@ const RadioOpion = ({
         paddingVertical: horizontalScale(10),
       }}>
       <SvgImage
-        url={
-          isSelected
-            ? userType == 'user'
-              ? Images.radioSelected
-              : Images.radioSelected_blue
-            : Images.radio
-        }
+        url={returnImage()}
         style={{
           height: verticalScale(20),
           width: verticalScale(20),

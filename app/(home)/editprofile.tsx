@@ -19,7 +19,7 @@ import { updateProfile } from '@/services/db';
 import { useRouter } from 'expo-router';
 import { showSuccessMessage } from '@/utils/helper';
 
-const editprofile = () => {
+const EditProfile = () => {
   const dispatch = useDispatch();
   const user = userSelector();
   const router = useRouter();
@@ -177,4 +177,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default editprofile;
+export default EditProfile;

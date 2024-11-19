@@ -184,6 +184,7 @@ export const createBooking = async (data: any) => {
     const bookingData = {
       uid: auth.currentUser?.uid,
       status: 'waiting',
+      allowextend: 'no',
       createdat: serverTimestamp(),
       bookingid: bookingRef.id,
       ...data,
@@ -259,7 +260,10 @@ export const updateProfile = async (data: any) => {
       throw new Error('User is not authenticated');
     }
     const uploadIfNeeded = async (field: string) => {
-      if (!data[field].includes('firebasestorage.googleapis.com')) {
+      if (
+        data[field] &&
+        !data[field].includes('firebasestorage.googleapis.com')
+      ) {
         data[field] = await uploadImage(data[field]);
       }
     };

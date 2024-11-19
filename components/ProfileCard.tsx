@@ -35,7 +35,11 @@ const ProfileCard = ({ isEdit = false }) => {
         dispatch(updateProfileImage({ profileimage: result.assets[0].uri }));
       }
     } else {
-      router.navigate('/(home)/editprofile');
+      if (userType == 'user') {
+        router.navigate('/(home)/editprofile');
+      } else {
+        router.navigate('/(home)/editastroprofile');
+      }
     }
   };
 

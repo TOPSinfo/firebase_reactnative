@@ -196,7 +196,7 @@ const Details = () => {
               </View>
               <TouchableOpacity style={styles.rateButton}>
                 <SvgImage
-                  url={Images.rupee}
+                  url={Images.rupee_white}
                   style={{
                     height: horizontalScale(12),
                     width: horizontalScale(12),
