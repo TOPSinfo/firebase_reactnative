@@ -33,6 +33,7 @@ import { selectedEventSelector, userSelector } from '@/redux/selector';
 import { setLoading } from '@/redux/loadingSlice';
 import { createBooking, deleteBooking, updateBooking } from '@/services/db';
 import {
+  calculateMinutes,
   getDefaultHeaderHeight,
   showErrorMessage,
   showSuccessMessage,
@@ -238,6 +239,7 @@ const Event = () => {
       id?: string;
       astrologerid: any;
       astrologername: any;
+      amount: any;
       astrologercharge: any;
       date: any;
       starttime: any;
@@ -251,11 +253,15 @@ const Event = () => {
       birthtime: any;
       birthplace: any;
       kundali: any;
+      userbirthdate: any;
       username: any;
       userprofileimage: any;
     } = {
       astrologerid: selectedEvent?.astrologerid,
       astrologername: selectedEvent?.astrologername,
+      amount:
+        calculateMinutes(selectedEvent.starttime, selectedEvent.endtime) *
+        selectedEvent.astrologercharge,
       astrologercharge: selectedEvent?.astrologercharge,
       date: selectedEvent.date,
       starttime: selectedEvent.starttime,
@@ -269,6 +275,7 @@ const Event = () => {
       birthtime: selectedEvent.birthtime,
       birthplace: selectedEvent.birthplace,
       kundali: selectedEvent.kundali,
+      userbirthdate: userdata.birthdate,
       username: userdata.fullname,
       userprofileimage: userdata.profileimage,
     };

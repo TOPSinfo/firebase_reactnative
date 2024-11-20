@@ -1,4 +1,5 @@
 import { Colors } from '@/constants/Colors';
+import moment from 'moment';
 import { StatusBar, PixelRatio, Platform } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 
@@ -166,3 +167,11 @@ export function getDefaultHeaderHeight(
 
   return headerHeight + statusBarHeight;
 }
+
+export const calculateMinutes = (startTime: string, endTime: string) => {
+  if (!startTime || !endTime) return 0;
+  const duration = moment.duration(
+    moment(endTime, 'hh:mm a').diff(moment(startTime, 'hh:mm a'))
+  );
+  return duration.asMinutes();
+};

@@ -95,9 +95,31 @@ const EditAstroProfile = () => {
       .filter(Boolean);
   };
 
+  const renderRight = () => {
+    return (
+      <TouchableOpacity
+        onPress={handleSubmit(onSubmit)}
+        hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
+        style={{
+          paddingHorizontal: horizontalScale(10),
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text
+          style={{
+            fontFamily: Fonts.PoppinsRegular,
+            color: Colors.white,
+            fontSize: moderateScale(16),
+          }}>
+          Save
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <DetailsHeader title="Profile" />
+      <DetailsHeader title="Profile" rightOption={renderRight()} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <ProfileCard isEdit={true} />
         <View style={{ padding: horizontalScale(25) }}>
@@ -280,14 +302,6 @@ const EditAstroProfile = () => {
           style={{
             padding: horizontalScale(25),
           }}>
-          <Text
-            style={{
-              fontSize: moderateScale(18),
-              fontFamily: Fonts.PoppinsMedium,
-              color: Colors.black1,
-            }}>
-            Appointment Slot
-          </Text>
           <AppointmentSlot />
           <View style={{ marginTop: horizontalScale(25) }}>
             <Button title="Save" onPress={handleSubmit(onSubmit)} />

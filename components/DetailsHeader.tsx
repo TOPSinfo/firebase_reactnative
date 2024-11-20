@@ -15,12 +15,10 @@ import { getDefaultHeaderHeight } from '@/utils/helper';
 
 const DetailsHeader = ({
   title,
-  rightIcon,
-  onRight,
+  rightOption,
 }: {
   title: string;
-  rightIcon?: string;
-  onRight?: () => void;
+  rightOption?: React.ReactNode;
 }) => {
   const insets = useSafeAreaInsets();
   const frame = useSafeAreaFrame();
@@ -54,23 +52,7 @@ const DetailsHeader = ({
         <View style={{ flex: 1, justifyContent: 'center' }}>
           <Text style={styles.title}>{title}</Text>
         </View>
-        {rightIcon && onRight ? (
-          <TouchableOpacity
-            onPress={onRight}
-            style={{
-              width: '10%',
-              justifyContent: 'center',
-              alignItems: 'flex-end',
-            }}>
-            <SvgImage
-              url={rightIcon}
-              style={{
-                height: horizontalScale(16),
-                width: horizontalScale(16),
-              }}
-            />
-          </TouchableOpacity>
-        ) : null}
+        {rightOption ? rightOption : null}
       </View>
     </View>
   );

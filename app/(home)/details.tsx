@@ -125,15 +125,31 @@ const Details = () => {
     );
   };
 
+  const renderRight = () => {
+    return (
+      <TouchableOpacity
+        onPress={onBookNow}
+        style={{
+          width: '10%',
+          justifyContent: 'center',
+          alignItems: 'flex-end',
+        }}>
+        <SvgImage
+          url={Images.plus}
+          style={{
+            height: horizontalScale(16),
+            width: horizontalScale(16),
+          }}
+        />
+      </TouchableOpacity>
+    );
+  };
+
   if (!details) return null;
 
   return (
     <View style={{ flex: 1 }}>
-      <DetailsHeader
-        title={'Astrologer'}
-        rightIcon={Images.plus}
-        onRight={onBookNow}
-      />
+      <DetailsHeader title={'Astrologer'} rightOption={renderRight()} />
       <View style={styles.container}>
         <ScrollView
           showsVerticalScrollIndicator={false}

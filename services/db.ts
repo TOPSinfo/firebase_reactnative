@@ -185,6 +185,7 @@ export const createBooking = async (data: any) => {
       uid: auth.currentUser?.uid,
       status: 'waiting',
       allowextend: 'no',
+      extendtime: 0,
       createdat: serverTimestamp(),
       bookingid: bookingRef.id,
       ...data,

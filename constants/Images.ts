@@ -64,4 +64,5 @@ export const Images = {
   launching_soon: require('../assets/images/launching_soon.svg'),
   experience: require('../assets/images/experience.svg'),
   rupee: require('../assets/images/rupee.svg'),
+  downArrow: require('../assets/images/downArrow.svg'),
 };
