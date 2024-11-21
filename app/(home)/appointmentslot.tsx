@@ -19,6 +19,25 @@ import {
 } from 'react-native-safe-area-context';
 import RNModal from '@/components/RNModal';
 import RadioOpion from '@/components/RadioOpion';
+import { selectedSlotSelector } from '@/redux/selector';
+import { useDispatch } from 'react-redux';
+import {
+  resetSelectedSlot,
+  setAppointmentSlots,
+  setSelectedSlot,
+} from '@/redux/userSlice';
+import DateTimePicker from '@/components/DateTimePicker';
+import moment from 'moment';
+
+const weekDays = [
+  { label: 'S', value: 'sunday' },
+  { label: 'M', value: 'monday' },
+  { label: 'T', value: 'tuesday' },
+  { label: 'W', value: 'wednesday' },
+  { label: 'T', value: 'thursday' },
+  { label: 'F', value: 'friday' },
+  { label: 'S', value: 'saturday' },
+];
 
 const Header = ({
   title,
@@ -59,14 +78,23 @@ const Header = ({
 const AppointmentSlot = () => {
   const [slotOptionModal, setSlotOptionModal] = useState(false);
 
+  const selectedSlot = selectedSlotSelector();
+  const dispatch = useDispatch();
   const onClose = () => {
+    dispatch(resetSelectedSlot());
+    router.back();
+  };
+
+  const onSave = () => {
+    dispatch(setAppointmentSlots(selectedSlot));
+    dispatch(resetSelectedSlot());
     router.back();
   };
 
   const renderRight = () => {
     return (
       <TouchableOpacity
-        onPress={() => {}}
+        onPress={onSave}
         hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
         style={{
           paddingHorizontal: horizontalScale(10),
@@ -85,42 +113,13 @@ const AppointmentSlot = () => {
     );
   };
 
-  const renderOption = ({
-    icon,
-    label,
-    value,
-    borderLeft,
-  }: {
-    icon: string;
-    label: string;
-    value: string;
-    borderLeft?: boolean;
-  }) => {
-    return (
-      <TouchableOpacity
-        onPress={() => {}}
-        hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
-        style={{
-          ...styles.optionContainer,
-          borderLeftWidth: borderLeft ? 0.5 : 0,
-        }}>
-        <SvgImage url={icon} style={styles.icon} />
-        <View>
-          <Text style={styles.text}>{label}</Text>
-          <Text
-            style={{
-              ...styles.text,
-              marginTop: verticalScale(10),
-            }}>
-            {value}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
   const onSlotOptionModalClose = () => {
     setSlotOptionModal(false);
+  };
+
+  const onSlotOptionSelect = (type: string) => {
+    dispatch(setSelectedSlot({ ...selectedSlot, type }));
+    onSlotOptionModalClose();
   };
 
   const renderSlotOption = () => {
@@ -128,13 +127,72 @@ const AppointmentSlot = () => {
       <RNModal visible={slotOptionModal} onClose={onSlotOptionModalClose}>
         <TouchableWithoutFeedback>
           <View style={styles.slotOptionContainer}>
-            <RadioOpion label="Repeat" onSelect={() => {}} isSelected={false} />
-            <RadioOpion label="Weekly" onSelect={() => {}} isSelected={false} />
-            <RadioOpion label="Custom" onSelect={() => {}} isSelected={false} />
+            <RadioOpion
+              label="Repeat"
+              onSelect={() => onSlotOptionSelect('Repeat')}
+              isSelected={selectedSlot.type == 'Repeat'}
+            />
+            <RadioOpion
+              label="Weekly"
+              onSelect={() => onSlotOptionSelect('Weekly')}
+              isSelected={selectedSlot.type == 'Weekly'}
+            />
+            <RadioOpion
+              label="Custom"
+              onSelect={() => onSlotOptionSelect('Custom')}
+              isSelected={selectedSlot.type == 'Custom'}
+            />
           </View>
         </TouchableWithoutFeedback>
       </RNModal>
     );
+  };
+
+  const onSlotOptionPress = () => {
+    setSlotOptionModal(true);
+  };
+
+  const onSelectStartDate = (date: Date) => {
+    dispatch(
+      setSelectedSlot({
+        ...selectedSlot,
+        startdate: moment(date).format('DD MMM YYYY'),
+      })
+    );
+  };
+
+  const onSelectEndDate = (date: Date) => {
+    dispatch(
+      setSelectedSlot({
+        ...selectedSlot,
+        enddate: moment(date).format('DD MMM YYYY'),
+      })
+    );
+  };
+
+  const onSelectStartTime = (date: Date) => {
+    dispatch(
+      setSelectedSlot({
+        ...selectedSlot,
+        starttime: moment(date).format('hh:mm a'),
+      })
+    );
+  };
+
+  const onSelectEndTime = (date: Date) => {
+    dispatch(
+      setSelectedSlot({
+        ...selectedSlot,
+        endtime: moment(date).format('hh:mm a'),
+      })
+    );
+  };
+
+  const onDayPress = (day: string) => {
+    const repeatdays = selectedSlot.repeatdays.includes(day)
+      ? selectedSlot.repeatdays.filter((item: string) => item !== day)
+      : [...selectedSlot.repeatdays, day];
+    dispatch(setSelectedSlot({ ...selectedSlot, repeatdays }));
   };
 
   return (
@@ -146,10 +204,11 @@ const AppointmentSlot = () => {
       />
       <View style={{ padding: horizontalScale(25) }}>
         <TouchableOpacity
+          onPress={onSlotOptionPress}
           style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <View style={{ flexDirection: 'row' }}>
             <SvgImage url={Images.calendar} style={styles.fieldIcon} />
-            <Text></Text>
+            <Text style={styles.text}>{selectedSlot.type}</Text>
           </View>
           <SvgImage
             url={Images.downArrow}
@@ -158,31 +217,89 @@ const AppointmentSlot = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.grid}>
-        <View style={styles.dateContainer}>
-          {renderOption({
-            icon: Images.calendar,
-            label: 'Start Date',
-            value: '20-11-2024',
-          })}
-          {renderOption({
-            icon: Images.calendar,
-            label: 'End Date',
-            value: '20-11-2024',
-            borderLeft: true,
-          })}
-        </View>
+        {selectedSlot.type == 'Weekly' ? (
+          <View
+            style={[
+              styles.dateContainer,
+              { justifyContent: 'center', alignItems: 'center' },
+            ]}>
+            {weekDays.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => onDayPress(item.value)}
+                style={[
+                  styles.dayContainer,
+                  {
+                    backgroundColor: selectedSlot.repeatdays.includes(
+                      item.value
+                    )
+                      ? Colors.blue
+                      : 'transparent',
+                  },
+                ]}>
+                <Text
+                  style={[
+                    styles.text,
+                    {
+                      color: selectedSlot.repeatdays.includes(item.value)
+                        ? Colors.white
+                        : Colors.grey,
+                    },
+                  ]}>
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ) : (
+          <View style={styles.dateContainer}>
+            <View style={styles.optionContainer}>
+              <SvgImage url={Images.calendar} style={styles.icon} />
+              <DateTimePicker
+                label="Start Date"
+                value={selectedSlot.startdate}
+                onSelect={onSelectStartDate}
+                isSlot={true}
+              />
+            </View>
+            {selectedSlot.type == 'Repeat' ? (
+              <View style={{ ...styles.optionContainer, borderLeftWidth: 0.5 }}>
+                <SvgImage url={Images.calendar} style={styles.icon} />
+                <DateTimePicker
+                  label="End Date"
+                  value={selectedSlot.enddate}
+                  onSelect={onSelectEndDate}
+                  isSlot={true}
+                />
+              </View>
+            ) : null}
+          </View>
+        )}
         <View style={styles.timeContainer}>
-          {renderOption({
-            icon: Images.time,
-            label: 'Start Time',
-            value: '10:00 am',
-          })}
-          {renderOption({
-            icon: Images.time,
-            label: 'End Time',
-            value: '05:00 pm',
-            borderLeft: true,
-          })}
+          <View style={styles.optionContainer}>
+            <SvgImage url={Images.time} style={styles.icon} />
+            <DateTimePicker
+              mode="time"
+              label="Start Time"
+              value={selectedSlot.starttime}
+              onSelect={onSelectStartTime}
+              isSlot={true}
+            />
+          </View>
+          <View
+            style={{
+              ...styles.optionContainer,
+              borderLeftWidth: 0.5,
+            }}>
+            <SvgImage url={Images.time} style={styles.icon} />
+            <DateTimePicker
+              mode="time"
+              label="End Time"
+              value={selectedSlot.endtime}
+              onSelect={onSelectEndTime}
+              isSlot={true}
+            />
+          </View>
         </View>
       </View>
       {renderSlotOption()}
@@ -246,6 +363,14 @@ const styles = StyleSheet.create({
   timeContainer: {
     height: horizontalScale(85),
     flexDirection: 'row',
+  },
+  dayContainer: {
+    height: verticalScale(48),
+    width: verticalScale(48),
+    borderRadius: horizontalScale(2.5),
+    marginHorizontal: horizontalScale(5),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

@@ -7,6 +7,15 @@ export const userSlice = createSlice({
     astrologers: [],
     myBookings: [] as any[],
     userType: '',
+    selectedSlot: {
+      startdate: null,
+      enddate: null,
+      starttime: null,
+      endtime: null,
+      type: 'Repeat',
+      repeatdays: [],
+    },
+    appointmentSlots: [] as any[],
   },
   reducers: {
     setUser: (state, actions) => {
@@ -42,6 +51,22 @@ export const userSlice = createSlice({
         return booking;
       });
     },
+    setSelectedSlot: (state, action) => {
+      state.selectedSlot = action.payload;
+    },
+    resetSelectedSlot: state => {
+      state.selectedSlot = {
+        startdate: null,
+        enddate: null,
+        starttime: null,
+        endtime: null,
+        type: 'Repeat',
+        repeatdays: [],
+      };
+    },
+    setAppointmentSlots: (state, action) => {
+      state.appointmentSlots = [...state.appointmentSlots, action.payload];
+    },
   },
 });
 
@@ -52,6 +77,9 @@ export const {
   updateProfileImage,
   setUserType,
   updateBookingStatus,
+  setSelectedSlot,
+  resetSelectedSlot,
+  setAppointmentSlots,
 } = userSlice.actions;
 
 export default userSlice.reducer;

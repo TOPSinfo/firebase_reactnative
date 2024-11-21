@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, TextInputProps } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { horizontalScale, moderateScale } from '@/utils/matrix';
+import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix';
 import SvgImage from './SvgImage';
 import Animated, {
   useAnimatedStyle,
@@ -112,11 +112,20 @@ const Textinput = ({
       <TextInput
         placeholder={!isFocused ? placeholder : ''}
         placeholderTextColor={Colors.grey}
-        style={[styles.textInput, { color: isFocused ? color : Colors.black }]}
+        style={[
+          styles.textInput,
+          {
+            color: isFocused ? color : Colors.black,
+            height: multiline ? horizontalScale(140) : horizontalScale(45),
+            marginTop: multiline ? horizontalScale(10) : 0,
+          },
+        ]}
+        textAlignVertical={multiline ? 'top' : 'center'}
         onFocus={onFocus}
         onBlur={onBlur}
         onChangeText={onChange}
         value={value}
+        multiline={multiline}
         {...rest}
       />
     </Animated.View>
@@ -135,7 +144,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    height: horizontalScale(45),
     marginLeft: horizontalScale(15),
     fontFamily: Fonts.PoppinsRegular,
     fontSize: moderateScale(12),

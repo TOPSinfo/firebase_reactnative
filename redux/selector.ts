@@ -31,3 +31,7 @@ export const languageListSelector = () => {
 export const specialityListSelector = () => {
   return useSelector((state: any) => state.app.specialities);
 };
+
+export const selectedSlotSelector = () => {
+  return useSelector((state: any) => state.user.selectedSlot);
+};

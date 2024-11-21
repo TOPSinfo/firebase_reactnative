@@ -1,6 +1,6 @@
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
-import { moderateScale } from '@/utils/matrix';
+import { moderateScale, verticalScale } from '@/utils/matrix';
 import moment from 'moment';
 import React, { useState } from 'react';
 import {
@@ -21,6 +21,7 @@ type DateTimePickerProps = {
   minDate?: Date;
   maxDate?: Date;
   editable?: boolean;
+  isSlot?: boolean;
 };
 
 const DateTimePicker = ({
@@ -32,6 +33,7 @@ const DateTimePicker = ({
   minDate = undefined,
   maxDate = undefined,
   editable = false,
+  isSlot = false,
 }: DateTimePickerProps) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
@@ -55,20 +57,46 @@ const DateTimePicker = ({
     return minDate;
   };
 
+  const renderLabel = () => {
+    if (isSlot) {
+      return (
+        <TouchableOpacity
+          disabled={editable}
+          onPress={showDatePicker}
+          style={style}>
+          <Text style={[styles.label, { color: Colors.grey }]}>{label}</Text>
+          <Text
+            style={[
+              styles.label,
+              {
+                marginTop: verticalScale(10),
+              },
+            ]}>
+            {value}
+          </Text>
+        </TouchableOpacity>
+      );
+    } else {
+      return (
+        <TouchableOpacity
+          disabled={editable}
+          onPress={showDatePicker}
+          style={style}>
+          <Text
+            style={[
+              styles.label,
+              { color: value ? Colors.black1 : Colors.grey },
+            ]}>
+            {value ? value : label}
+          </Text>
+        </TouchableOpacity>
+      );
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
-      <TouchableOpacity
-        disabled={editable}
-        onPress={showDatePicker}
-        style={style}>
-        <Text
-          style={[
-            styles.label,
-            { color: value ? Colors.black1 : Colors.grey },
-          ]}>
-          {value ? value : label}
-        </Text>
-      </TouchableOpacity>
+      {renderLabel()}
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode={mode}

@@ -162,7 +162,7 @@ export function getDefaultHeaderHeight(
       }
     }
   } else {
-    headerHeight = 64;
+    headerHeight = 54;
   }
 
   return headerHeight + statusBarHeight;

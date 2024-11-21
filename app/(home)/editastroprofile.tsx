@@ -5,6 +5,8 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import Button from '@/components/Button';
 import DateTimePicker from '@/components/DateTimePicker';
@@ -118,7 +120,10 @@ const EditAstroProfile = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      enabled={Platform.OS == 'ios'}
+      behavior="padding">
       <DetailsHeader title="Profile" rightOption={renderRight()} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <ProfileCard isEdit={true} />
@@ -308,7 +313,7 @@ const EditAstroProfile = () => {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
