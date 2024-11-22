@@ -65,7 +65,7 @@ export const userSlice = createSlice({
       };
     },
     setAppointmentSlots: (state, action) => {
-      state.appointmentSlots = [...state.appointmentSlots, action.payload];
+      state.appointmentSlots = action.payload;
     },
   },
 });

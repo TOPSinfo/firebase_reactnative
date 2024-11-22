@@ -3,6 +3,7 @@ import { store } from '@/redux/store';
 import { showErrorMessage } from '@/utils/helper';
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -14,7 +15,12 @@ import {
   where,
 } from 'firebase/firestore';
 import { auth, db, storage } from './config';
-import { setAstrologers, setMyBookings, setUser } from '@/redux/userSlice';
+import {
+  setAppointmentSlots,
+  setAstrologers,
+  setMyBookings,
+  setUser,
+} from '@/redux/userSlice';
 import { getDownloadURL, ref, uploadBytesResumable } from '@firebase/storage';
 import { setSelectedEvent, updateSelectedEvent } from '@/redux/eventSlice';
 import { setLanguages, setSpecialities } from '@/redux/appSlice';
@@ -325,6 +331,63 @@ export const getLanguagesAndSpecialities = async () => {
     });
     store.dispatch(setLanguages(languagesData));
     store.dispatch(setSpecialities(specialitiesData));
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const createAppointmentSlot = async (data: any) => {
+  try {
+    store.dispatch(setLoading(true));
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      throw new Error('User is not authenticated');
+    }
+    const appointmentSlotRef = doc(collection(db, 'users', uid, 'timeslot'));
+    await setDoc(appointmentSlotRef, {
+      ...data,
+      createdat: serverTimestamp(),
+      uid,
+      timeslotid: appointmentSlotRef.id,
+    });
+    store.dispatch(setLoading(false));
+    await getAppointmentSlots();
+    return true;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const getAppointmentSlots = async () => {
+  try {
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      throw new Error('User is not authenticated');
+    }
+    const q = query(collection(db, 'users', uid, 'timeslot'));
+    const querySnapshot = await getDocs(q);
+    const appointmentSlots: any = [];
+    querySnapshot.forEach(doc => {
+      appointmentSlots.push({ ...doc.data(), id: doc.id });
+    });
+    store.dispatch(setAppointmentSlots(appointmentSlots));
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const deleteAppointmentSlot = async (id: string) => {
+  try {
+    store.dispatch(setLoading(true));
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      throw new Error('User is not authenticated');
+    }
+    const appointmentSlotRef = doc(db, 'users', uid, 'timeslot', id);
+    await deleteDoc(appointmentSlotRef);
+    await getAppointmentSlots();
+    store.dispatch(setLoading(false));
+    return true;
   } catch (error: any) {
     handleError(error);
   }

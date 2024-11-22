@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -27,7 +27,7 @@ import {
 } from '@/redux/selector';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '@/redux/loadingSlice';
-import { updateProfile } from '@/services/db';
+import { getAppointmentSlots, updateProfile } from '@/services/db';
 import { useRouter } from 'expo-router';
 import { showSuccessMessage } from '@/utils/helper';
 import AppointmentSlot from '@/components/AppointmentSlot';
@@ -56,6 +56,14 @@ const EditAstroProfile = () => {
       aboutyou: user?.aboutyou || '',
     },
   });
+
+  const fetchAppointmentSlots = async () => {
+    await getAppointmentSlots();
+  };
+
+  useEffect(() => {
+    fetchAppointmentSlots();
+  }, []);
 
   const onSubmit = async (data: any) => {
     dispatch(setLoading(true));

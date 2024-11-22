@@ -10,8 +10,8 @@ import SvgImage from '@/components/SvgImage';
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
 import { Images } from '@/constants/Images';
-import { getDefaultHeaderHeight } from '@/utils/helper';
-import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix';
+import { getDefaultHeaderHeight, showErrorMessage } from '@/utils/helper';
+import { horizontalScale, moderateScale } from '@/utils/matrix';
 import { router } from 'expo-router';
 import {
   useSafeAreaFrame,
@@ -21,13 +21,10 @@ import RNModal from '@/components/RNModal';
 import RadioOpion from '@/components/RadioOpion';
 import { selectedSlotSelector } from '@/redux/selector';
 import { useDispatch } from 'react-redux';
-import {
-  resetSelectedSlot,
-  setAppointmentSlots,
-  setSelectedSlot,
-} from '@/redux/userSlice';
+import { resetSelectedSlot, setSelectedSlot } from '@/redux/userSlice';
 import DateTimePicker from '@/components/DateTimePicker';
 import moment from 'moment';
+import { createAppointmentSlot } from '@/services/db';
 
 const weekDays = [
   { label: 'S', value: 'sunday' },
@@ -85,10 +82,46 @@ const AppointmentSlot = () => {
     router.back();
   };
 
-  const onSave = () => {
-    dispatch(setAppointmentSlots(selectedSlot));
-    dispatch(resetSelectedSlot());
-    router.back();
+  const onSave = async () => {
+    if (selectedSlot.type == 'Repeat') {
+      if (!selectedSlot.startdate || !selectedSlot.enddate) {
+        return showErrorMessage('Please select start date and end date');
+      }
+      if (selectedSlot.startdate > selectedSlot.enddate) {
+        return showErrorMessage('Start date should be less than end date');
+      }
+      if (!selectedSlot.starttime || !selectedSlot.endtime) {
+        return showErrorMessage('Please select start time and end time');
+      }
+    }
+    if (selectedSlot.type == 'Weekly') {
+      if (selectedSlot.repeatdays.length == 0) {
+        return showErrorMessage('Please select repeat days');
+      }
+      if (!selectedSlot.starttime || !selectedSlot.endtime) {
+        return showErrorMessage('Please select start time and end time');
+      }
+    }
+    if (selectedSlot.type == 'Custom') {
+      if (!selectedSlot.startdate) {
+        return showErrorMessage('Please select start date');
+      }
+      if (!selectedSlot.starttime || !selectedSlot.endtime) {
+        return showErrorMessage('Please select start time and end time');
+      }
+    }
+    if (
+      moment(selectedSlot.endtime, 'hh:mm a').isBefore(
+        moment(selectedSlot.starttime, 'hh:mm a')
+      )
+    ) {
+      return showErrorMessage('Start time should be less than end time');
+    }
+    const res = await createAppointmentSlot(selectedSlot);
+    if (res) {
+      dispatch(resetSelectedSlot());
+      router.back();
+    }
   };
 
   const renderRight = () => {
@@ -365,8 +398,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   dayContainer: {
-    height: verticalScale(48),
-    width: verticalScale(48),
+    height: horizontalScale(40),
+    width: horizontalScale(40),
     borderRadius: horizontalScale(2.5),
     marginHorizontal: horizontalScale(5),
     justifyContent: 'center',

@@ -35,3 +35,7 @@ export const specialityListSelector = () => {
 export const selectedSlotSelector = () => {
   return useSelector((state: any) => state.user.selectedSlot);
 };
+
+export const apponitmentSlotSelector = () => {
+  return useSelector((state: any) => state.user.appointmentSlots);
+};
