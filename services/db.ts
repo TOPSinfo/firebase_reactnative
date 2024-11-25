@@ -344,12 +344,19 @@ export const createAppointmentSlot = async (data: any) => {
       throw new Error('User is not authenticated');
     }
     const appointmentSlotRef = doc(collection(db, 'users', uid, 'timeslot'));
-    await setDoc(appointmentSlotRef, {
-      ...data,
-      createdat: serverTimestamp(),
-      uid,
-      timeslotid: appointmentSlotRef.id,
-    });
+    if (data.timeslotid) {
+      const timeslotRef = doc(db, 'users', uid, 'timeslot', data.timeslotid);
+      await updateDoc(timeslotRef, {
+        ...data,
+      });
+    } else {
+      await setDoc(appointmentSlotRef, {
+        ...data,
+        createdat: serverTimestamp(),
+        uid,
+        timeslotid: appointmentSlotRef.id,
+      });
+    }
     store.dispatch(setLoading(false));
     await getAppointmentSlots();
     return true;
@@ -368,7 +375,7 @@ export const getAppointmentSlots = async () => {
     const querySnapshot = await getDocs(q);
     const appointmentSlots: any = [];
     querySnapshot.forEach(doc => {
-      appointmentSlots.push({ ...doc.data(), id: doc.id });
+      appointmentSlots.push({ ...doc.data() });
     });
     store.dispatch(setAppointmentSlots(appointmentSlots));
   } catch (error: any) {
