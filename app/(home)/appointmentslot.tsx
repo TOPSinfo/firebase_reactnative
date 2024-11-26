@@ -24,7 +24,7 @@ import { useDispatch } from 'react-redux';
 import { resetSelectedSlot, setSelectedSlot } from '@/redux/userSlice';
 import DateTimePicker from '@/components/DateTimePicker';
 import moment from 'moment';
-import { createAppointmentSlot } from '@/services/db';
+import { saveAppointmentSlot } from '@/services/db';
 
 const weekDays = [
   { label: 'S', value: 'sunday' },
@@ -117,7 +117,7 @@ const AppointmentSlot = () => {
     ) {
       return showErrorMessage('Start time should be less than end time');
     }
-    const res = await createAppointmentSlot(selectedSlot);
+    const res = await saveAppointmentSlot(selectedSlot);
     if (res) {
       dispatch(resetSelectedSlot());
       router.back();

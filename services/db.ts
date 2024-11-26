@@ -189,7 +189,7 @@ export const createBooking = async (data: any) => {
     const bookingRef = doc(collection(db, 'bookinghistory'));
     const bookingData = {
       uid: auth.currentUser?.uid,
-      status: 'waiting',
+      status: 'approved',
       allowextend: 'no',
       extendtime: 0,
       createdat: serverTimestamp(),
@@ -336,7 +336,7 @@ export const getLanguagesAndSpecialities = async () => {
   }
 };
 
-export const createAppointmentSlot = async (data: any) => {
+export const saveAppointmentSlot = async (data: any) => {
   try {
     store.dispatch(setLoading(true));
     const uid = auth.currentUser?.uid;

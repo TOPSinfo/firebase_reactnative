@@ -97,6 +97,7 @@ const AstrologerEvent = () => {
   };
 
   const renderRight = () => {
+    if (selectedEvent.status != 'waiting') return null;
     if (selectedEvent.id) {
       if (editable) {
         return (

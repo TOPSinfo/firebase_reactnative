@@ -321,7 +321,7 @@ const Details = () => {
                 </TouchableOpacity>
               </View>
             </View>
-            <FlatList
+            {/* <FlatList
               style={{ paddingBottom: horizontalScale(20) }}
               contentContainerStyle={{ paddingLeft: horizontalScale(10) }}
               data={appoinmentTime}
@@ -329,7 +329,7 @@ const Details = () => {
               horizontal
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item, index) => index.toString()}
-            />
+            /> */}
           </View>
           <View
             style={{
