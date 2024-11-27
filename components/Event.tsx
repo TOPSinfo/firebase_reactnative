@@ -31,13 +31,19 @@ import { onChangeEventData } from '@/redux/eventSlice';
 import moment from 'moment';
 import { selectedEventSelector, userSelector } from '@/redux/selector';
 import { setLoading } from '@/redux/loadingSlice';
-import { createBooking, deleteBooking, updateBooking } from '@/services/db';
+import {
+  checkDateAndTimeSlot,
+  createBooking,
+  deleteBooking,
+  updateBooking,
+} from '@/services/db';
 import {
   calculateMinutes,
   getDefaultHeaderHeight,
   showErrorMessage,
   showSuccessMessage,
 } from '@/utils/helper';
+import RazorpayCheckout from 'react-native-razorpay';
 
 const Header = ({
   title,
@@ -90,6 +96,15 @@ const Event = () => {
       setEditable(false);
     }
   }, []);
+
+  const checkSlotAvailable = async () => {
+    if (selectedEvent.date && selectedEvent.starttime && selectedEvent.endtime)
+      await checkDateAndTimeSlot(selectedEvent);
+  };
+
+  useEffect(() => {
+    checkSlotAvailable();
+  }, [selectedEvent.date, selectedEvent.starttime, selectedEvent.endtime]);
 
   const onClose = () => {
     router.back();
@@ -215,85 +230,113 @@ const Event = () => {
   };
 
   const onBookNow = async (isUpdate = false) => {
-    if (
-      !selectedEvent.date ||
-      !selectedEvent.starttime ||
-      !selectedEvent.endtime ||
-      !selectedEvent.description ||
-      !selectedEvent.photo ||
-      !selectedEvent.fullname ||
-      !selectedEvent.birthdate ||
-      !selectedEvent.birthtime ||
-      !selectedEvent.birthplace ||
-      !selectedEvent.kundali
-    ) {
-      showErrorMessage('Please fill all the details.');
-      return;
-    }
-    if (selectedEvent.starttime >= selectedEvent.endtime) {
-      showErrorMessage('Start time should be less than end time.');
-      return;
-    }
-
-    const data: {
-      id?: string;
-      astrologerid: any;
-      astrologername: any;
-      amount: any;
-      astrologercharge: any;
-      date: any;
-      starttime: any;
-      endtime: any;
-      description: any;
-      notificationmin: any;
-      notify: any;
-      photo: any;
-      fullname: any;
-      birthdate: any;
-      birthtime: any;
-      birthplace: any;
-      kundali: any;
-      userbirthdate: any;
-      username: any;
-      userprofileimage: any;
-    } = {
-      astrologerid: selectedEvent?.astrologerid,
-      astrologername: selectedEvent?.astrologername,
-      amount:
-        calculateMinutes(selectedEvent.starttime, selectedEvent.endtime) *
-        selectedEvent.astrologercharge,
-      astrologercharge: selectedEvent?.astrologercharge,
-      date: selectedEvent.date,
-      starttime: selectedEvent.starttime,
-      endtime: selectedEvent.endtime,
-      description: selectedEvent.description,
-      notificationmin: selectedEvent.notificationmin,
-      notify: selectedEvent.notify,
-      photo: selectedEvent.photo,
-      fullname: selectedEvent.fullname,
-      birthdate: selectedEvent.birthdate,
-      birthtime: selectedEvent.birthtime,
-      birthplace: selectedEvent.birthplace,
-      kundali: selectedEvent.kundali,
-      userbirthdate: userdata.birthdate,
-      username: userdata.fullname,
-      userprofileimage: userdata.profileimage,
+    var options: any = {
+      description: 'Credits towards consultation',
+      image: 'https://i.imgur.com/3g7nmJC.png',
+      currency: 'INR',
+      key: process.env.EXPO_PUBLIC_RZP_API_KEY, // Your api key
+      amount: '5000',
+      name: 'foo',
+      prefill: {
+        email: 'void@razorpay.com',
+        contact: '9191919191',
+        name: 'Razorpay Software',
+      },
+      theme: { color: Colors.orange },
     };
-    if (isUpdate) {
-      data.id = selectedEvent.bookingid;
-    }
-    console.log('Book Now', data);
-    const res = isUpdate
-      ? await updateBooking(data)
-      : await createBooking(data);
-    if (res) {
-      showSuccessMessage(
-        isUpdate
-          ? 'Your booking request updated successfully.'
-          : 'Your booking request successfully created.'
-      );
-      onClose();
-    }
+    RazorpayCheckout.open(options)
+      .then(data => {
+        // handle success
+        alert(`Success: ${data.razorpay_payment_id}`);
+      })
+      .catch(error => {
+        // handle failure
+        alert(`Error: ${error.code} | ${error.description}`);
+      });
+
+    // if (
+    //   !selectedEvent.date ||
+    //   !selectedEvent.starttime ||
+    //   !selectedEvent.endtime ||
+    //   !selectedEvent.description ||
+    //   !selectedEvent.photo ||
+    //   !selectedEvent.fullname ||
+    //   !selectedEvent.birthdate ||
+    //   !selectedEvent.birthtime ||
+    //   !selectedEvent.birthplace ||
+    //   !selectedEvent.kundali
+    // ) {
+    //   showErrorMessage('Please fill all the details.');
+    //   return;
+    // }
+    // if (selectedEvent.starttime >= selectedEvent.endtime) {
+    //   showErrorMessage('Start time should be less than end time.');
+    //   return;
+    // }
+    // if (!selectedEvent.slotAvailable) {
+    //   showErrorMessage('Astrologer is not available at this time.');
+    //   return;
+    // }
+
+    // const data: {
+    //   id?: string;
+    //   astrologerid: any;
+    //   astrologername: any;
+    //   amount: any;
+    //   astrologercharge: any;
+    //   date: any;
+    //   starttime: any;
+    //   endtime: any;
+    //   description: any;
+    //   notificationmin: any;
+    //   notify: any;
+    //   photo: any;
+    //   fullname: any;
+    //   birthdate: any;
+    //   birthtime: any;
+    //   birthplace: any;
+    //   kundali: any;
+    //   userbirthdate: any;
+    //   username: any;
+    //   userprofileimage: any;
+    // } = {
+    //   astrologerid: selectedEvent?.astrologerid,
+    //   astrologername: selectedEvent?.astrologername,
+    //   amount:
+    //     calculateMinutes(selectedEvent.starttime, selectedEvent.endtime) *
+    //     selectedEvent.astrologercharge,
+    //   astrologercharge: selectedEvent?.astrologercharge,
+    //   date: selectedEvent.date,
+    //   starttime: selectedEvent.starttime,
+    //   endtime: selectedEvent.endtime,
+    //   description: selectedEvent.description,
+    //   notificationmin: selectedEvent.notificationmin,
+    //   notify: selectedEvent.notify,
+    //   photo: selectedEvent.photo,
+    //   fullname: selectedEvent.fullname,
+    //   birthdate: selectedEvent.birthdate,
+    //   birthtime: selectedEvent.birthtime,
+    //   birthplace: selectedEvent.birthplace,
+    //   kundali: selectedEvent.kundali,
+    //   userbirthdate: userdata.birthdate,
+    //   username: userdata.fullname,
+    //   userprofileimage: userdata.profileimage,
+    // };
+    // if (isUpdate) {
+    //   data.id = selectedEvent.bookingid;
+    // }
+    // console.log('Book Now', data);
+    // const res = isUpdate
+    //   ? await updateBooking(data)
+    //   : await createBooking(data);
+    // if (res) {
+    //   showSuccessMessage(
+    //     isUpdate
+    //       ? 'Your booking request updated successfully.'
+    //       : 'Your booking request successfully created.'
+    //   );
+    //   onClose();
+    // }
   };
 
   const onSelectNotification = () => {

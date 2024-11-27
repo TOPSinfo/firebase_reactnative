@@ -1,6 +1,6 @@
 {
   "expo": {
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "name": "astrology",
     "slug": "astrology",
     "version": "1.0.0",
@@ -18,8 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/adaptive-logo.png"
       },
       "permissions": ["android.permission.RECORD_AUDIO"],
       "package": "com.astrology"

@@ -22,8 +22,9 @@ import {
   setUser,
 } from '@/redux/userSlice';
 import { getDownloadURL, ref, uploadBytesResumable } from '@firebase/storage';
-import { setSelectedEvent, updateSelectedEvent } from '@/redux/eventSlice';
+import { onChangeEventData, updateSelectedEvent } from '@/redux/eventSlice';
 import { setLanguages, setSpecialities } from '@/redux/appSlice';
+import moment from 'moment';
 
 const handleError = (error: object) => {
   console.log('Error', error);
@@ -171,6 +172,57 @@ export const uploadImage = async (uri: string) => {
     const URL = await getDownloadURL(snapshot.ref);
     console.log('URL', URL);
     return URL;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const checkDateAndTimeSlot = async (data: any) => {
+  try {
+    const q = query(
+      collection(db, 'bookinghistory'),
+      where('astrologerid', '==', data.astrologerid),
+      where('date', '==', data.date)
+    );
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const newStartTime = moment(data.starttime, 'hh:mm A');
+      const newEndTime = moment(data.endtime, 'hh:mm A');
+
+      let slotAvailable = true;
+      querySnapshot.forEach(doc => {
+        const event = doc.data();
+        const existingStartTime = moment(event.starttime, 'hh:mm A');
+        const existingEndTime = moment(event.endtime, 'hh:mm A');
+        if (
+          newStartTime.isBetween(
+            existingStartTime,
+            existingEndTime,
+            undefined,
+            '[)'
+          ) || // Starts within existing range
+          newEndTime.isBetween(
+            existingStartTime,
+            existingEndTime,
+            undefined,
+            '(]'
+          ) || // Ends within existing range
+          existingStartTime.isBetween(newStartTime, newEndTime, undefined, '[)') // Existing range is fully inside new range
+        ) {
+          slotAvailable = false;
+        }
+      });
+      if (slotAvailable) {
+        store.dispatch(onChangeEventData({ slotAvailable: true }));
+      } else {
+        showErrorMessage(
+          'This time slot is already booked, Please select another date or time'
+        );
+        store.dispatch(onChangeEventData({ slotAvailable: false }));
+      }
+    } else {
+      store.dispatch(onChangeEventData({ slotAvailable: true }));
+    }
   } catch (error: any) {
     handleError(error);
   }

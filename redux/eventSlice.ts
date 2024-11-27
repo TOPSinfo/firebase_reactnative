@@ -17,6 +17,7 @@ export const eventSlice = createSlice({
       birthplace: '',
       kundali: '',
       phone: '',
+      slotAvailable: false,
     },
   },
   reducers: {
@@ -41,6 +42,7 @@ export const eventSlice = createSlice({
         birthplace: '',
         kundali: '',
         phone: '',
+        slotAvailable: false,
       };
     },
     updateSelectedEvent: (state, actions) => {
