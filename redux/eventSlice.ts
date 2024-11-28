@@ -18,6 +18,7 @@ export const eventSlice = createSlice({
       kundali: '',
       phone: '',
       slotAvailable: false,
+      paymenttype: '',
     },
   },
   reducers: {
@@ -43,6 +44,7 @@ export const eventSlice = createSlice({
         kundali: '',
         phone: '',
         slotAvailable: false,
+        paymenttype: '',
       };
     },
     updateSelectedEvent: (state, actions) => {

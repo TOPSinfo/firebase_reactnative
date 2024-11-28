@@ -13,6 +13,7 @@ import {
   setDoc,
   updateDoc,
   where,
+  increment,
 } from 'firebase/firestore';
 import { auth, db, storage } from './config';
 import {
@@ -251,6 +252,22 @@ export const createBooking = async (data: any) => {
     console.log('bookingData', bookingData);
     await setDoc(bookingRef, bookingData);
     store.dispatch(setLoading(false));
+    return true;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const deductWalletBalance = async (amount: number) => {
+  try {
+    store.dispatch(setLoading(true));
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      throw new Error('User is not authenticated');
+    }
+    const userRef = doc(db, 'users', uid);
+    await updateDoc(userRef, { walletbalance: increment(-amount) });
+    await getUser();
     return true;
   } catch (error: any) {
     handleError(error);

@@ -1,5 +1,5 @@
 import { horizontalScale, moderateScale } from '@/utils/matrix';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -34,6 +34,7 @@ import { setLoading } from '@/redux/loadingSlice';
 import {
   checkDateAndTimeSlot,
   createBooking,
+  deductWalletBalance,
   deleteBooking,
   updateBooking,
 } from '@/services/db';
@@ -83,6 +84,7 @@ const Header = ({
 
 const Event = () => {
   const [notificationModal, setNotificationModal] = useState(false);
+  const [paymentModeModal, setPaymentModeModal] = useState(false);
   const [editable, setEditable] = useState(true);
   const dispatch = useDispatch();
   const selectedEvent = selectedEventSelector();
@@ -105,6 +107,14 @@ const Event = () => {
   useEffect(() => {
     checkSlotAvailable();
   }, [selectedEvent.date, selectedEvent.starttime, selectedEvent.endtime]);
+
+  const amount = useMemo(() => {
+    if (!selectedEvent.starttime || !selectedEvent.endtime) return 0;
+    return Number(
+      calculateMinutes(selectedEvent.starttime, selectedEvent.endtime) *
+        selectedEvent.astrologercharge
+    );
+  }, [selectedEvent.starttime, selectedEvent.endtime]);
 
   const onClose = () => {
     router.back();
@@ -229,114 +239,131 @@ const Event = () => {
     );
   };
 
-  const onBookNow = async (isUpdate = false) => {
+  const handlePayment = async (amount: number) => {
     var options: any = {
-      description: 'Credits towards consultation',
-      image: 'https://i.imgur.com/3g7nmJC.png',
+      description: 'Asrtology Service',
+      image:
+        'https://firebasestorage.googleapis.com/v0/b/sales-astrology-reactnative.appspot.com/o/images%2Fastro_logo.png?alt=media&token=da65b3f5-0bba-463c-b891-1cfd7381eab9',
       currency: 'INR',
-      key: process.env.EXPO_PUBLIC_RZP_API_KEY, // Your api key
-      amount: '5000',
-      name: 'foo',
+      key: process.env.EXPO_PUBLIC_RZP_API_KEY_TEST, // Your api key
+      amount: amount * 100,
+      name: 'AstroYodha',
       prefill: {
-        email: 'void@razorpay.com',
-        contact: '9191919191',
-        name: 'Razorpay Software',
+        email: userdata.email || '',
+        contact: userdata.phone || '',
+        name: userdata.fullname || '',
       },
       theme: { color: Colors.orange },
     };
-    RazorpayCheckout.open(options)
-      .then(data => {
-        // handle success
-        alert(`Success: ${data.razorpay_payment_id}`);
-      })
-      .catch(error => {
-        // handle failure
-        alert(`Error: ${error.code} | ${error.description}`);
-      });
+    return RazorpayCheckout.open(options);
+  };
 
-    // if (
-    //   !selectedEvent.date ||
-    //   !selectedEvent.starttime ||
-    //   !selectedEvent.endtime ||
-    //   !selectedEvent.description ||
-    //   !selectedEvent.photo ||
-    //   !selectedEvent.fullname ||
-    //   !selectedEvent.birthdate ||
-    //   !selectedEvent.birthtime ||
-    //   !selectedEvent.birthplace ||
-    //   !selectedEvent.kundali
-    // ) {
-    //   showErrorMessage('Please fill all the details.');
-    //   return;
-    // }
-    // if (selectedEvent.starttime >= selectedEvent.endtime) {
-    //   showErrorMessage('Start time should be less than end time.');
-    //   return;
-    // }
-    // if (!selectedEvent.slotAvailable) {
-    //   showErrorMessage('Astrologer is not available at this time.');
-    //   return;
-    // }
-
-    // const data: {
-    //   id?: string;
-    //   astrologerid: any;
-    //   astrologername: any;
-    //   amount: any;
-    //   astrologercharge: any;
-    //   date: any;
-    //   starttime: any;
-    //   endtime: any;
-    //   description: any;
-    //   notificationmin: any;
-    //   notify: any;
-    //   photo: any;
-    //   fullname: any;
-    //   birthdate: any;
-    //   birthtime: any;
-    //   birthplace: any;
-    //   kundali: any;
-    //   userbirthdate: any;
-    //   username: any;
-    //   userprofileimage: any;
-    // } = {
-    //   astrologerid: selectedEvent?.astrologerid,
-    //   astrologername: selectedEvent?.astrologername,
-    //   amount:
-    //     calculateMinutes(selectedEvent.starttime, selectedEvent.endtime) *
-    //     selectedEvent.astrologercharge,
-    //   astrologercharge: selectedEvent?.astrologercharge,
-    //   date: selectedEvent.date,
-    //   starttime: selectedEvent.starttime,
-    //   endtime: selectedEvent.endtime,
-    //   description: selectedEvent.description,
-    //   notificationmin: selectedEvent.notificationmin,
-    //   notify: selectedEvent.notify,
-    //   photo: selectedEvent.photo,
-    //   fullname: selectedEvent.fullname,
-    //   birthdate: selectedEvent.birthdate,
-    //   birthtime: selectedEvent.birthtime,
-    //   birthplace: selectedEvent.birthplace,
-    //   kundali: selectedEvent.kundali,
-    //   userbirthdate: userdata.birthdate,
-    //   username: userdata.fullname,
-    //   userprofileimage: userdata.profileimage,
-    // };
-    // if (isUpdate) {
-    //   data.id = selectedEvent.bookingid;
-    // }
-    // console.log('Book Now', data);
-    // const res = isUpdate
-    //   ? await updateBooking(data)
-    //   : await createBooking(data);
-    // if (res) {
-    //   showSuccessMessage(
-    //     isUpdate
-    //       ? 'Your booking request updated successfully.'
-    //       : 'Your booking request successfully created.'
-    //   );
-    //   onClose();
-    // }
+  const onBookNow = async (isUpdate = false) => {
+    if (
+      !selectedEvent.date ||
+      !selectedEvent.starttime ||
+      !selectedEvent.endtime ||
+      !selectedEvent.description ||
+      !selectedEvent.photo ||
+      !selectedEvent.fullname ||
+      !selectedEvent.birthdate ||
+      !selectedEvent.birthtime ||
+      !selectedEvent.birthplace ||
+      !selectedEvent.kundali
+    ) {
+      showErrorMessage('Please fill all the details.');
+      return;
+    }
+    if (selectedEvent.starttime >= selectedEvent.endtime) {
+      showErrorMessage('Start time should be less than end time.');
+      return;
+    }
+    if (!selectedEvent.slotAvailable) {
+      showErrorMessage('Astrologer is not available at this time.');
+      return;
+    }
+    if (!selectedEvent.paymenttype && amount > 0) {
+      showErrorMessage('Please select payment mode.');
+      return;
+    }
+    const data: {
+      id?: string;
+      astrologerid: any;
+      astrologername: any;
+      amount: any;
+      astrologercharge: any;
+      date: any;
+      starttime: any;
+      endtime: any;
+      description: any;
+      notificationmin: any;
+      notify: any;
+      photo: any;
+      fullname: any;
+      birthdate: any;
+      birthtime: any;
+      birthplace: any;
+      kundali: any;
+      userbirthdate: any;
+      username: any;
+      userprofileimage: any;
+      paymentstatus?: any;
+      paymenttype?: any;
+      transactionid?: any;
+    } = {
+      astrologerid: selectedEvent?.astrologerid,
+      astrologername: selectedEvent?.astrologername,
+      amount,
+      astrologercharge: selectedEvent?.astrologercharge,
+      date: selectedEvent.date,
+      starttime: selectedEvent.starttime,
+      endtime: selectedEvent.endtime,
+      description: selectedEvent.description,
+      notificationmin: selectedEvent.notificationmin,
+      notify: selectedEvent.notify,
+      photo: selectedEvent.photo,
+      fullname: selectedEvent.fullname,
+      birthdate: selectedEvent.birthdate,
+      birthtime: selectedEvent.birthtime,
+      birthplace: selectedEvent.birthplace,
+      kundali: selectedEvent.kundali,
+      userbirthdate: userdata.birthdate,
+      username: userdata.fullname,
+      userprofileimage: userdata.profileimage,
+      transactionid: '',
+      paymentstatus: '',
+    };
+    console.log('data', data);
+    if (isUpdate) {
+      data.id = selectedEvent.bookingid;
+      const res = await updateBooking(data);
+      if (res) {
+        showSuccessMessage('Your booking request updated successfully.');
+        onClose();
+      }
+    } else {
+      try {
+        if (amount > 0) {
+          data.paymenttype = selectedEvent.paymenttype;
+          if (selectedEvent.paymenttype != 'wallet') {
+            const paymentRes = await handlePayment(amount);
+            console.log('res', paymentRes);
+            data.transactionid = paymentRes.razorpay_payment_id;
+            data.paymentstatus = 'captured';
+          } else {
+            await deductWalletBalance(data.amount);
+          }
+        }
+        const res = await createBooking(data);
+        if (res) {
+          showSuccessMessage('Your booking request successfully created.');
+          onClose();
+        }
+      } catch (error) {
+        console.log('Payment Error', error);
+        showErrorMessage('Payment unsuccessful. Please try again.');
+      }
+    }
   };
 
   const onSelectNotification = () => {
@@ -392,6 +419,51 @@ const Event = () => {
               label="1 day before"
               onSelect={() => onNotificationSelect('1 day before', '1440')}
               isSelected={selectedEvent.notificationmin == '1440'}
+            />
+          </View>
+        </TouchableWithoutFeedback>
+      </RNModal>
+    );
+  };
+
+  const onPaymentModeSelect = () => {
+    setPaymentModeModal(true);
+  };
+
+  const onPaymentModeClose = () => {
+    setPaymentModeModal(false);
+  };
+
+  const onSelectPaymentMode = (paymenttype: string) => {
+    if (paymenttype == 'wallet' && amount > userdata.walletbalance) {
+      setPaymentModeModal(false);
+      showErrorMessage('Insufficient wallet balance.');
+      return;
+    }
+    dispatch(onChangeEventData({ paymenttype }));
+    setPaymentModeModal(false);
+  };
+
+  const renderPaymentModeModal = () => {
+    return (
+      <RNModal visible={paymentModeModal} onClose={onPaymentModeClose}>
+        <TouchableWithoutFeedback>
+          <View
+            style={{
+              backgroundColor: Colors.white,
+              borderTopLeftRadius: horizontalScale(7),
+              borderTopRightRadius: horizontalScale(7),
+              padding: horizontalScale(25),
+            }}>
+            <RadioOpion
+              label="Pay with wallet"
+              onSelect={() => onSelectPaymentMode('wallet')}
+              isSelected={selectedEvent.paymenttype == 'wallet'}
+            />
+            <RadioOpion
+              label="Pay with online"
+              onSelect={() => onSelectPaymentMode('paymentgateway')}
+              isSelected={selectedEvent.paymenttype == 'paymentgateway'}
             />
           </View>
         </TouchableWithoutFeedback>
@@ -649,22 +721,8 @@ const Event = () => {
               </View>
             </View>
           ) : null}
-          <View
-            style={{
-              ...styles.fieldContainer,
-              height: horizontalScale(50),
-              backgroundColor: Colors.white3,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <Text
-              style={{
-                fontFamily: Fonts.PoppinsBold,
-                color: Colors.black1,
-                fontSize: moderateScale(12),
-              }}>
-              Personal Details
-            </Text>
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Personal Details</Text>
           </View>
           <View
             style={[
@@ -687,22 +745,8 @@ const Event = () => {
                 disabled={!editable}
                 onPress={onUploadPhoto}
                 style={{ justifyContent: 'center' }}>
-                <Text
-                  style={{
-                    fontFamily: Fonts.PoppinsRegular,
-                    color: Colors.orange,
-                    fontSize: moderateScale(12),
-                  }}>
-                  Upload your photo
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: Fonts.PoppinsRegular,
-                    color: Colors.grey,
-                    fontSize: moderateScale(9),
-                  }}>
-                  Only JPEG or PNG
-                </Text>
+                <Text style={styles.colorLabel}>Upload your photo</Text>
+                <Text style={styles.smallLabel}>Only JPEG or PNG</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -793,22 +837,57 @@ const Event = () => {
                 disabled={!editable}
                 onPress={onUploadKundali}
                 style={{ justifyContent: 'center' }}>
-                <Text
+                <Text style={styles.colorLabel}>Upload your kundali</Text>
+                <Text style={styles.smallLabel}>Only JPEG or PNG</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Payment Mode</Text>
+          </View>
+          <View
+            style={[
+              styles.fieldContainer,
+              { height: horizontalScale(55), justifyContent: 'center' },
+            ]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <SvgImage url={Images.wallet} style={styles.fieldIcon} />
+              <TouchableOpacity
+                disabled={!editable}
+                onPress={onPaymentModeSelect}
+                style={{
+                  justifyContent: 'space-between',
+                  flexDirection: 'row',
+                  flex: 1,
+                }}>
+                {selectedEvent.paymenttype ? (
+                  <Text style={[styles.input, { height: undefined }]}>
+                    {selectedEvent.paymenttype == 'wallet'
+                      ? 'Pay with wallet'
+                      : 'Pay with online'}
+                  </Text>
+                ) : (
+                  <Text style={[styles.input, { height: undefined }]}>
+                    Select Payment Mode
+                  </Text>
+                )}
+                <View
                   style={{
-                    fontFamily: Fonts.PoppinsRegular,
-                    color: Colors.orange,
-                    fontSize: moderateScale(12),
+                    flex: 0.3,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
                   }}>
-                  Upload your kundali
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: Fonts.PoppinsRegular,
-                    color: Colors.grey,
-                    fontSize: moderateScale(9),
-                  }}>
-                  Only JPEG or PNG
-                </Text>
+                  <SvgImage
+                    url={Images.rupee}
+                    style={{
+                      height: horizontalScale(8),
+                      width: horizontalScale(8),
+                      tintColor: Colors.orange,
+                    }}
+                  />
+                  <Text style={styles.colorLabel}>{amount}</Text>
+                </View>
               </TouchableOpacity>
             </View>
           </View>
@@ -823,6 +902,7 @@ const Event = () => {
           )}
         </ScrollView>
         {renderNotificationModal()}
+        {renderPaymentModeModal()}
       </View>
     </KeyboardAvoidingView>
   );
@@ -862,6 +942,31 @@ const styles = StyleSheet.create({
     color: Colors.black1,
     fontSize: moderateScale(12),
     height: horizontalScale(45),
+  },
+  section: {
+    paddingHorizontal: horizontalScale(20),
+    padding: horizontalScale(10),
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.white1,
+    height: horizontalScale(50),
+    backgroundColor: Colors.white3,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sectionLabel: {
+    fontFamily: Fonts.PoppinsBold,
+    color: Colors.black1,
+    fontSize: moderateScale(12),
+  },
+  colorLabel: {
+    color: Colors.orange,
+    fontSize: moderateScale(12),
+    fontFamily: Fonts.PoppinsRegular,
+  },
+  smallLabel: {
+    color: Colors.grey,
+    fontSize: moderateScale(9),
+    fontFamily: Fonts.PoppinsRegular,
   },
 });
 
