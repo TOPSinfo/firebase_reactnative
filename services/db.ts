@@ -274,6 +274,23 @@ export const deductWalletBalance = async (amount: number) => {
   }
 };
 
+export const topupWallet = async (amount: number) => {
+  try {
+    store.dispatch(setLoading(true));
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      throw new Error('User is not authenticated');
+    }
+    const userRef = doc(db, 'users', uid);
+    await updateDoc(userRef, { walletbalance: increment(amount) });
+    await getUser();
+    store.dispatch(setLoading(false));
+    return true;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
 export const getMyBookings = async () => {
   const attribute =
     store.getState().user.userType == 'user' ? 'uid' : 'astrologerid';

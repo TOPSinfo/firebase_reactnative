@@ -170,58 +170,10 @@ const TabLayout = () => {
           tabBarActiveTintColor: Colors.orange,
           headerShown: false,
         }}>
-        <Tabs.Screen
-          name="home"
-          options={{
-            tabBarButton: ({ accessibilityState, onPress }) => (
-              <TabBarButton
-                title={'Home'}
-                focused={accessibilityState?.selected}
-                icon={Images.home}
-                onPress={onPress}
-              />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="(myBookings)"
-          options={{
-            tabBarButton: ({ accessibilityState, onPress }) => (
-              <TabBarButton
-                title={'My Bookings'}
-                focused={accessibilityState?.selected}
-                icon={Images.calendar}
-                onPress={onPress}
-              />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="wallet"
-          options={{
-            tabBarButton: ({ accessibilityState, onPress }) => (
-              <TabBarButton
-                title={'Wallet'}
-                focused={accessibilityState?.selected}
-                icon={Images.wallet}
-                onPress={onPress}
-              />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="profile"
-          options={{
-            tabBarButton: ({ accessibilityState, onPress }) => (
-              <TabBarButton
-                title={'Profile'}
-                focused={accessibilityState?.selected}
-                icon={Images.user}
-                onPress={onPress}
-              />
-            ),
-          }}
-        />
+        <Tabs.Screen name="home" />
+        <Tabs.Screen name="(myBookings)" />
+        <Tabs.Screen name="wallet" />
+        <Tabs.Screen name="profile" />
       </Tabs>
     );
   }
@@ -232,51 +184,15 @@ const TabLayout = () => {
         tabBarActiveTintColor: Colors.orange,
         headerShown: false,
       }}>
-      <Tabs.Screen
-        name="home"
-        options={{
-          tabBarButton: ({ accessibilityState, onPress }) => (
-            <TabBarButton
-              title={'Home'}
-              focused={accessibilityState?.selected}
-              icon={Images.home}
-              onPress={onPress}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="(myBookings)"
-        options={{
-          tabBarButton: ({ accessibilityState, onPress }) => (
-            <TabBarButton
-              title={'My Bookings'}
-              focused={accessibilityState?.selected}
-              icon={Images.calendar}
-              onPress={onPress}
-            />
-          ),
-        }}
-      />
+      <Tabs.Screen name="home" />
+      <Tabs.Screen name="(myBookings)" />
       <Tabs.Screen
         name="wallet"
         options={{
           href: null,
         }}
       />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          tabBarButton: ({ accessibilityState, onPress }) => (
-            <TabBarButton
-              title={'Profile'}
-              focused={accessibilityState?.selected}
-              icon={Images.user}
-              onPress={onPress}
-            />
-          ),
-        }}
-      />
+      <Tabs.Screen name="profile" />
     </Tabs>
   );
 };
