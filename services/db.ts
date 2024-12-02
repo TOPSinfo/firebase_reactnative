@@ -20,6 +20,7 @@ import {
   setAppointmentSlots,
   setAstrologers,
   setMyBookings,
+  setTransactionHistory,
   setUser,
 } from '@/redux/userSlice';
 import { getDownloadURL, ref, uploadBytesResumable } from '@firebase/storage';
@@ -180,11 +181,14 @@ export const uploadImage = async (uri: string) => {
 
 export const checkDateAndTimeSlot = async (data: any) => {
   try {
-    const q = query(
-      collection(db, 'bookinghistory'),
+    const conditions = [
       where('astrologerid', '==', data.astrologerid),
-      where('date', '==', data.date)
-    );
+      where('date', '==', data.date),
+    ];
+    if (data.bookingid) {
+      conditions.push(where('bookingid', '!=', data.bookingid));
+    }
+    const q = query(collection(db, 'bookinghistory'), ...conditions);
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
       const newStartTime = moment(data.starttime, 'hh:mm A');
@@ -251,6 +255,7 @@ export const createBooking = async (data: any) => {
     };
     console.log('bookingData', bookingData);
     await setDoc(bookingRef, bookingData);
+    addTransaction(bookingData);
     store.dispatch(setLoading(false));
     return true;
   } catch (error: any) {
@@ -274,7 +279,7 @@ export const deductWalletBalance = async (amount: number) => {
   }
 };
 
-export const topupWallet = async (amount: number) => {
+export const topupWallet = async (data: any) => {
   try {
     store.dispatch(setLoading(true));
     const uid = auth.currentUser?.uid;
@@ -282,8 +287,9 @@ export const topupWallet = async (amount: number) => {
       throw new Error('User is not authenticated');
     }
     const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, { walletbalance: increment(amount) });
+    await updateDoc(userRef, { walletbalance: increment(data.amount) });
     await getUser();
+    addTransaction(data);
     store.dispatch(setLoading(false));
     return true;
   } catch (error: any) {
@@ -481,6 +487,58 @@ export const deleteAppointmentSlot = async (id: string) => {
     await getAppointmentSlots();
     store.dispatch(setLoading(false));
     return true;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const addTransaction = async (data: any) => {
+  try {
+    store.dispatch(setLoading(true));
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      throw new Error('User is not authenticated');
+    }
+    const transactionRef = doc(
+      collection(db, 'users', uid, 'transactionhistory')
+    );
+    await setDoc(transactionRef, {
+      amount: data.amount,
+      astrologerid: data.astrologerid || '',
+      astrologername: data.astrologername || '',
+      bookingid: data.bookingid || '',
+      description: '',
+      paymenttype: data.paymenttype,
+      transactionid: data.transactionid,
+      username: data.username,
+      transactiontype: data.bookingid ? 'debit' : 'credit',
+      createdat: serverTimestamp(),
+      setcapturedgateway: false,
+      orderid: transactionRef.id,
+      uid,
+    });
+    store.dispatch(setLoading(false));
+    return true;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const getTransactionHistory = async () => {
+  try {
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      throw new Error('User is not authenticated');
+    }
+    store.dispatch(setLoading(true));
+    const q = query(collection(db, 'users', uid, 'transactionhistory'));
+    const querySnapshot = await getDocs(q);
+    const transactions: any = [];
+    querySnapshot.forEach(doc => {
+      transactions.push({ ...doc.data(), id: doc.id });
+    });
+    store.dispatch(setTransactionHistory(transactions));
+    store.dispatch(setLoading(false));
   } catch (error: any) {
     handleError(error);
   }

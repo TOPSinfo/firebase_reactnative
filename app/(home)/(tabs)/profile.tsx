@@ -73,8 +73,7 @@ const Profile = () => {
   };
 
   const onTransactionHistory = () => {
-    // router.navigate('/(home)/transactionshistory')
-    router.navigate('/(home)/comingsoon');
+    router.navigate('/(home)/transactionshistory');
   };
 
   const onHelp = () => {

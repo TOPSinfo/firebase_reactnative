@@ -39,3 +39,7 @@ export const selectedSlotSelector = () => {
 export const apponitmentSlotSelector = () => {
   return useSelector((state: any) => state.user.appointmentSlots);
 };
+
+export const transactionHistorySelector = () => {
+  return useSelector((state: any) => state.user.transactionHistory);
+};

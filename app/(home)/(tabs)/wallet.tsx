@@ -84,7 +84,13 @@ const Wallet = () => {
   const onTopupPress = async () => {
     try {
       const paymentRes = await handlePayment();
-      const res = await topupWallet(Number(amount));
+      const data = {
+        amount: Number(amount),
+        transactionid: paymentRes.razorpay_payment_id,
+        paymenttype: 'paymentgateway',
+        username: userdata.fullname,
+      };
+      const res = await topupWallet(data);
       if (res) {
         router.navigate('/thankyou');
       }

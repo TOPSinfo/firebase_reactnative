@@ -1,11 +1,16 @@
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
+import { setSelectedEvent } from '@/redux/eventSlice';
 import { userTypeSelector } from '@/redux/selector';
 import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix';
+import { router } from 'expo-router';
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 const BookingCard = ({ data }: any) => {
+  const dispatch = useDispatch();
+
   const userType = userTypeSelector();
   const color = useMemo(() => {
     const status = data.status;
@@ -22,8 +27,13 @@ const BookingCard = ({ data }: any) => {
     }
   }, [data.status]);
 
+  const onEventPress = () => {
+    dispatch(setSelectedEvent(data));
+    router.navigate('/(home)/eventscreen');
+  };
+
   return (
-    <View style={styles.container}>
+    <TouchableOpacity onPress={onEventPress} style={styles.container}>
       <View style={[styles.dateContainer, { backgroundColor: color }]}>
         <Text style={styles.date}>{data.date.slice(0, 2)}</Text>
         <Text style={styles.date}>{data.date.slice(2, 6)}</Text>
@@ -55,7 +65,7 @@ const BookingCard = ({ data }: any) => {
                 lineHeight: moderateScale(20),
               },
             ]}>
-            Your Appointment with {data.fullName}
+            Your Appointment with {data.fullname}
           </Text>
         )}
         <Text style={styles.label}>
@@ -71,7 +81,7 @@ const BookingCard = ({ data }: any) => {
           </Text>
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

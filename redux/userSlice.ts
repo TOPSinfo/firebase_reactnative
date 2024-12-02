@@ -16,6 +16,7 @@ export const userSlice = createSlice({
       repeatdays: [],
     },
     appointmentSlots: [] as any[],
+    transactionHistory: [] as any[],
   },
   reducers: {
     setUser: (state, actions) => {
@@ -67,6 +68,9 @@ export const userSlice = createSlice({
     setAppointmentSlots: (state, action) => {
       state.appointmentSlots = action.payload;
     },
+    setTransactionHistory: (state, action) => {
+      state.transactionHistory = action.payload;
+    },
   },
 });
 
@@ -80,6 +84,7 @@ export const {
   setSelectedSlot,
   resetSelectedSlot,
   setAppointmentSlots,
+  setTransactionHistory,
 } = userSlice.actions;
 
 export default userSlice.reducer;

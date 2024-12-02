@@ -67,4 +67,6 @@ export const Images = {
   downArrow: require('../assets/images/downArrow.svg'),
   wallet_card: require('../assets/images/wallet_card.svg'),
   thank_you: require('../assets/images/thank_you.png'),
+  debit: require('../assets/images/debit.svg'),
+  credit: require('../assets/images/credit.svg'),
 };

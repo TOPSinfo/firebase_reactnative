@@ -1,14 +1,25 @@
-import DetailsHeader from '@/components/DetailsHeader'
-import { Colors } from '@/constants/Colors'
-import React from 'react'
-import { View } from 'react-native'
+import React, { useEffect } from 'react';
+import { View } from 'react-native';
+import DetailsHeader from '@/components/DetailsHeader';
+import TransactionHistory from '@/components/TransactionHistory';
+import { Colors } from '@/constants/Colors';
+import { getTransactionHistory } from '@/services/db';
 
 const transactionshistory = () => {
-    return (
-        <View style={{ flex: 1, backgroundColor: Colors.white }}>
-            <DetailsHeader title='Transaction History' />
-        </View>
-    )
-}
+  const fetchTransactionHistory = async () => {
+    await getTransactionHistory();
+  };
 
-export default transactionshistory
+  useEffect(() => {
+    fetchTransactionHistory();
+  }, []);
+
+  return (
+    <View style={{ flex: 1, backgroundColor: Colors.white }}>
+      <DetailsHeader title="Transaction History" />
+      <TransactionHistory />
+    </View>
+  );
+};
+
+export default transactionshistory;
