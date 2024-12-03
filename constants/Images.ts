@@ -69,4 +69,6 @@ export const Images = {
   thank_you: require('../assets/images/thank_you.png'),
   debit: require('../assets/images/debit.svg'),
   credit: require('../assets/images/credit.svg'),
+  bank: require('../assets/images/bank.svg'),
+  send: require('../assets/images/send.svg'),
 };

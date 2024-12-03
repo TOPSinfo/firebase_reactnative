@@ -17,6 +17,7 @@ export const userSlice = createSlice({
     },
     appointmentSlots: [] as any[],
     transactionHistory: [] as any[],
+    messages: [] as any[],
   },
   reducers: {
     setUser: (state, actions) => {
@@ -71,6 +72,12 @@ export const userSlice = createSlice({
     setTransactionHistory: (state, action) => {
       state.transactionHistory = action.payload;
     },
+    setMessages: (state, action) => {
+      state.messages = action.payload;
+    },
+    resetMessages: state => {
+      state.messages = [];
+    },
   },
 });
 
@@ -85,6 +92,8 @@ export const {
   resetSelectedSlot,
   setAppointmentSlots,
   setTransactionHistory,
+  setMessages,
+  resetMessages,
 } = userSlice.actions;
 
 export default userSlice.reducer;

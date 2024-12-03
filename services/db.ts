@@ -14,11 +14,14 @@ import {
   updateDoc,
   where,
   increment,
+  onSnapshot,
+  addDoc,
 } from 'firebase/firestore';
 import { auth, db, storage } from './config';
 import {
   setAppointmentSlots,
   setAstrologers,
+  setMessages,
   setMyBookings,
   setTransactionHistory,
   setUser,
@@ -539,6 +542,66 @@ export const getTransactionHistory = async () => {
     });
     store.dispatch(setTransactionHistory(transactions));
     store.dispatch(setLoading(false));
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const sendMessage = async (data: any) => {
+  try {
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      throw new Error('User is not authenticated');
+    }
+    const messageid =
+      data.senderid > data.receiverid
+        ? `${data.senderid}${data.receiverid}`
+        : `${data.receiverid}${data.senderid}`;
+
+    const messageRef = collection(db, 'messages', messageid, 'message');
+    await addDoc(messageRef, {
+      ...data,
+      timestamp: serverTimestamp(),
+    });
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const getMessageSnapshot = (data: any) => {
+  try {
+    const messageid =
+      data.senderid > data.receiverid
+        ? `${data.senderid}${data.receiverid}`
+        : `${data.receiverid}${data.senderid}`;
+    const q = query(collection(db, `messages/${messageid}/message`));
+
+    const subscribe = onSnapshot(q, async querySnapshot => {
+      if (!querySnapshot.empty) {
+        const messages: any = [];
+        querySnapshot.forEach(doc => {
+          console.log('Message', doc.data());
+          const data = doc.data();
+          let message = {
+            _id: doc.id,
+            text: data.messagetext,
+            createdAt: new Date(data.timestamp.seconds * 1000),
+            user: {
+              _id: data.senderid,
+            },
+            image: data.url,
+            // You can also add a video prop:
+            video: data.video_url,
+            // Mark the message as sent, using one tick
+          };
+
+          messages.push(message);
+        });
+        store.dispatch(setMessages(messages));
+      }
+    });
+    console.log('Subscribe', subscribe);
+    return subscribe;
   } catch (error: any) {
     handleError(error);
   }

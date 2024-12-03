@@ -535,6 +535,15 @@ const Event = () => {
     dispatch(onChangeEventData({ birthplace: text }));
   };
 
+  const onCallPress = () => {};
+
+  const onChatPress = () => {
+    router.navigate({
+      pathname: '/(home)/chat',
+      params: { receiverid: selectedEvent.astrologerid },
+    });
+  };
+
   const getColor = () => {
     switch (selectedEvent.status) {
       case 'approved':
@@ -891,7 +900,25 @@ const Event = () => {
               </TouchableOpacity>
             </View>
           </View>
-          {selectedEvent.bookingid ? null : (
+          {selectedEvent.bookingid ? (
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                marginTop: horizontalScale(20),
+              }}>
+              <Button
+                title="Call"
+                onPress={onCallPress}
+                style={{ width: '40%' }}
+              />
+              <Button
+                title="Chat"
+                onPress={onChatPress}
+                style={{ width: '40%' }}
+              />
+            </View>
+          ) : (
             <View
               style={{
                 paddingHorizontal: horizontalScale(20),

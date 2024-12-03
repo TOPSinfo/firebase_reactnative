@@ -9,6 +9,26 @@ import moment from 'moment';
 
 const Transaction = ({ transaction }: { transaction: any }) => {
   const isDebit = transaction.transactiontype == 'debit';
+
+  const renderTransactionType = () => {
+    if (transaction.transactiontype === 'debit') {
+      return `Sent from`;
+    } else if (transaction.transactiontype === 'credit') {
+      return 'Received in';
+    }
+  };
+
+  const renderIcon = () => {
+    if (isDebit) {
+      if (transaction.paymenttype === 'wallet') {
+        return Images.wallet;
+      }
+      return Images.bank;
+    } else {
+      return Images.wallet;
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -31,10 +51,16 @@ const Transaction = ({ transaction }: { transaction: any }) => {
           </Text>
         </View>
       </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={styles.title}>{isDebit ? '-' : '+'}</Text>
-        <SvgImage url={Images.rupee} style={styles.rupee} />
-        <Text style={styles.title}>{transaction.amount}</Text>
+      <View style={{ justifyContent: 'center', alignItems: 'flex-end' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={styles.title}>{isDebit ? '-' : '+'}</Text>
+          <SvgImage url={Images.rupee} style={styles.rupee} />
+          <Text style={styles.title}>{transaction.amount}</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={styles.subtitle}>{renderTransactionType()}</Text>
+          <SvgImage url={renderIcon()} style={styles.wallet} />
+        </View>
       </View>
     </View>
   );
@@ -62,6 +88,7 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.PoppinsRegular,
     fontSize: moderateScale(12),
     color: Colors.black1,
+    lineHeight: moderateScale(22),
   },
   subtitle: {
     fontFamily: Fonts.PoppinsRegular,
@@ -73,6 +100,11 @@ const styles = StyleSheet.create({
     width: horizontalScale(10),
     tintColor: Colors.black1,
     marginHorizontal: horizontalScale(2.5),
+  },
+  wallet: {
+    height: horizontalScale(8),
+    width: horizontalScale(8),
+    marginLeft: horizontalScale(5),
   },
 });
 

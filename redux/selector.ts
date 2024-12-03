@@ -43,3 +43,7 @@ export const apponitmentSlotSelector = () => {
 export const transactionHistorySelector = () => {
   return useSelector((state: any) => state.user.transactionHistory);
 };
+
+export const messagesSelector = () => {
+  return useSelector((state: any) => state.user.messages);
+};
