@@ -47,3 +47,9 @@ export const transactionHistorySelector = () => {
 export const messagesSelector = () => {
   return useSelector((state: any) => state.user.messages);
 };
+
+export const astrologerProfileImageSelector = (id: string) => {
+  const astrologers = useSelector((state: any) => state.user.astrologers);
+  const astro = astrologers.find((astro: any) => astro.uid === id);
+  return astro?.profileimage || '';
+};

@@ -574,18 +574,32 @@ export const getMessageSnapshot = (data: any) => {
       data.senderid > data.receiverid
         ? `${data.senderid}${data.receiverid}`
         : `${data.receiverid}${data.senderid}`;
-    const q = query(collection(db, `messages/${messageid}/message`));
+    const q = query(
+      collection(db, `messages/${messageid}/message`),
+      orderBy('timestamp', 'desc')
+    );
 
     const subscribe = onSnapshot(q, async querySnapshot => {
       if (!querySnapshot.empty) {
         const messages: any = [];
-        querySnapshot.forEach(doc => {
-          console.log('Message', doc.data());
-          const data = doc.data();
+
+        const messagesList = querySnapshot
+          .docChanges()
+          .map(change => {
+            if (change.type === 'added') {
+              return { id: change.doc.id, ...change.doc.data() };
+            }
+            return null;
+          })
+          .filter(message => message !== null);
+        messagesList.forEach((doc: any) => {
+          const data = doc;
           let message = {
-            _id: doc.id,
+            _id: data.id,
             text: data.messagetext,
-            createdAt: new Date(data.timestamp.seconds * 1000),
+            createdAt: data.timestamp?.seconds
+              ? new Date(data.timestamp.seconds * 1000)
+              : new Date(),
             user: {
               _id: data.senderid,
             },
@@ -594,13 +608,12 @@ export const getMessageSnapshot = (data: any) => {
             video: data.video_url,
             // Mark the message as sent, using one tick
           };
-
           messages.push(message);
         });
+        console.log('Messages', messages);
         store.dispatch(setMessages(messages));
       }
     });
-    console.log('Subscribe', subscribe);
     return subscribe;
   } catch (error: any) {
     handleError(error);

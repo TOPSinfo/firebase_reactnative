@@ -73,7 +73,7 @@ export const userSlice = createSlice({
       state.transactionHistory = action.payload;
     },
     setMessages: (state, action) => {
-      state.messages = action.payload;
+      state.messages = [...action.payload, ...state.messages];
     },
     resetMessages: state => {
       state.messages = [];

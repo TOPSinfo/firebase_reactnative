@@ -6,7 +6,7 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 import SvgImage from './SvgImage';
-import { horizontalScale, moderateScale } from '@/utils/matrix';
+import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix';
 import { Images } from '@/constants/Images';
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
@@ -16,9 +16,13 @@ import { getDefaultHeaderHeight } from '@/utils/helper';
 const DetailsHeader = ({
   title,
   rightOption,
+  isChat,
+  profileImage,
 }: {
   title: string;
   rightOption?: React.ReactNode;
+  isChat?: boolean;
+  profileImage?: string;
 }) => {
   const insets = useSafeAreaInsets();
   const frame = useSafeAreaFrame();
@@ -36,7 +40,6 @@ const DetailsHeader = ({
   const onBack = () => {
     router.back();
   };
-
   return (
     <View style={{ height: defaultHeight + 10 }}>
       <View pointerEvents="none" style={{ height: statusBarHeight }} />
@@ -50,7 +53,20 @@ const DetailsHeader = ({
           />
         </TouchableOpacity>
         <View style={{ flex: 1, justifyContent: 'center' }}>
-          <Text style={styles.title}>{title}</Text>
+          {isChat ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={styles.profileContainer}>
+                <SvgImage
+                  url={profileImage ? profileImage : Images.user}
+                  style={styles.profile}
+                  resizeMode="cover"
+                />
+              </View>
+              <Text style={styles.title}>{title}</Text>
+            </View>
+          ) : (
+            <Text style={styles.title}>{title}</Text>
+          )}
         </View>
         {rightOption ? rightOption : null}
       </View>
@@ -70,6 +86,20 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(18),
     color: Colors.white,
     fontFamily: Fonts.PoppinsRegular,
+  },
+  profileContainer: {
+    backgroundColor: Colors.white,
+    borderRadius: verticalScale(32),
+    height: verticalScale(32),
+    width: verticalScale(32),
+    marginRight: horizontalScale(10),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profile: {
+    height: verticalScale(32),
+    width: verticalScale(32),
+    borderRadius: verticalScale(32),
   },
 });
 

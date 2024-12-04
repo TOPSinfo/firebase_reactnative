@@ -71,4 +71,6 @@ export const Images = {
   credit: require('../assets/images/credit.svg'),
   bank: require('../assets/images/bank.svg'),
   send: require('../assets/images/send.svg'),
+  send_blue: require('../assets/images/send_blue.svg'),
+  call: require('../assets/images/call.svg'),
 };

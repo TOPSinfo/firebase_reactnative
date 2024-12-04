@@ -33,6 +33,7 @@ import {
   showErrorMessage,
   showSuccessMessage,
 } from '@/utils/helper';
+import Button from './Button';
 
 const Header = ({
   title,
@@ -213,6 +214,17 @@ const AstrologerEvent = () => {
 
   const onSelectEndTime = (date: Date) => {
     dispatch(onChangeEventData({ endTime: moment(date).format('hh:mm A') }));
+  };
+
+  const onJoinCallorChat = () => {
+    router.push({
+      pathname: '/chat',
+      params: {
+        username: selectedEvent.username,
+        profileimage: encodeURIComponent(selectedEvent.userprofileimage),
+        receiverid: selectedEvent.uid,
+      },
+    });
   };
 
   const getColor = () => {
@@ -441,6 +453,9 @@ const AstrologerEvent = () => {
             </TouchableOpacity>
           ) : null}
         </ScrollView>
+        <View style={{ padding: horizontalScale(20) }}>
+          <Button title="Join call or chat" onPress={onJoinCallorChat} />
+        </View>
         {renderAcceptRejectModal()}
       </View>
     </KeyboardAvoidingView>

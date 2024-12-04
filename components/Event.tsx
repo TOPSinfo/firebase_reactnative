@@ -29,7 +29,11 @@ import * as ImagePicker from 'expo-image-picker';
 import { useDispatch } from 'react-redux';
 import { onChangeEventData } from '@/redux/eventSlice';
 import moment from 'moment';
-import { selectedEventSelector, userSelector } from '@/redux/selector';
+import {
+  astrologerProfileImageSelector,
+  selectedEventSelector,
+  userSelector,
+} from '@/redux/selector';
 import { setLoading } from '@/redux/loadingSlice';
 import {
   checkDateAndTimeSlot,
@@ -90,6 +94,10 @@ const Event = () => {
   const selectedEvent = selectedEventSelector();
   const router = useRouter();
   const userdata = userSelector();
+
+  const astrologerProfileImage = astrologerProfileImageSelector(
+    selectedEvent.astrologerid
+  );
 
   console.log('Selected event', selectedEvent);
 
@@ -540,7 +548,11 @@ const Event = () => {
   const onChatPress = () => {
     router.navigate({
       pathname: '/(home)/chat',
-      params: { receiverid: selectedEvent.astrologerid },
+      params: {
+        username: selectedEvent?.astrologername,
+        profileimage: encodeURIComponent(astrologerProfileImage),
+        receiverid: selectedEvent.astrologerid,
+      },
     });
   };
 
