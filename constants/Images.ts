@@ -73,4 +73,5 @@ export const Images = {
   send: require('../assets/images/send.svg'),
   send_blue: require('../assets/images/send_blue.svg'),
   call: require('../assets/images/call.svg'),
+  double_tick: require('../assets/images/double_tick.svg'),
 };

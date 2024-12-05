@@ -10,15 +10,13 @@ import {
   Bubble,
   BubbleProps,
   Composer,
+  InputToolbarProps,
+  ComposerProps,
+  InputToolbar,
 } from 'react-native-gifted-chat';
 import SvgImage from '@/components/SvgImage';
 import { Images } from '@/constants/Images';
-import {
-  height,
-  horizontalScale,
-  moderateScale,
-  verticalScale,
-} from '@/utils/matrix';
+import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix';
 import { getMessageSnapshot, sendMessage } from '@/services/db';
 import { useLocalSearchParams } from 'expo-router';
 import {
@@ -29,6 +27,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { resetMessages } from '@/redux/userSlice';
 import { Fonts } from '@/constants/Fonts';
+import * as ImagePicker from 'expo-image-picker';
 
 const chat = () => {
   const [messageText, setmessageText] = useState('');
@@ -44,6 +43,7 @@ const chat = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(resetMessages());
     let unsubscribe: any = null;
     if (userdata.uid) {
       unsubscribe = getMessageSnapshot({
@@ -54,7 +54,6 @@ const chat = () => {
         if (unsubscribe) {
           unsubscribe();
         }
-        dispatch(resetMessages());
       };
     }
   }, []);
@@ -66,7 +65,7 @@ const chat = () => {
         senderid: userdata.uid,
         receiverid: receiverid,
         messagetype: 'TEXT',
-        status: '',
+        status: 'SEND',
         url: '',
         video_url: '',
       };
@@ -77,11 +76,9 @@ const chat = () => {
 
   const renderSend = useCallback((props: SendProps<IMessage>) => {
     return (
-      <Send
-        {...props}
-        containerStyle={{ justifyContent: 'center', paddingHorizontal: 10 }}>
+      <Send {...props} containerStyle={{ paddingLeft: 10 }}>
         <SvgImage
-          url={Images.send}
+          url={userType == 'user' ? Images.send : Images.send_blue}
           style={{ height: verticalScale(50), width: verticalScale(50) }}
         />
       </Send>
@@ -107,6 +104,9 @@ const chat = () => {
         textStyle={{
           right: styles.messageText,
           left: styles.messageText,
+        }}
+        tickStyle={{
+          color: userType == 'user' ? Colors.orange : Colors.blue,
         }}
       />
     );
@@ -145,37 +145,61 @@ const chat = () => {
     );
   };
 
-  const customtInputToolbar = () => {
+  const onPressAttachment = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const data = {
+        messagetext: '',
+        senderid: userdata.uid,
+        receiverid: receiverid,
+        messagetype: 'IMAGE',
+        status: 'SEND',
+        url: result.assets[0].uri,
+        video_url: '',
+      };
+      const res = await sendMessage(data);
+    }
+  };
+
+  const renderComposer = (props: ComposerProps) => {
     return (
-      <View style={styles.customInputView}>
-        <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.attachmentContainer}>
-            <SvgImage
-              url={Images.photo}
-              style={{ height: verticalScale(14), width: verticalScale(14) }}
-            />
-          </TouchableOpacity>
-          <Composer
-            placeholder="Type message here"
-            placeholderTextColor={Colors.grey}
-            text={messageText}
-            onTextChanged={val => {
-              setmessageText(val.trim());
-            }}
-            textInputStyle={styles.composerTxt}
-          />
-        </View>
-        <Send
-          onSend={messages => onSend(messages)}
-          alwaysShowSend={true}
-          disabled={!messageText}
-          containerStyle={{ justifyContent: 'center', paddingHorizontal: 10 }}>
+      <View style={styles.inputContainer}>
+        <TouchableOpacity
+          onPress={onPressAttachment}
+          style={styles.attachmentContainer}>
           <SvgImage
-            url={userType == 'user' ? Images.send : Images.send_blue}
-            style={{ height: verticalScale(50), width: verticalScale(50) }}
+            url={Images.photo}
+            style={{ height: verticalScale(14), width: verticalScale(14) }}
           />
-        </Send>
+        </TouchableOpacity>
+        <Composer
+          {...props}
+          placeholder="Type message here"
+          placeholderTextColor={Colors.grey}
+          composerHeight={verticalScale(45)}
+          textInputStyle={styles.composerTxt}
+        />
       </View>
+    );
+  };
+
+  const renderInputToolbar = (props: InputToolbarProps<IMessage>) => {
+    return (
+      <InputToolbar
+        {...props}
+        containerStyle={{
+          borderTopWidth: 0,
+          margin: horizontalScale(15),
+          height: verticalScale(60),
+          justifyContent: 'center',
+        }}
+      />
     );
   };
 
@@ -193,9 +217,20 @@ const chat = () => {
         onInputTextChanged={setmessageText}
         onSend={messages => onSend(messages)}
         renderSend={renderSend}
-        renderInputToolbar={customtInputToolbar}
+        alwaysShowSend
+        renderInputToolbar={renderInputToolbar}
+        renderComposer={renderComposer}
         renderBubble={renderBubble}
-        renderAvatar={() => null}
+        lightboxProps={{
+          activeProps: {
+            style: {
+              flex: 1,
+              width: '100%',
+              resizeMode: 'contain',
+            },
+          },
+        }}
+        renderAvatar={null}
         user={{
           _id: userdata.uid,
         }}
@@ -226,27 +261,25 @@ const styles = StyleSheet.create({
   customInputView: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    margin: horizontalScale(15),
-    height: verticalScale(55),
   },
   inputContainer: {
+    flex: 1,
     flexDirection: 'row',
     borderRadius: horizontalScale(7),
     backgroundColor: Colors.white3,
-    alignItems: 'center',
     height: verticalScale(50),
-    flex: 1,
+    alignItems: 'center',
   },
   composerTxt: {
     color: Colors.black1,
     fontFamily: Fonts.PoppinsRegular,
     fontSize: moderateScale(12),
-    paddingTop: 0,
+    lineHeight: moderateScale(18),
+    paddingVertical: verticalScale(10),
   },
   attachmentContainer: {
-    height: verticalScale(40),
-    width: verticalScale(40),
+    height: verticalScale(50),
+    width: verticalScale(50),
     alignItems: 'center',
     justifyContent: 'center',
   },

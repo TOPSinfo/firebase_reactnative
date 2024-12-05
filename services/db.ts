@@ -559,6 +559,15 @@ export const sendMessage = async (data: any) => {
         : `${data.receiverid}${data.senderid}`;
 
     const messageRef = collection(db, 'messages', messageid, 'message');
+
+    const uploadIfNeeded = async (field: string) => {
+      if (data[field]) {
+        data[field] = await uploadImage(data[field]);
+        store.dispatch(setLoading(false));
+      }
+    };
+    await uploadIfNeeded('url');
+
     await addDoc(messageRef, {
       ...data,
       timestamp: serverTimestamp(),
@@ -607,6 +616,8 @@ export const getMessageSnapshot = (data: any) => {
             // You can also add a video prop:
             video: data.video_url,
             // Mark the message as sent, using one tick
+            // sent: true,
+            // received: false,
           };
           messages.push(message);
         });
