@@ -75,6 +75,18 @@ export const userSlice = createSlice({
     setMessages: (state, action) => {
       state.messages = [...action.payload, ...state.messages];
     },
+    updateMessages: (state, action) => {
+      const updatedMessages = action.payload;
+      state.messages = state.messages.map((message: any) => {
+        const updatedMessage = updatedMessages.find(
+          (updatedMessage: any) => updatedMessage._id === message._id
+        );
+        if (updatedMessage) {
+          return updatedMessage;
+        }
+        return message;
+      });
+    },
     resetMessages: state => {
       state.messages = [];
     },
@@ -93,6 +105,7 @@ export const {
   setAppointmentSlots,
   setTransactionHistory,
   setMessages,
+  updateMessages,
   resetMessages,
 } = userSlice.actions;
 

@@ -87,28 +87,59 @@ const chat = () => {
 
   const renderBubble = (props: BubbleProps<IMessage>) => {
     return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          right: {
-            backgroundColor:
-              userType == 'user' ? Colors.orange1 : Colors.white3,
-            borderRadius: horizontalScale(7),
-          },
-          left: {
-            backgroundColor:
-              userType == 'user' ? Colors.white3 : Colors.lightBlue,
-            borderRadius: horizontalScale(7),
-          },
-        }}
-        textStyle={{
-          right: styles.messageText,
-          left: styles.messageText,
-        }}
-        tickStyle={{
-          color: userType == 'user' ? Colors.orange : Colors.blue,
-        }}
-      />
+      <View>
+        <Bubble
+          {...props}
+          wrapperStyle={{
+            right: {
+              backgroundColor:
+                userType == 'user' ? Colors.orange1 : Colors.white3,
+              borderRadius: horizontalScale(7),
+            },
+            left: {
+              backgroundColor:
+                userType == 'user' ? Colors.white3 : Colors.lightBlue,
+              borderRadius: horizontalScale(7),
+            },
+          }}
+          textStyle={{
+            right: styles.messageText,
+            left: styles.messageText,
+          }}
+          tickStyle={{
+            display: 'none',
+          }}
+        />
+        <View
+          style={{
+            alignItems: props.position == 'left' ? 'flex-start' : 'flex-end',
+            paddingHorizontal: horizontalScale(4),
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <Text style={styles.timeText}>
+              {new Date(props.currentMessage.createdAt).toLocaleTimeString(
+                'en-US',
+                { hour: '2-digit', minute: '2-digit' }
+              )}
+            </Text>
+            {props.position == 'right' && props.currentMessage.received && (
+              <SvgImage
+                url={Images.double_tick}
+                style={{
+                  height: moderateScale(12),
+                  width: moderateScale(12),
+                  marginLeft: verticalScale(5),
+                  tintColor: userType == 'user' ? Colors.orange : Colors.blue,
+                }}
+              />
+            )}
+          </View>
+        </View>
+      </View>
     );
   };
 
@@ -190,6 +221,7 @@ const chat = () => {
   };
 
   const renderInputToolbar = (props: InputToolbarProps<IMessage>) => {
+    // return null;
     return (
       <InputToolbar
         {...props}
@@ -231,6 +263,7 @@ const chat = () => {
           },
         }}
         renderAvatar={null}
+        renderTime={() => null}
         user={{
           _id: userdata.uid,
         }}

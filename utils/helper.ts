@@ -175,3 +175,9 @@ export const calculateMinutes = (startTime: string, endTime: string) => {
   );
   return duration.asMinutes();
 };
+
+export const getChatId = (senderid: string, receiverid: string) => {
+  return senderid > receiverid
+    ? `${senderid}${receiverid}`
+    : `${receiverid}${senderid}`;
+};

@@ -1,6 +1,6 @@
 import { setLoading } from '@/redux/loadingSlice';
 import { store } from '@/redux/store';
-import { showErrorMessage } from '@/utils/helper';
+import { getChatId, showErrorMessage } from '@/utils/helper';
 import {
   collection,
   deleteDoc,
@@ -16,6 +16,7 @@ import {
   increment,
   onSnapshot,
   addDoc,
+  writeBatch,
 } from 'firebase/firestore';
 import { auth, db, storage } from './config';
 import {
@@ -25,6 +26,7 @@ import {
   setMyBookings,
   setTransactionHistory,
   setUser,
+  updateMessages,
 } from '@/redux/userSlice';
 import { getDownloadURL, ref, uploadBytesResumable } from '@firebase/storage';
 import { onChangeEventData, updateSelectedEvent } from '@/redux/eventSlice';
@@ -553,10 +555,7 @@ export const sendMessage = async (data: any) => {
     if (!uid) {
       throw new Error('User is not authenticated');
     }
-    const messageid =
-      data.senderid > data.receiverid
-        ? `${data.senderid}${data.receiverid}`
-        : `${data.receiverid}${data.senderid}`;
+    const messageid = getChatId(data.senderid, data.receiverid);
 
     const messageRef = collection(db, 'messages', messageid, 'message');
 
@@ -579,10 +578,7 @@ export const sendMessage = async (data: any) => {
 
 export const getMessageSnapshot = (data: any) => {
   try {
-    const messageid =
-      data.senderid > data.receiverid
-        ? `${data.senderid}${data.receiverid}`
-        : `${data.receiverid}${data.senderid}`;
+    const messageid = getChatId(data.senderid, data.receiverid);
     const q = query(
       collection(db, `messages/${messageid}/message`),
       orderBy('timestamp', 'desc')
@@ -591,38 +587,76 @@ export const getMessageSnapshot = (data: any) => {
     const subscribe = onSnapshot(q, async querySnapshot => {
       if (!querySnapshot.empty) {
         const messages: any = [];
+        const unReadMessages: any = [];
 
         const messagesList = querySnapshot
           .docChanges()
           .map(change => {
-            if (change.type === 'added') {
-              return { id: change.doc.id, ...change.doc.data() };
+            if (change.type === 'added' || change.type === 'modified') {
+              return {
+                id: change.doc.id,
+                type: change.type,
+                ...change.doc.data(),
+              };
             }
             return null;
           })
           .filter(message => message !== null);
-        messagesList.forEach((doc: any) => {
-          const data = doc;
+        messagesList.forEach(async (doc: any) => {
+          const msgData = doc;
           let message = {
-            _id: data.id,
-            text: data.messagetext,
-            createdAt: data.timestamp?.seconds
-              ? new Date(data.timestamp.seconds * 1000)
+            _id: msgData.id,
+            text: msgData.messagetext,
+            createdAt: msgData.timestamp?.seconds
+              ? new Date(msgData.timestamp.seconds * 1000)
               : new Date(),
             user: {
-              _id: data.senderid,
+              _id: msgData.senderid,
             },
-            image: data.url,
+            image: msgData.url,
             // You can also add a video prop:
-            video: data.video_url,
+            video: msgData.video_url,
             // Mark the message as sent, using one tick
-            // sent: true,
-            // received: false,
+            sent: msgData.status === 'SEND',
+            received: msgData.status === 'READ',
+            type: msgData.type,
           };
+          if (
+            msgData.receiverid == data.senderid &&
+            msgData.status === 'SEND'
+          ) {
+            unReadMessages.push(doc.id);
+          }
           messages.push(message);
         });
         console.log('Messages', messages);
-        store.dispatch(setMessages(messages));
+        if (messages.filter((msg: any) => msg.type == 'added').length > 0) {
+          store.dispatch(
+            setMessages(messages.filter((msg: any) => msg.type == 'added'))
+          );
+        }
+        if (messages.filter((msg: any) => msg.type == 'modified').length > 0) {
+          store.dispatch(
+            updateMessages(
+              messages.filter((msg: any) => msg.type == 'modified')
+            )
+          );
+        }
+        console.log('Unread Messages', unReadMessages);
+        if (unReadMessages.length > 0) {
+          const batch = writeBatch(db);
+          unReadMessages.forEach((messageId: any) => {
+            const messageRef = doc(
+              db,
+              'messages',
+              messageid,
+              'message',
+              messageId
+            );
+            batch.update(messageRef, { status: 'READ' });
+          });
+          await batch.commit();
+        }
       }
     });
     return subscribe;
