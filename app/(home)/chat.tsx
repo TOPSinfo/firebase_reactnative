@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import DetailsHeader from '@/components/DetailsHeader';
 import {
@@ -17,8 +17,8 @@ import {
 import SvgImage from '@/components/SvgImage';
 import { Images } from '@/constants/Images';
 import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix';
-import { getMessageSnapshot, sendMessage } from '@/services/db';
-import { useLocalSearchParams } from 'expo-router';
+import { endChat, getMessageSnapshot, sendMessage } from '@/services/db';
+import { router, useLocalSearchParams } from 'expo-router';
 import {
   messagesSelector,
   userSelector,
@@ -31,15 +31,20 @@ import * as ImagePicker from 'expo-image-picker';
 
 const chat = () => {
   const [messageText, setmessageText] = useState('');
-  const { username, profileimage, receiverid } = useLocalSearchParams<{
-    username: string;
-    profileimage: any;
-    receiverid: string;
-  }>();
+  const { boookingid, username, profileimage, receiverid, status } =
+    useLocalSearchParams<{
+      boookingid: string;
+      username: string;
+      profileimage: any;
+      receiverid: string;
+      status: string;
+    }>();
   const messages = messagesSelector();
   const userdata = userSelector();
   const userType = userTypeSelector();
 
+  const isViewOnly =
+    status == 'completed' || status == 'rejected' || status == 'deleted';
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -143,11 +148,35 @@ const chat = () => {
     );
   };
 
+  const onCallPress = () => {};
+
+  const endChatSession = async () => {
+    const res = await endChat(boookingid);
+    if (res) {
+      router.navigate('/(home)/(tabs)/(myBookings)');
+    }
+  };
+
+  const onEndPress = async () => {
+    Alert.alert('End Chat', 'Are you sure you want to end chat?', [
+      {
+        text: 'Yes',
+        onPress: endChatSession,
+      },
+      {
+        text: 'No',
+        onPress: () => {},
+      },
+    ]);
+  };
+
   const renderRight = () => {
+    if (isViewOnly) return null;
+
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <TouchableOpacity
-          onPress={() => {}}
+          onPress={onCallPress}
           hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}>
           <SvgImage
             url={Images.call}
@@ -155,7 +184,7 @@ const chat = () => {
           />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => {}}
+          onPress={onEndPress}
           hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
           style={{
             marginLeft: horizontalScale(15),
@@ -221,7 +250,7 @@ const chat = () => {
   };
 
   const renderInputToolbar = (props: InputToolbarProps<IMessage>) => {
-    // return null;
+    if (isViewOnly) return null;
     return (
       <InputToolbar
         {...props}
@@ -287,7 +316,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(12),
   },
   timeText: {
-    color: Colors.grey,
+    color: Colors.white7,
     fontFamily: Fonts.PoppinsRegular,
     fontSize: moderateScale(12),
   },

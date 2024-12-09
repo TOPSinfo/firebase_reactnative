@@ -552,6 +552,8 @@ const Event = () => {
         username: selectedEvent?.astrologername,
         profileimage: encodeURIComponent(astrologerProfileImage),
         receiverid: selectedEvent.astrologerid,
+        boookingid: selectedEvent?.bookingid,
+        status: selectedEvent?.status,
       },
     });
   };

@@ -664,3 +664,16 @@ export const getMessageSnapshot = (data: any) => {
     handleError(error);
   }
 };
+
+export const endChat = async (bookingid: any) => {
+  try {
+    store.dispatch(setLoading(true));
+    const bookingRef = doc(db, 'bookinghistory', bookingid);
+    await updateDoc(bookingRef, { status: 'completed' });
+    await getMyBookings();
+    store.dispatch(setLoading(false));
+    return true;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
