@@ -1,5 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  Platform,
+} from 'react-native';
 import { Colors } from '@/constants/Colors';
 import DetailsHeader from '@/components/DetailsHeader';
 import {
@@ -244,6 +251,7 @@ const chat = () => {
           placeholderTextColor={Colors.grey}
           composerHeight={verticalScale(45)}
           textInputStyle={styles.composerTxt}
+          multiline={false}
         />
       </View>
     );
@@ -300,6 +308,7 @@ const chat = () => {
           left: styles.timeText,
           right: styles.timeText,
         }}
+        bottomOffset={Platform.OS == 'ios' ? verticalScale(-25) : 0}
       />
     </View>
   );
