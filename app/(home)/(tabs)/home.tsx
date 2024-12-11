@@ -5,7 +5,7 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { router } from 'expo-router';
 import SvgImage from '@/components/SvgImage';
 import { Images } from '@/constants/Images';
@@ -26,11 +26,67 @@ import { astrologersSelector, userTypeSelector } from '@/redux/selector';
 import UserRequestList from '@/components/UserRequestList';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '@/redux/loadingSlice';
+import { registerForPushNotificationsAsync } from '@/utils/helper';
+import * as Notifications from 'expo-notifications';
 
 const Home = () => {
+  const notificationListener = useRef<Notifications.EventSubscription | null>(
+    null
+  );
+  const responseListener = useRef<Notifications.EventSubscription | null>(null);
+
   const astrologers = astrologersSelector();
   const userType = userTypeSelector();
   const dispatch = useDispatch();
+
+  const getInitialNotification = async () => {
+    const response = await Notifications.getLastNotificationResponseAsync();
+    if (response) {
+      console.log(
+        'Initial Notification',
+        response.notification.request.content
+      );
+      // if (response.notification.request.content.data) {
+      //     handleNotification(response.notification.request.content.data)
+      // }
+    }
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      registerForPushNotificationsAsync()
+        .then(token => {
+          if (token) {
+            console.log('Push token', token);
+          }
+        })
+        .catch(error => console.log('Error getting push token', error));
+      getInitialNotification();
+      notificationListener.current =
+        Notifications.addNotificationReceivedListener(notification => {
+          console.log('Notification received', notification);
+        });
+
+      responseListener.current =
+        Notifications.addNotificationResponseReceivedListener(response => {
+          console.log(
+            'Response recieved',
+            response.notification.request.content
+          );
+          // if (response.notification.request.content.data &&) {
+          //     handleNotification(response.notification.request.content.data)
+          // }
+        });
+    }, 2000);
+    return () => {
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(
+          notificationListener.current
+        );
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
   /**
    * Navigates to the astrologer page.

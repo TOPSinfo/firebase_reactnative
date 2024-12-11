@@ -1,4 +1,4 @@
-package com.astrology
+package tops.astrology
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

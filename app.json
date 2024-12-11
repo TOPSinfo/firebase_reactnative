@@ -14,14 +14,16 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.astrology"
+      "bundleIdentifier": "tops.astrology",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-logo.png"
       },
+      "googleServicesFile": "./google-services.json",
       "permissions": ["android.permission.RECORD_AUDIO"],
-      "package": "com.astrology"
+      "package": "tops.astrology"
     },
     "web": {
       "bundler": "metro",
@@ -54,6 +56,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "a788d39c-c704-4885-9a46-668d4cd5588f"
+      }
     }
   }
 }

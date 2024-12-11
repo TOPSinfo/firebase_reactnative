@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1009732554116",
+    "project_id": "sales-astrology-reactnative",
+    "storage_bucket": "sales-astrology-reactnative.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1009732554116:android:3c2383f4a9ae64f5a5e1d1",
+        "android_client_info": {
+          "package_name": "tops.astrology"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDROdu61lHRIJAbTpJDoImRiM43RDwIx4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

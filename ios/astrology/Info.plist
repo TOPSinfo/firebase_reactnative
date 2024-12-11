@@ -28,7 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>myapp</string>
-          <string>com.astrology</string>
+          <string>tops.astrology</string>
         </array>
       </dict>
     </array>
