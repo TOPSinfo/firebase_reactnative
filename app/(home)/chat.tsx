@@ -35,7 +35,7 @@ import { useDispatch } from 'react-redux';
 import { resetMessages } from '@/redux/userSlice';
 import { Fonts } from '@/constants/Fonts';
 import * as ImagePicker from 'expo-image-picker';
-
+import * as Notifications from 'expo-notifications';
 const chat = () => {
   const [messageText, setmessageText] = useState('');
   const { boookingid, username, profileimage, receiverid, status } =
@@ -55,6 +55,13 @@ const chat = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: false,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+      }),
+    });
     dispatch(resetMessages());
     let unsubscribe: any = null;
     if (userdata.uid) {
@@ -66,6 +73,13 @@ const chat = () => {
         if (unsubscribe) {
           unsubscribe();
         }
+        Notifications.setNotificationHandler({
+          handleNotification: async () => ({
+            shouldShowAlert: true,
+            shouldPlaySound: true,
+            shouldSetBadge: false,
+          }),
+        });
       };
     }
   }, []);
@@ -82,7 +96,7 @@ const chat = () => {
         video_url: '',
       };
       console.log('Data', data);
-      const res = await sendMessage(data);
+      const res = await sendMessage(data, userdata.fullname, boookingid);
     }
   };
 
@@ -230,7 +244,7 @@ const chat = () => {
         url: result.assets[0].uri,
         video_url: '',
       };
-      const res = await sendMessage(data);
+      const res = await sendMessage(data, userdata.fullname, boookingid);
     }
   };
 

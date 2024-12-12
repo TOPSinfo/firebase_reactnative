@@ -53,3 +53,7 @@ export const astrologerProfileImageSelector = (id: string) => {
   const astro = astrologers.find((astro: any) => astro.uid === id);
   return astro?.profileimage || '';
 };
+
+export const deviceTokenSelector = () => {
+  return useSelector((state: any) => state.app.devicetoken);
+};

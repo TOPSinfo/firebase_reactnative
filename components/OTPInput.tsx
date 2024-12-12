@@ -32,6 +32,7 @@ const OTPInput: React.FC<OTPInputProps> = ({
    * and focuses the next input field if the current input field is not the last one and has text.
    */
   const handleChangeText = (text: string, index: number) => {
+    if (text.length > 1) return;
     const updatedOtp = [...otp];
     updatedOtp[index] = text;
     setOtp(updatedOtp);
@@ -70,6 +71,7 @@ const OTPInput: React.FC<OTPInputProps> = ({
             { borderColor: color, backgroundColor, color },
           ]}
           value={otp[index]}
+          returnKeyType="done"
           maxLength={1}
           keyboardType="number-pad"
           onChangeText={text => handleChangeText(text, index)}

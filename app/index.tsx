@@ -3,12 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { getAuth } from 'firebase/auth';
 import { Colors } from '@/constants/Colors';
+import { app } from '@/services/config';
+console.log('app', app);
 
 const index = () => {
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
-
   const onAuthStateChanged = async (user: any) => {
     console.log('User auth status', user);
     setLoading(false);

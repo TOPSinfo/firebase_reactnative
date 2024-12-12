@@ -1,11 +1,11 @@
 {
   "expo": {
     "newArchEnabled": false,
-    "name": "astrology",
+    "name": "Astrology",
     "slug": "astrology",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/astro_logo.png",
+    "icon": "./assets/images/app_icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -19,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-logo.png"
+        "foregroundImage": "./assets/images/adaptive_icon.png"
       },
       "googleServicesFile": "./google-services.json",
       "permissions": ["android.permission.RECORD_AUDIO"],
@@ -48,7 +48,7 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#FFFFFF",
-          "image": "./assets/images/astro_logo.png",
+          "image": "./assets/images/app_icon.png",
           "imageWidth": 200
         }
       ],

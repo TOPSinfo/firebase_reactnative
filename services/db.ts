@@ -1,6 +1,10 @@
 import { setLoading } from '@/redux/loadingSlice';
 import { store } from '@/redux/store';
-import { getChatId, showErrorMessage } from '@/utils/helper';
+import {
+  getChatId,
+  sendPushNotification,
+  showErrorMessage,
+} from '@/utils/helper';
 import {
   collection,
   deleteDoc,
@@ -385,6 +389,20 @@ export const updateProfile = async (data: any) => {
   }
 };
 
+export const updateDeviceToken = async (token: string) => {
+  try {
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      throw new Error('User is not authenticated');
+    }
+    const userRef = doc(db, 'users', uid);
+    await updateDoc(userRef, { token });
+    return true;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
 export const updateEventStatus = async (id: string, status: string) => {
   try {
     store.dispatch(setLoading(true));
@@ -549,7 +567,11 @@ export const getTransactionHistory = async () => {
   }
 };
 
-export const sendMessage = async (data: any) => {
+export const sendMessage = async (
+  data: any,
+  senderName: string,
+  bookingid: string
+) => {
   try {
     const uid = auth.currentUser?.uid;
     if (!uid) {
@@ -571,6 +593,20 @@ export const sendMessage = async (data: any) => {
       ...data,
       timestamp: serverTimestamp(),
     });
+    const receiverDoc = doc(db, 'users', data.receiverid);
+    const receiver = await getDoc(receiverDoc);
+    if (receiver.exists()) {
+      const receiverData = receiver.data();
+      if (receiverData?.token) {
+        await sendPushNotification(
+          `Message from ${senderName}`,
+          data.messagetype == 'IMAGE' ? '📷 Photo' : data.messagetext,
+          receiverData.token,
+          bookingid,
+          'chat'
+        );
+      }
+    }
   } catch (error: any) {
     handleError(error);
   }
@@ -673,6 +709,21 @@ export const endChat = async (bookingid: any) => {
     await getMyBookings();
     store.dispatch(setLoading(false));
     return true;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const getBookingDetails = async (bookingid: string) => {
+  try {
+    store.dispatch(setLoading(true));
+    const bookingRef = doc(db, 'bookinghistory', bookingid);
+    const querySnapshot = await getDoc(bookingRef);
+    store.dispatch(setLoading(false));
+    if (querySnapshot.exists()) {
+      return querySnapshot.data();
+    }
+    return null;
   } catch (error: any) {
     handleError(error);
   }

@@ -223,6 +223,8 @@ const AstrologerEvent = () => {
         username: selectedEvent.username,
         profileimage: encodeURIComponent(selectedEvent.userprofileimage),
         receiverid: selectedEvent.uid,
+        boookingid: selectedEvent?.bookingid,
+        status: selectedEvent?.status,
       },
     });
   };

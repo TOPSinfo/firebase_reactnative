@@ -18,16 +18,31 @@ import Banner from '@/components/Banner';
 import Upcoming from '@/components/Upcoming';
 import {
   getAstrologers,
+  getBookingDetails,
   getLanguagesAndSpecialities,
   getMyBookings,
   getUser,
+  updateDeviceToken,
 } from '@/services/db';
-import { astrologersSelector, userTypeSelector } from '@/redux/selector';
+import {
+  astrologersSelector,
+  deviceTokenSelector,
+  userTypeSelector,
+} from '@/redux/selector';
 import UserRequestList from '@/components/UserRequestList';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '@/redux/loadingSlice';
 import { registerForPushNotificationsAsync } from '@/utils/helper';
 import * as Notifications from 'expo-notifications';
+import { setDeviceToken } from '@/redux/appSlice';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 const Home = () => {
   const notificationListener = useRef<Notifications.EventSubscription | null>(
@@ -37,7 +52,38 @@ const Home = () => {
 
   const astrologers = astrologersSelector();
   const userType = userTypeSelector();
+  const deviceToken = deviceTokenSelector();
   const dispatch = useDispatch();
+
+  const handleNotification = async (data: any) => {
+    console.log('Notification data', data);
+    if (data.type === 'chat') {
+      const res = await getBookingDetails(data.bookingid);
+      const astro = astrologers.find(
+        (astro: any) => astro.uid === res?.astrologerid
+      );
+      const chatData =
+        userType == 'user'
+          ? {
+              username: res?.astrologername,
+              profileimage: encodeURIComponent(astro.profileimage || ''),
+              receiverid: res?.astrologerid,
+              boookingid: res?.bookingid,
+              status: res?.status,
+            }
+          : {
+              username: res?.username,
+              profileimage: encodeURIComponent(res?.userprofileimage),
+              receiverid: res?.uid,
+              boookingid: res?.bookingid,
+              status: res?.status,
+            };
+      router.navigate({
+        pathname: '/(home)/chat',
+        params: chatData,
+      });
+    }
+  };
 
   const getInitialNotification = async () => {
     const response = await Notifications.getLastNotificationResponseAsync();
@@ -46,11 +92,17 @@ const Home = () => {
         'Initial Notification',
         response.notification.request.content
       );
-      // if (response.notification.request.content.data) {
-      //     handleNotification(response.notification.request.content.data)
-      // }
+      if (response.notification.request.content.data) {
+        handleNotification(response.notification.request.content.data);
+      }
     }
   };
+
+  useEffect(() => {
+    if (deviceToken) {
+      updateDeviceToken(deviceToken);
+    }
+  }, [deviceToken]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -58,6 +110,7 @@ const Home = () => {
         .then(token => {
           if (token) {
             console.log('Push token', token);
+            dispatch(setDeviceToken(token));
           }
         })
         .catch(error => console.log('Error getting push token', error));
@@ -73,9 +126,9 @@ const Home = () => {
             'Response recieved',
             response.notification.request.content
           );
-          // if (response.notification.request.content.data &&) {
-          //     handleNotification(response.notification.request.content.data)
-          // }
+          if (response.notification.request.content.data) {
+            handleNotification(response.notification.request.content.data);
+          }
         });
     }, 2000);
     return () => {

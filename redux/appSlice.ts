@@ -5,6 +5,7 @@ export const appSlice = createSlice({
   initialState: {
     languages: [],
     specialities: [],
+    devicetoken: '',
   },
   reducers: {
     setLanguages: (state, actions) => {
@@ -13,9 +14,13 @@ export const appSlice = createSlice({
     setSpecialities: (state, actions) => {
       state.specialities = actions.payload;
     },
+    setDeviceToken: (state, actions) => {
+      state.devicetoken = actions.payload;
+    },
   },
 });
 
-export const { setLanguages, setSpecialities } = appSlice.actions;
+export const { setLanguages, setSpecialities, setDeviceToken } =
+  appSlice.actions;
 
 export default appSlice.reducer;

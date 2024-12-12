@@ -233,3 +233,35 @@ export const registerForPushNotificationsAsync = async () => {
     handleRegistrationError('Must use physical device for push notifications');
   }
 };
+
+export const sendPushNotification = async (
+  title: string,
+  body: string,
+  expoPushToken: string,
+  bookingid: string,
+  type: string
+) => {
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title: title,
+    body: body,
+    channelId: 'default',
+    data: {
+      bookingid,
+      type,
+    },
+  };
+
+  console.log('Message', message);
+
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
+};

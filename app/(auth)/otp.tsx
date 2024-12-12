@@ -6,6 +6,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
 } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix';
@@ -51,6 +52,7 @@ const Otp = () => {
    * @returns {Promise<void>} A promise that resolves when the verification is complete.
    */
   const onVerify = async () => {
+    Keyboard.dismiss();
     if (otp.length < 6) {
       showErrorMessage('Please enter valid OTP');
       return;
@@ -58,13 +60,15 @@ const Otp = () => {
     disptach(setLoading(true));
     const res = await verifyOTP(verification, otp);
     disptach(setLoading(false));
-    if (res && isLogin !== '1') {
-      const response = await createUser('+91' + phone, email, fullName);
-      if (response) {
-        router.replace('/(tabs)/home');
+    if (res) {
+      if (isLogin !== '1') {
+        const response = await createUser('+91' + phone, email, fullName);
+        if (response) {
+          router.replace('/(home)/(tabs)/home');
+        }
+      } else {
+        router.replace('/(home)/(tabs)/home');
       }
-    } else {
-      router.replace('/(tabs)/home');
     }
   };
 
