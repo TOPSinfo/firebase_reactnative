@@ -52,6 +52,13 @@
           "imageWidth": 200
         }
       ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification_icon.png",
+          "defaultChannel": "default"
+        }
+      ],
       "expo-font"
     ],
     "experiments": {

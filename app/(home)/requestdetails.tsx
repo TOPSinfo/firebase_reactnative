@@ -83,7 +83,9 @@ const requestdetails = () => {
   return (
     <View style={styles.container}>
       <DetailsHeader title="Request Details" />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: verticalScale(25) }}>
         <View style={{ padding: horizontalScale(20) }}>
           <SvgImage
             url={selectedEvent.photo}

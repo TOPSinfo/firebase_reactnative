@@ -82,6 +82,10 @@ const Wallet = () => {
   };
 
   const onTopupPress = async () => {
+    if (!/^\d+(\.\d+)?$/.test(amount)) {
+      showErrorMessage('Please enter valid amount');
+      return;
+    }
     try {
       const paymentRes = await handlePayment();
       const data = {
@@ -147,7 +151,7 @@ const Wallet = () => {
                 style={styles.textInput}
                 keyboardType="numeric"
                 value={amount}
-                onChangeText={text => setAmount(text)}
+                onChangeText={text => setAmount(text.trim())}
                 onFocus={onFocus}
                 onBlur={onBlur}
               />

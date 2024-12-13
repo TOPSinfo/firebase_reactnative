@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, Modal, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  Modal,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import {
   useSafeAreaFrame,
   useSafeAreaInsets,
@@ -10,6 +17,7 @@ import { Fonts } from '@/constants/Fonts';
 import SvgImage from './SvgImage';
 import { Images } from '@/constants/Images';
 import { getDefaultHeaderHeight } from '@/utils/helper';
+import { languageListSelector, specialityListSelector } from '@/redux/selector';
 
 type FilterModalProps = {
   visible: boolean;
@@ -22,71 +30,59 @@ type FilterModalProps = {
   onResetFilter: () => void;
 };
 
-const filterOptions: {
-  title: string;
-  id: string;
-  options: string[];
-  selectMultiple: boolean;
-  selected: string | string[];
-}[] = [
-  {
-    title: 'Sort by',
-    id: 'sort',
-    options: [
-      'Popularity',
-      'Experience: High to Low',
-      'Experience: Low to High',
-      'Price: High to Low',
-      'Price: Low to High',
-    ],
-    selectMultiple: false,
-    selected: '',
-  },
-  {
-    title: 'Skill',
-    id: 'skills',
-    options: [
-      'Cartomancy',
-      'Counselor',
-      'Face Reading',
-      'Horary',
-      'KP',
-      'Lal Kitab',
-      'Life Coach',
-    ],
-    selectMultiple: true,
-    selected: [],
-  },
-  {
-    title: 'Language',
-    id: 'language',
-    options: [
-      'English',
-      'Hindi',
-      'Gujarati',
-      'Marathi',
-      'Tamil',
-      'Telugu',
-      'Kannada',
-      'Malayalam',
-    ],
-    selectMultiple: true,
-    selected: [],
-  },
-  {
-    title: 'Gender',
-    id: 'gender',
-    options: ['Male', 'Female'],
-    selectMultiple: false,
-    selected: '',
-  },
-];
-
 const FilterModal = ({
   visible,
   onApplyFilter,
   onResetFilter,
 }: FilterModalProps) => {
+  const languages = languageListSelector();
+  const speciality = specialityListSelector();
+  const filterOptions: {
+    title: string;
+    id: string;
+    options: any[];
+    selectMultiple: boolean;
+    selected: string | string[];
+  }[] = [
+    {
+      title: 'Sort by',
+      id: 'sort',
+      options: [
+        { id: '1', name: 'Popularity' },
+        { id: '2', name: 'Experience: High to Low' },
+        { id: '3', name: 'Experience: Low to High' },
+        { id: '4', name: 'Price: High to Low' },
+        { id: '5', name: 'Price: Low to High' },
+      ],
+      selectMultiple: false,
+      selected: '',
+    },
+    {
+      title: 'Skill',
+      id: 'skills',
+      options: speciality,
+      selectMultiple: true,
+      selected: [],
+    },
+    {
+      title: 'Language',
+      id: 'language',
+      options: languages,
+      selectMultiple: true,
+      selected: [],
+    },
+    {
+      title: 'Gender',
+      id: 'gender',
+      options: [
+        { id: '1', name: 'Male' },
+        { id: '2', name: 'Female' },
+      ],
+      selectMultiple: false,
+      selected: '',
+    },
+  ];
+
   const [currentOption, setCurrentOption] = useState(0);
   const [options, setOptions] = useState(filterOptions);
 
@@ -118,32 +114,32 @@ const FilterModal = ({
     setCurrentOption(index);
   };
 
-  const onSelect = (item: string) => {
+  const onSelect = (item: { id: string }) => {
     if (options[currentOption].selectMultiple) {
       const selected = options[currentOption].selected || [];
-      if (selected.includes(item)) {
-        const index = selected.indexOf(item);
+      if (selected.includes(item.id)) {
+        const index = selected.indexOf(item.id);
         if (Array.isArray(selected)) {
           selected.splice(index, 1);
         }
       } else {
         if (Array.isArray(selected)) {
-          selected.push(item);
+          selected.push(item.id);
         }
       }
       setOptions([...options]);
     } else {
-      options[currentOption].selected = item;
+      options[currentOption].selected = item.id;
       setOptions([...options]);
     }
   };
 
-  const renderRadio = (option: string) => {
+  const renderRadio = (option: { id: string; name: string }) => {
     if (options[currentOption].selectMultiple) {
       return (
         <SvgImage
           url={
-            options[currentOption].selected.includes(option)
+            options[currentOption].selected.includes(option.id)
               ? Images.radioChecked
               : Images.radio
           }
@@ -158,7 +154,7 @@ const FilterModal = ({
     return (
       <SvgImage
         url={
-          options[currentOption].selected.includes(option)
+          options[currentOption].selected.includes(option.id)
             ? Images.radioSelected
             : Images.radio
         }
@@ -225,27 +221,29 @@ const FilterModal = ({
           ))}
         </View>
         <View style={{ width: '65%', backgroundColor: Colors.white }}>
-          {options[currentOption].options.map((option, index) => (
-            <TouchableOpacity
-              onPress={() => onSelect(option)}
-              key={index}
-              style={{
-                paddingHorizontal: horizontalScale(20),
-                paddingVertical: horizontalScale(15),
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              {renderRadio(option)}
-              <Text
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {options[currentOption].options.map((option, index) => (
+              <TouchableOpacity
+                onPress={() => onSelect(option)}
+                key={index}
                 style={{
-                  fontSize: moderateScale(12),
-                  color: Colors.black2,
-                  fontFamily: Fonts.PoppinsMedium,
+                  paddingHorizontal: horizontalScale(20),
+                  paddingVertical: horizontalScale(15),
+                  flexDirection: 'row',
+                  alignItems: 'center',
                 }}>
-                {option}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                {renderRadio(option)}
+                <Text
+                  style={{
+                    fontSize: moderateScale(12),
+                    color: Colors.black2,
+                    fontFamily: Fonts.PoppinsMedium,
+                  }}>
+                  {option.name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
       </View>
       <View

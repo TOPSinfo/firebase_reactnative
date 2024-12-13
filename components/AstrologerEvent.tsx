@@ -9,6 +9,7 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import SvgImage from './SvgImage';
 import { Images } from '@/constants/Images';
@@ -275,7 +276,10 @@ const AstrologerEvent = () => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
+    <KeyboardAvoidingView
+      enabled={Platform.OS == 'ios'}
+      style={styles.container}
+      behavior="padding">
       <Header title={'View Event'} onClose={onClose} right={renderRight()} />
       <View style={styles.container}>
         <ScrollView

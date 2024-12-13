@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Alert,
+  Platform,
 } from 'react-native';
 import SvgImage from './SvgImage';
 import { Images } from '@/constants/Images';
@@ -604,7 +605,10 @@ const Event = () => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
+    <KeyboardAvoidingView
+      style={styles.container}
+      enabled={Platform.OS == 'ios'}
+      behavior="padding">
       <Header
         title={selectedEvent.bookingid ? 'View Event' : 'Add Event'}
         onClose={onClose}
@@ -752,7 +756,11 @@ const Event = () => {
               styles.fieldContainer,
               { height: horizontalScale(70), justifyContent: 'center' },
             ]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity
+              hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
+              disabled={!editable}
+              onPress={onUploadPhoto}
+              style={{ flexDirection: 'row', alignItems: 'center' }}>
               <SvgImage url={Images.photo} style={styles.fieldIcon} />
               {selectedEvent.photo ? (
                 <SvgImage
@@ -764,14 +772,11 @@ const Event = () => {
                   }}
                 />
               ) : null}
-              <TouchableOpacity
-                disabled={!editable}
-                onPress={onUploadPhoto}
-                style={{ justifyContent: 'center' }}>
+              <View style={{ justifyContent: 'center' }}>
                 <Text style={styles.colorLabel}>Upload your photo</Text>
                 <Text style={styles.smallLabel}>Only JPEG or PNG</Text>
-              </TouchableOpacity>
-            </View>
+              </View>
+            </TouchableOpacity>
           </View>
           <View
             style={[
@@ -844,7 +849,11 @@ const Event = () => {
               styles.fieldContainer,
               { height: horizontalScale(70), justifyContent: 'center' },
             ]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity
+              hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
+              disabled={!editable}
+              onPress={onUploadKundali}
+              style={{ flexDirection: 'row', alignItems: 'center' }}>
               <SvgImage url={Images.kundali} style={styles.fieldIcon} />
               {selectedEvent.kundali ? (
                 <SvgImage
@@ -856,14 +865,11 @@ const Event = () => {
                   }}
                 />
               ) : null}
-              <TouchableOpacity
-                disabled={!editable}
-                onPress={onUploadKundali}
-                style={{ justifyContent: 'center' }}>
+              <View style={{ justifyContent: 'center' }}>
                 <Text style={styles.colorLabel}>Upload your kundali</Text>
                 <Text style={styles.smallLabel}>Only JPEG or PNG</Text>
-              </TouchableOpacity>
-            </View>
+              </View>
+            </TouchableOpacity>
           </View>
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>Payment Mode</Text>

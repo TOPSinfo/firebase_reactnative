@@ -7,7 +7,7 @@ import { Images } from '@/constants/Images';
 import { astrologersSelector } from '@/redux/selector';
 import { horizontalScale } from '@/utils/matrix';
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 
 const SelectAstrologer = () => {
   const [filterVisible, setFilterVisible] = useState(false);
@@ -34,10 +34,10 @@ const SelectAstrologer = () => {
     const filteredAstrologers = astrologers.filter((astrologer: any) => {
       const genderMatch = gender ? astrologer.gender === gender : true;
       const skillsMatch = skills.length
-        ? skills.some(skill => astrologer.skills.includes(skill))
+        ? skills.some(skill => astrologer.speciality.includes(skill))
         : true;
       const languageMatch = language.length
-        ? language.some(lng => astrologer.language.includes(lng))
+        ? language.some(lng => astrologer.languages.includes(lng))
         : true;
       return genderMatch && skillsMatch && languageMatch;
     });

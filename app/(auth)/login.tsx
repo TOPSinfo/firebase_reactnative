@@ -96,6 +96,7 @@ const Login = () => {
           icon={Images.mobile}
           placeholder="Mobile Number"
           keyboardType="number-pad"
+          returnKeyType="done"
           maxLength={10}
           rules={{
             required: 'Phone number is required',
