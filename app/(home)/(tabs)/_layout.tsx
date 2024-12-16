@@ -63,7 +63,7 @@ const TabBarComponent = ({ state, descriptors, navigation }: any) => {
 
   return (
     <Shadow
-      style={{ width: '100%' }}
+      style={{ width: '100%', backgroundColor: Colors.white }}
       distance={35}
       offset={[3, -5]}
       startColor="rgba(0,0,0,0.05)">

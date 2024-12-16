@@ -1,7 +1,9 @@
 import React from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import AstrologerCard from './AstrologerCard';
-import { horizontalScale } from '@/utils/matrix';
+import { horizontalScale, moderateScale } from '@/utils/matrix';
+import { Colors } from '@/constants/Colors';
+import { Fonts } from '@/constants/Fonts';
 
 const AstrologersList = ({
   data,
@@ -23,6 +25,21 @@ const AstrologersList = ({
     );
   };
 
+  const ListEmptyComponent = () => {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text
+          style={{
+            fontSize: moderateScale(12),
+            color: Colors.grey,
+            fontFamily: Fonts.PoppinsRegular,
+          }}>
+          No astrologers found
+        </Text>
+      </View>
+    );
+  };
+
   return (
     <FlatList
       scrollEnabled={scrollable}
@@ -34,6 +51,7 @@ const AstrologersList = ({
       numColumns={2}
       renderItem={renderItem}
       keyExtractor={(item, index) => index.toString()}
+      ListEmptyComponent={ListEmptyComponent}
     />
   );
 };

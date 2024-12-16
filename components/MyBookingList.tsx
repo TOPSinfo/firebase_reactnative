@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { Colors } from '@/constants/Colors';
 import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix';
 import { Fonts } from '@/constants/Fonts';
 import { userAppColor } from '@/hooks/useAppColor';
+import { useFocusEffect } from 'expo-router';
 
 const MyBookingList = () => {
   const [tab, setTab] = useState(1);
@@ -29,9 +30,15 @@ const MyBookingList = () => {
     dispatch(setLoading(false));
   };
 
-  useEffect(() => {
-    fetchBookings();
-  }, []);
+  // useEffect(() => {
+  //   fetchBookings();
+  // }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchBookings();
+    }, [])
+  );
 
   const onTabPress = (index: number) => {
     setTab(index);

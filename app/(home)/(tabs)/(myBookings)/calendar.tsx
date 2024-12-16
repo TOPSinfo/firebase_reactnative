@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import TabHeader from '../../../../components/TabHeader';
 import SvgImage from '../../../../components/SvgImage';
@@ -168,64 +169,66 @@ const Calendar = () => {
           }}>
           {item.label}
         </Text>
-        {item.booking.map((booking: any, index: number) => {
-          return (
-            <TouchableOpacity
-              onPress={() => onEventPress(booking)}
-              key={index}
-              style={{
-                marginLeft: horizontalScale(15),
-                height: verticalScale(48),
-                backgroundColor: Colors.white,
-                width: horizontalScale(255),
-                borderRadius: horizontalScale(5),
-                flexDirection: 'row',
-                overflow: 'hidden',
-              }}>
-              <View
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {item.booking.map((booking: any, index: number) => {
+            return (
+              <TouchableOpacity
+                onPress={() => onEventPress(booking)}
+                key={index}
                 style={{
-                  backgroundColor: getColor(booking.status),
-                  width: horizontalScale(38),
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  marginLeft: horizontalScale(15),
+                  height: verticalScale(48),
+                  backgroundColor: Colors.white,
+                  width: horizontalScale(255),
+                  borderRadius: horizontalScale(5),
+                  flexDirection: 'row',
+                  overflow: 'hidden',
                 }}>
-                <SvgImage
-                  url={getIcon(booking.status)}
+                <View
                   style={{
-                    height: verticalScale(16),
-                    width: verticalScale(16),
-                  }}
-                />
-              </View>
-              <View
-                style={{
-                  paddingLeft: horizontalScale(10),
-                  justifyContent: 'center',
-                }}>
-                <Text
-                  style={{
-                    fontFamily: Fonts.PoppinsBold,
-                    fontSize: moderateScale(9),
-                    color: Colors.black1,
+                    backgroundColor: getColor(booking.status),
+                    width: horizontalScale(38),
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}>
-                  Your appointment with{' '}
-                  {userType == 'user'
-                    ? booking.astrologername
-                    : booking.fullname}
-                </Text>
-                <Text
+                  <SvgImage
+                    url={getIcon(booking.status)}
+                    style={{
+                      height: verticalScale(16),
+                      width: verticalScale(16),
+                    }}
+                  />
+                </View>
+                <View
                   style={{
-                    fontFamily: Fonts.PoppinsRegular,
-                    fontSize: moderateScale(12),
-                    color: Colors.grey,
-                    marginTop: horizontalScale(2),
+                    paddingLeft: horizontalScale(10),
+                    justifyContent: 'center',
                   }}>
-                  {booking.starttime} - {booking.endtime}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
+                  <Text
+                    style={{
+                      fontFamily: Fonts.PoppinsBold,
+                      fontSize: moderateScale(9),
+                      color: Colors.black1,
+                    }}>
+                    Your appointment with{' '}
+                    {userType == 'user'
+                      ? booking.astrologername
+                      : booking.fullname}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: Fonts.PoppinsRegular,
+                      fontSize: moderateScale(12),
+                      color: Colors.grey,
+                      marginTop: horizontalScale(2),
+                    }}>
+                    {booking.starttime} - {booking.endtime}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
     );
   };
