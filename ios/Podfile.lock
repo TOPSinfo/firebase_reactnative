@@ -59,7 +59,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoSplashScreen (0.29.16):
+  - ExpoSplashScreen (0.29.18):
     - ExpoModulesCore
   - ExpoSystemUI (4.0.5):
     - ExpoModulesCore
@@ -2066,7 +2066,7 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: 783e68647b969b210a786047c3daa7b753dcac1f
   ExpoLinking: a8332a219379ba80f8e612d5a5de4a3da446886e
   ExpoModulesCore: 6b1ed7e4e5ab279a1825f40ef0140db84f6aad0f
-  ExpoSplashScreen: 6e6e40c382d13491e6408e80248bf0f287895f1e
+  ExpoSplashScreen: aa5c5eba706a5686b91861b53ced2996f1dd080d
   ExpoSystemUI: e41835aa059bd79369f3b398b4f2b64ed4bfa5c6
   ExpoWebBrowser: f08aaf1c8a02af8a768d83793186cb6d2c69f529
   FBLazyVector: be7314029d6ec6b90f0f75ce1195b8130ed9ac4f

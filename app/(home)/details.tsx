@@ -106,6 +106,7 @@ const Details = () => {
         astrologerid: details?.id,
         astrologername: details?.fullname,
         astrologercharge: details?.price,
+        date: date,
       })
     );
     router.navigate('/(home)/eventscreen');
@@ -120,6 +121,11 @@ const Details = () => {
   };
 
   const onPrev = () => {
+    if (
+      moment(date, 'DD MMM YYYY').format('DD MMM YYYY') ==
+      moment().format('DD MMM YYYY')
+    )
+      return;
     setDate(
       moment(date, 'DD MMM YYYY').subtract(1, 'days').format('DD MMM YYYY')
     );
