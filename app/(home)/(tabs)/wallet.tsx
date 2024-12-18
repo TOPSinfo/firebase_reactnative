@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -17,8 +17,7 @@ import { userSelector } from '@/redux/selector';
 import Button from '@/components/Button';
 import RazorpayCheckout from 'react-native-razorpay';
 import { showErrorMessage } from '@/utils/helper';
-import { useIsFocused } from '@react-navigation/native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { topupWallet } from '@/services/db';
 
 const options = ['10', '15', '20', '50', '100', '500', '5000'];
@@ -40,15 +39,16 @@ const Option = ({ value, onPress }: { value: string; onPress: () => void }) => {
 };
 
 const Wallet = () => {
-  const isScreeFocused = useIsFocused();
   const [isFocused, setIsFocused] = useState(false);
   const [amount, setAmount] = useState('');
 
   const userdata = userSelector();
 
-  useEffect(() => {
-    setAmount('');
-  }, [isScreeFocused]);
+  useFocusEffect(
+    useCallback(() => {
+      setAmount('');
+    }, [])
+  );
 
   const onOptionPress = (value: string) => {
     setAmount(value);
