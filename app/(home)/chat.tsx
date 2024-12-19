@@ -169,7 +169,9 @@ const chat = () => {
     );
   };
 
-  const onCallPress = () => {};
+  const onCallPress = () => {
+    router.navigate('/(home)/videocall');
+  };
 
   const endChatSession = async () => {
     const res = await endChat(boookingid);
