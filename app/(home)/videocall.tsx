@@ -1,32 +1,69 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text } from 'react-native';
 import { JitsiMeeting } from '@jitsi/react-native-sdk';
 import { router } from 'expo-router';
-import { selectedEventSelector, userSelector } from '@/redux/selector';
+import {
+  selectedEventSelector,
+  userSelector,
+  userTypeSelector,
+} from '@/redux/selector';
+import { createCallLog, findActiveCallLog, updateCallLog } from '@/services/db';
 
 const videocall = () => {
+  const [callId, setCallId] = useState<string | null>(null);
   const jitsiMeeting = useRef(null);
   const selectedEvent = selectedEventSelector();
   const userdata = userSelector();
+  const userType = userTypeSelector();
   console.log('Selected Event', selectedEvent);
 
+  const endCall = async () => {
+    if (callId) {
+      await updateCallLog(callId, selectedEvent.bookingid);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      endCall();
+    };
+  }, [callId]);
+
   const onReadyToClose = useCallback(() => {
-    router.back();
-    // @ts-ignore
-    // @ts-ignore
+    console.log('Ready to close', userType);
     jitsiMeeting.current?.close();
+    router.back();
   }, []);
 
   const onEndpointMessageReceived = useCallback(() => {
     console.log('You got a message!');
   }, []);
 
-  const onConferenceJoined = useCallback(() => {
-    console.log('Conference Joined');
+  const onConferenceJoined = useCallback(async () => {
+    const resActive = await findActiveCallLog(selectedEvent.bookingid);
+    if (resActive) {
+      console.log('Active Call Log Found', resActive);
+      setCallId(resActive);
+      return;
+    }
+    const data = {
+      uid: userdata.uid,
+      username: userdata.fullname,
+      usertype: userType,
+    };
+    const res = await createCallLog(data, selectedEvent.bookingid);
+    if (res) {
+      setCallId(res);
+    }
+    console.log('Conference Joined', userType);
   }, []);
 
   const onParticipantJoined = useCallback(() => {
-    console.log('Participant Joined');
+    console.log('Participant Joined', userType);
+  }, []);
+
+  const onParticipantLeft = useCallback(() => {
+    console.log('Conference Left---', userType);
   }, []);
 
   const eventListeners = {
@@ -34,6 +71,7 @@ const videocall = () => {
     onEndpointMessageReceived,
     onConferenceJoined,
     onParticipantJoined,
+    onParticipantLeft,
   };
 
   return (
@@ -63,8 +101,8 @@ const videocall = () => {
         'meeting-name.enabled': false,
       }}
       room={'astro_appointment'}
-      serverURL={'https://meet.jit.si/'}
-      //serverURL="https://meet.ffmuc.net/"
+      //serverURL={'https://meet.jit.si/'}
+      serverURL="https://meet.ffmuc.net/"
       //serverURL="https://meet.guifi.net"
     />
   );

@@ -728,3 +728,64 @@ export const getBookingDetails = async (bookingid: string) => {
     handleError(error);
   }
 };
+
+export const createCallLog = async (data: any, bookingId: string) => {
+  try {
+    store.dispatch(setLoading(true));
+    const callLogRef = doc(
+      collection(db, 'bookinghistory', bookingId, 'calllog')
+    );
+    await setDoc(callLogRef, {
+      ...data,
+      id: callLogRef.id,
+      extendcount: 0,
+      extendmin: 0,
+      starttime: serverTimestamp(),
+      endtime: null,
+      createdat: serverTimestamp(),
+      status: 'active',
+    });
+    store.dispatch(setLoading(false));
+    return callLogRef.id;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const findActiveCallLog = async (bookingId: string) => {
+  try {
+    const q = query(
+      collection(db, 'bookinghistory', bookingId, 'calllog'),
+      where('status', '==', 'active')
+    );
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const data = querySnapshot.docs[0].data();
+      return data.id;
+    }
+    return null;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const updateCallLog = async (logId: string, bookingId: string) => {
+  try {
+    store.dispatch(setLoading(true));
+    const callLogRef = doc(db, 'bookinghistory', bookingId, 'calllog', logId);
+
+    const callLog = await getDoc(callLogRef);
+    if (callLog.exists() && callLog.data().status === 'completed') {
+      store.dispatch(setLoading(false));
+      return false;
+    }
+    await updateDoc(callLogRef, {
+      endtime: serverTimestamp(),
+      status: 'completed',
+    });
+    store.dispatch(setLoading(false));
+    return true;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
