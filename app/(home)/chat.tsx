@@ -36,6 +36,7 @@ import { resetMessages } from '@/redux/userSlice';
 import { Fonts } from '@/constants/Fonts';
 import * as ImagePicker from 'expo-image-picker';
 import * as Notifications from 'expo-notifications';
+import { StatusBar } from 'expo-status-bar';
 const chat = () => {
   const [messageText, setmessageText] = useState('');
   const { boookingid, username, profileimage, receiverid, status } =
@@ -326,6 +327,7 @@ const chat = () => {
         }}
         bottomOffset={Platform.OS == 'ios' ? verticalScale(-25) : 0}
       />
+      <StatusBar style="dark" translucent={true} />
     </View>
   );
 };
