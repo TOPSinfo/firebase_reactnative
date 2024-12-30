@@ -21,11 +21,15 @@ import {
   onSnapshot,
   addDoc,
   writeBatch,
+  limit,
+  startAfter,
 } from 'firebase/firestore';
 import { auth, db, storage } from './config';
 import {
   setAppointmentSlots,
   setAstrologers,
+  setLastVisibleMessage,
+  setLoadMoreMessages,
   setMessages,
   setMyBookings,
   setTransactionHistory,
@@ -612,19 +616,88 @@ export const sendMessage = async (
   }
 };
 
+export const getMoreMessages = async (data: any) => {
+  if (!store.getState().user.lastVisibleMessage) return false;
+  try {
+    const messageid = getChatId(data.senderid, data.receiverid);
+    const q = query(
+      collection(db, `messages/${messageid}/message`),
+      orderBy('timestamp', 'desc'),
+      startAfter(store.getState().user.lastVisibleMessage),
+      limit(50)
+    );
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const messages: any = [];
+      const unReadMessages: any = [];
+      store.dispatch(
+        setLastVisibleMessage(querySnapshot.docs[querySnapshot.docs.length - 1])
+      );
+      querySnapshot.forEach(doc => {
+        const msgData = doc.data();
+        let message = {
+          _id: doc.id,
+          text: msgData.messagetext,
+          createdAt: msgData.timestamp?.seconds
+            ? new Date(msgData.timestamp.seconds * 1000)
+            : new Date(),
+          user: {
+            _id: msgData.senderid,
+          },
+          image: msgData.url,
+          // You can also add a video prop:
+          video: msgData.video_url,
+          // Mark the message as sent, using one tick
+          sent: msgData.status === 'SEND',
+          received: msgData.status === 'READ',
+          type: msgData.type,
+        };
+        if (msgData.receiverid == data.senderid && msgData.status === 'SEND') {
+          unReadMessages.push(doc.id);
+        }
+        messages.push(message);
+      });
+      if (messages.length > 0) {
+        store.dispatch(setLoadMoreMessages(messages));
+      }
+      if (unReadMessages.length > 0) {
+        const batch = writeBatch(db);
+        unReadMessages.forEach((messageId: any) => {
+          const messageRef = doc(
+            db,
+            'messages',
+            messageid,
+            'message',
+            messageId
+          );
+          batch.update(messageRef, { status: 'READ' });
+        });
+        await batch.commit();
+      }
+    }
+    return !querySnapshot.empty;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
 export const getMessageSnapshot = (data: any) => {
   try {
     const messageid = getChatId(data.senderid, data.receiverid);
     const q = query(
       collection(db, `messages/${messageid}/message`),
-      orderBy('timestamp', 'desc')
+      orderBy('timestamp', 'desc'),
+      limit(50)
     );
-
     const subscribe = onSnapshot(q, async querySnapshot => {
       if (!querySnapshot.empty) {
         const messages: any = [];
         const unReadMessages: any = [];
-
+        store.dispatch(
+          setLastVisibleMessage(
+            querySnapshot.docs[querySnapshot.docs.length - 1]
+          )
+        );
         const messagesList = querySnapshot
           .docChanges()
           .map(change => {

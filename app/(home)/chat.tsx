@@ -24,7 +24,12 @@ import {
 import SvgImage from '@/components/SvgImage';
 import { Images } from '@/constants/Images';
 import { horizontalScale, moderateScale, verticalScale } from '@/utils/matrix';
-import { endChat, getMessageSnapshot, sendMessage } from '@/services/db';
+import {
+  endChat,
+  getMessageSnapshot,
+  getMoreMessages,
+  sendMessage,
+} from '@/services/db';
 import { router, useLocalSearchParams } from 'expo-router';
 import {
   messagesSelector,
@@ -39,6 +44,7 @@ import * as Notifications from 'expo-notifications';
 import { StatusBar } from 'expo-status-bar';
 const chat = () => {
   const [messageText, setmessageText] = useState('');
+  const [loadMore, setLoadMore] = useState(true);
   const { boookingid, username, profileimage, receiverid, status } =
     useLocalSearchParams<{
       boookingid: string;
@@ -289,6 +295,14 @@ const chat = () => {
     );
   };
 
+  const onLoadMore = async () => {
+    const res = await getMoreMessages({
+      senderid: userdata.uid,
+      receiverid: receiverid,
+    });
+    setLoadMore(res ?? false);
+  };
+
   return (
     <View style={styles.container}>
       <DetailsHeader
@@ -326,6 +340,8 @@ const chat = () => {
           right: styles.timeText,
         }}
         bottomOffset={Platform.OS == 'ios' ? verticalScale(-25) : 0}
+        loadEarlier={loadMore}
+        onLoadEarlier={onLoadMore}
       />
       <StatusBar style="dark" translucent={true} />
     </View>

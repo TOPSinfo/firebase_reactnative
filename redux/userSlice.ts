@@ -18,6 +18,7 @@ export const userSlice = createSlice({
     appointmentSlots: [] as any[],
     transactionHistory: [] as any[],
     messages: [] as any[],
+    lastVisibleMessage: null,
   },
   reducers: {
     setUser: (state, actions) => {
@@ -90,6 +91,12 @@ export const userSlice = createSlice({
     resetMessages: state => {
       state.messages = [];
     },
+    setLastVisibleMessage: (state, action) => {
+      state.lastVisibleMessage = action.payload;
+    },
+    setLoadMoreMessages: (state, action) => {
+      state.messages = [...state.messages, ...action.payload];
+    },
   },
 });
 
@@ -107,6 +114,8 @@ export const {
   setMessages,
   updateMessages,
   resetMessages,
+  setLastVisibleMessage,
+  setLoadMoreMessages,
 } = userSlice.actions;
 
 export default userSlice.reducer;
