@@ -44,7 +44,7 @@ import * as Notifications from 'expo-notifications';
 import { StatusBar } from 'expo-status-bar';
 const chat = () => {
   const [messageText, setmessageText] = useState('');
-  const [loadMore, setLoadMore] = useState(true);
+  const [loadMore, setLoadMore] = useState(false);
   const { boookingid, username, profileimage, receiverid, status } =
     useLocalSearchParams<{
       boookingid: string;
@@ -56,6 +56,14 @@ const chat = () => {
   const messages = messagesSelector();
   const userdata = userSelector();
   const userType = userTypeSelector();
+
+  useEffect(() => {
+    if (messages.length > 40) {
+      setLoadMore(true);
+    } else {
+      setLoadMore(false);
+    }
+  }, [messages]);
 
   const isViewOnly =
     status == 'completed' || status == 'rejected' || status == 'deleted';
@@ -303,6 +311,14 @@ const chat = () => {
     setLoadMore(res ?? false);
   };
 
+  const renderEmpty = () => {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={styles.messageText}>No messages</Text>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <DetailsHeader
@@ -312,6 +328,9 @@ const chat = () => {
         rightOption={renderRight()}
       />
       <GiftedChat
+        listViewProps={{
+          inverted: messages.length !== 0,
+        }}
         messages={messages}
         text={messageText}
         onInputTextChanged={setmessageText}
@@ -342,6 +361,7 @@ const chat = () => {
         bottomOffset={Platform.OS == 'ios' ? verticalScale(-25) : 0}
         loadEarlier={loadMore}
         onLoadEarlier={onLoadMore}
+        renderChatEmpty={renderEmpty}
       />
       <StatusBar style="dark" translucent={true} />
     </View>

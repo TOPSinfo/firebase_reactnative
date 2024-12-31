@@ -257,13 +257,7 @@ const Calendar = () => {
   return (
     <View style={styles.container}>
       <TabHeader title="Calendar" right={renderRight()} />
-      <View
-        style={{
-          paddingHorizontal: horizontalScale(15),
-          backgroundColor: Colors.white,
-          borderBottomLeftRadius: horizontalScale(25),
-          borderBottomRightRadius: horizontalScale(25),
-        }}>
+      <View style={styles.calendarContainer}>
         <DateTimePicker
           mode="single"
           date={date}
@@ -320,6 +314,13 @@ const Calendar = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  calendarContainer: {
+    paddingHorizontal: horizontalScale(15),
+    paddingBottom: verticalScale(10),
+    backgroundColor: Colors.white,
+    borderBottomLeftRadius: horizontalScale(25),
+    borderBottomRightRadius: horizontalScale(25),
   },
 });
 

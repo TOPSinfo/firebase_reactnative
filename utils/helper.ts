@@ -74,7 +74,7 @@ export const showErrorMessage = (message: string) => {
     description: message,
     type: 'error' as MessageType,
     duration: 2500,
-    backgroundColor: Colors.red,
+    backgroundColor: Colors.red1,
     statusBarHeight: StatusBar.currentHeight,
   });
 };

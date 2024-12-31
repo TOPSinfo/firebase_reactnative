@@ -544,7 +544,18 @@ const Event = () => {
     dispatch(onChangeEventData({ birthplace: text }));
   };
 
-  const onCallPress = () => {};
+  const onCallPress = () => {
+    router.navigate({
+      pathname: '/(home)/chat',
+      params: {
+        username: selectedEvent?.astrologername,
+        profileimage: encodeURIComponent(astrologerProfileImage),
+        receiverid: selectedEvent.astrologerid,
+        boookingid: selectedEvent?.bookingid,
+        status: selectedEvent?.status,
+      },
+    });
+  };
 
   const onChatPress = () => {
     router.navigate({
@@ -921,23 +932,25 @@ const Event = () => {
             </View>
           </View>
           {selectedEvent.bookingid ? (
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-                marginTop: horizontalScale(20),
-              }}>
-              <Button
-                title="Call"
-                onPress={onCallPress}
-                style={{ width: '40%' }}
-              />
-              <Button
-                title="Chat"
-                onPress={onChatPress}
-                style={{ width: '40%' }}
-              />
-            </View>
+            editable ? null : (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-around',
+                  marginTop: horizontalScale(20),
+                }}>
+                <Button
+                  title="Call"
+                  onPress={onCallPress}
+                  style={{ width: '40%' }}
+                />
+                <Button
+                  title="Chat"
+                  onPress={onChatPress}
+                  style={{ width: '40%' }}
+                />
+              </View>
+            )
           ) : (
             <View
               style={{
