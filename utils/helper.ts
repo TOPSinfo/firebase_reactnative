@@ -265,3 +265,20 @@ export const sendPushNotification = async (
     body: JSON.stringify(message),
   });
 };
+
+export const schedulePushNotification = async (seconds: number) => {
+  if (!seconds) return null;
+  const id = await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Extend Meeting',
+      body: 'Your meeting is about to end in 10 minutes, Do you want to extend?',
+    },
+    trigger: { seconds },
+  });
+  return id;
+};
+
+export const cancelSchedulePushNotification = async (id: any) => {
+  await Notifications.cancelScheduledNotificationAsync(id);
+  console.log('Notificatino cancel', id);
+};

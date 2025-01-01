@@ -8,9 +8,15 @@ import {
   userTypeSelector,
 } from '@/redux/selector';
 import { createCallLog, findActiveCallLog, updateCallLog } from '@/services/db';
+import {
+  calculateMinutes,
+  cancelSchedulePushNotification,
+  schedulePushNotification,
+} from '@/utils/helper';
 
 const videocall = () => {
   const [callId, setCallId] = useState<string | null>(null);
+  const [notificationId, setNotificationId] = useState<string | null>(null);
   const jitsiMeeting = useRef(null);
   const selectedEvent = selectedEventSelector();
   const userdata = userSelector();
@@ -29,6 +35,14 @@ const videocall = () => {
     };
   }, [callId]);
 
+  useEffect(() => {
+    return () => {
+      if (notificationId) {
+        cancelSchedulePushNotification(notificationId);
+      }
+    };
+  }, [notificationId]);
+
   const onReadyToClose = useCallback(() => {
     console.log('Ready to close', userType);
     jitsiMeeting.current?.close();
@@ -40,6 +54,17 @@ const videocall = () => {
   }, []);
 
   const onConferenceJoined = useCallback(async () => {
+    if (userType == 'user') {
+      const totalTime = calculateMinutes(
+        selectedEvent.starttime,
+        selectedEvent.endtime
+      );
+      const reminderTime = (totalTime - 10) * 60;
+      console.log('Total Time', reminderTime);
+      const id = await schedulePushNotification(reminderTime);
+      console.log('notification', id);
+      setNotificationId(id);
+    }
     const resActive = await findActiveCallLog(selectedEvent.bookingid);
     if (resActive) {
       console.log('Active Call Log Found', resActive);

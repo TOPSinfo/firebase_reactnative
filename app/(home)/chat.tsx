@@ -30,7 +30,7 @@ import {
   getMoreMessages,
   sendMessage,
 } from '@/services/db';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import {
   messagesSelector,
   userSelector,
@@ -69,14 +69,28 @@ const chat = () => {
     status == 'completed' || status == 'rejected' || status == 'deleted';
   const dispatch = useDispatch();
 
+  useFocusEffect(
+    useCallback(() => {
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowAlert: false,
+          shouldPlaySound: false,
+          shouldSetBadge: false,
+        }),
+      });
+      return () => {
+        Notifications.setNotificationHandler({
+          handleNotification: async () => ({
+            shouldShowAlert: true,
+            shouldPlaySound: true,
+            shouldSetBadge: false,
+          }),
+        });
+      };
+    }, [])
+  );
+
   useEffect(() => {
-    Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowAlert: false,
-        shouldPlaySound: false,
-        shouldSetBadge: false,
-      }),
-    });
     dispatch(resetMessages());
     let unsubscribe: any = null;
     if (userdata.uid) {
@@ -88,13 +102,6 @@ const chat = () => {
         if (unsubscribe) {
           unsubscribe();
         }
-        Notifications.setNotificationHandler({
-          handleNotification: async () => ({
-            shouldShowAlert: true,
-            shouldPlaySound: true,
-            shouldSetBadge: false,
-          }),
-        });
       };
     }
   }, []);
