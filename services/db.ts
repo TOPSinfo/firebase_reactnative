@@ -558,7 +558,10 @@ export const getTransactionHistory = async () => {
       throw new Error('User is not authenticated');
     }
     store.dispatch(setLoading(true));
-    const q = query(collection(db, 'users', uid, 'transactionhistory'));
+    const q = query(
+      collection(db, 'users', uid, 'transactionhistory'),
+      orderBy('createdat', 'desc')
+    );
     const querySnapshot = await getDocs(q);
     const transactions: any = [];
     querySnapshot.forEach(doc => {
@@ -856,6 +859,31 @@ export const updateCallLog = async (logId: string, bookingId: string) => {
       endtime: serverTimestamp(),
       status: 'completed',
     });
+    store.dispatch(setLoading(false));
+    return true;
+  } catch (error: any) {
+    handleError(error);
+  }
+};
+
+export const extendCallLog = async (
+  logId: string,
+  bookingId: string,
+  data: any
+) => {
+  try {
+    store.dispatch(setLoading(true));
+    const callLogRef = doc(db, 'bookinghistory', bookingId, 'calllog', logId);
+    const callLog = await getDoc(callLogRef);
+    if (callLog.exists() && callLog.data().status === 'completed') {
+      store.dispatch(setLoading(false));
+      return false;
+    }
+    await updateDoc(callLogRef, {
+      extendcount: increment(1),
+      extendmin: increment(15),
+    });
+    addTransaction(data);
     store.dispatch(setLoading(false));
     return true;
   } catch (error: any) {
