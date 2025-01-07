@@ -21,6 +21,7 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '@/redux/userSlice';
 import { userAppColor } from '@/hooks/useAppColor';
 import { userTypeSelector } from '@/redux/selector';
+import { updateDeviceToken } from '@/services/db';
 
 const Option = ({
   title,
@@ -60,6 +61,7 @@ const Profile = () => {
       {
         text: 'Yes',
         onPress: () => {
+          updateDeviceToken('');
           auth.signOut();
           router.replace('/(auth)');
           dispatch(setUser(null));

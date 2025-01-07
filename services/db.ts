@@ -40,6 +40,7 @@ import { getDownloadURL, ref, uploadBytesResumable } from '@firebase/storage';
 import { onChangeEventData, updateSelectedEvent } from '@/redux/eventSlice';
 import { setLanguages, setSpecialities } from '@/redux/appSlice';
 import moment from 'moment';
+import * as Device from 'expo-device';
 
 const handleError = (error: object) => {
   console.log('Error', error);
@@ -65,7 +66,7 @@ export const createUser = async (
       walletbalance: 0,
       profileimage: '',
       uid: auth.currentUser?.uid,
-      devicedetails: '',
+      devicedetails: Device.modelName || '',
       token: '',
       isOnline: false,
       lastupdatetime: serverTimestamp(),
@@ -400,7 +401,8 @@ export const updateDeviceToken = async (token: string) => {
       throw new Error('User is not authenticated');
     }
     const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, { token });
+    const devicedetails = Device.modelName || '';
+    await updateDoc(userRef, { token, devicedetails });
     return true;
   } catch (error: any) {
     handleError(error);
