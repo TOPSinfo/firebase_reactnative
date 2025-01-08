@@ -730,7 +730,12 @@ const Event = () => {
                 disabled={!editable}
                 onPress={onSelectNotification}
                 style={{ justifyContent: 'center' }}>
-                <Text style={[styles.input, { height: undefined }]}>
+                <Text
+                  style={{
+                    fontFamily: Fonts.PoppinsRegular,
+                    color: Colors.black1,
+                    fontSize: moderateScale(12),
+                  }}>
                   {selectedEvent.notify}
                 </Text>
               </TouchableOpacity>
@@ -749,10 +754,11 @@ const Event = () => {
                 />
                 <View style={{ justifyContent: 'center' }}>
                   <Text
-                    style={[
-                      styles.input,
-                      { height: undefined, color: getColor() },
-                    ]}>
+                    style={{
+                      fontFamily: Fonts.PoppinsRegular,
+                      fontSize: moderateScale(12),
+                      color: getColor(),
+                    }}>
                     {statusLabel()}
                   </Text>
                 </View>

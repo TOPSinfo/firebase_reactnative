@@ -424,10 +424,20 @@ const AstrologerEvent = () => {
               styles.fieldContainer,
               { height: horizontalScale(55), justifyContent: 'center' },
             ]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                flex: 1,
+              }}>
               <SvgImage url={Images.bell} style={styles.fieldIcon} />
               <View style={{ justifyContent: 'center' }}>
-                <Text style={[styles.input, { height: undefined }]}>
+                <Text
+                  style={{
+                    fontFamily: Fonts.PoppinsRegular,
+                    color: Colors.black1,
+                    fontSize: moderateScale(12),
+                  }}>
                   {selectedEvent.notify}
                 </Text>
               </View>
@@ -448,10 +458,11 @@ const AstrologerEvent = () => {
                 />
                 <View style={{ justifyContent: 'center' }}>
                   <Text
-                    style={[
-                      styles.input,
-                      { height: undefined, color: getColor() },
-                    ]}>
+                    style={{
+                      fontFamily: Fonts.PoppinsRegular,
+                      fontSize: moderateScale(12),
+                      color: getColor(),
+                    }}>
                     {statusLabel()}
                   </Text>
                 </View>

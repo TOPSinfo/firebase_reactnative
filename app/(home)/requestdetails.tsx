@@ -208,6 +208,7 @@ const styles = StyleSheet.create({
   icon: {
     height: verticalScale(16),
     width: verticalScale(16),
+    tintColor: Colors.grey,
   },
   label: {
     fontSize: moderateScale(12),

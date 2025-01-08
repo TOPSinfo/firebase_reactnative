@@ -52,7 +52,11 @@ const TabBarButton = ({ title, icon, onPress, focused }: any) => {
           }}
         />
       </View>
-      <Text style={[styles.tabTitle, { color: color }]}>{title}</Text>
+      <Text
+        maxFontSizeMultiplier={1.1}
+        style={[styles.tabTitle, { color: color }]}>
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 };

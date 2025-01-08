@@ -42,9 +42,11 @@ const BookingCard = ({ data }: any) => {
         style={{
           padding: horizontalScale(10),
           paddingLeft: horizontalScale(15),
+          flex: 1,
         }}>
         {userType === 'user' ? (
           <Text
+            numberOfLines={2}
             style={[
               styles.label,
               {
@@ -57,6 +59,7 @@ const BookingCard = ({ data }: any) => {
           </Text>
         ) : (
           <Text
+            numberOfLines={2}
             style={[
               styles.label,
               {

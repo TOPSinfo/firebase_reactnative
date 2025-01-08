@@ -229,7 +229,8 @@ const Details = () => {
             </View>
             <View
               style={{ flexDirection: 'row', marginTop: horizontalScale(10) }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View
+                style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                 <SvgImage
                   url={Images.language}
                   style={{
@@ -238,13 +239,16 @@ const Details = () => {
                     marginLeft: horizontalScale(3),
                   }}
                 />
-                <Text style={styles.skills}>{languages.join(', ')}</Text>
+                <Text numberOfLines={1} style={styles.skills}>
+                  {languages.join(', ')}
+                </Text>
               </View>
               <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                   marginLeft: horizontalScale(10),
+                  flex: 1,
                 }}>
                 <SvgImage
                   url={Images.skills}
@@ -254,7 +258,9 @@ const Details = () => {
                     marginLeft: horizontalScale(3),
                   }}
                 />
-                <Text style={styles.skills}>{specialities.join(', ')}</Text>
+                <Text numberOfLines={1} style={styles.skills}>
+                  {specialities.join(', ')}
+                </Text>
               </View>
             </View>
             <View
