@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import Button from '@/components/Button';
 import DateTimePicker from '@/components/DateTimePicker';
 import DetailsHeader from '@/components/DetailsHeader';
@@ -18,11 +24,13 @@ import { setLoading } from '@/redux/loadingSlice';
 import { updateProfile } from '@/services/db';
 import { useRouter } from 'expo-router';
 import { showSuccessMessage } from '@/utils/helper';
+import { useOTP } from '@/hooks/useOTPHook';
 
 const EditProfile = () => {
   const dispatch = useDispatch();
   const user = userSelector();
   const router = useRouter();
+  const { sendOTP, recaptcha } = useOTP();
   const { control, handleSubmit } = useForm({
     defaultValues: {
       fullname: user?.fullname || '',
@@ -35,20 +43,40 @@ const EditProfile = () => {
   });
 
   const onSubmit = async (data: any) => {
-    console.log('on submit', data);
     dispatch(setLoading(true));
-    const res = await updateProfile({
-      ...data,
-      profileimage: user.profileimage,
-    });
-    if (res) {
-      showSuccessMessage('Profile updated successfully');
-      router.back();
+    if (data.phone !== user.phone) {
+      const res = await sendOTP(data.phone);
+      if (res) {
+        dispatch(setLoading(false));
+        router.navigate({
+          pathname: '/otpverification',
+          params: {
+            verification: res,
+            phone: data.phone,
+            data: JSON.stringify({
+              ...data,
+              profileimage: encodeURIComponent(user.profileimage),
+            }),
+          },
+        });
+      }
+    } else {
+      const res = await updateProfile({
+        ...data,
+        profileimage: user.profileimage,
+      });
+      if (res) {
+        showSuccessMessage('Profile updated successfully');
+        router.back();
+      }
     }
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      enabled={Platform.OS == 'ios'}
+      behavior="padding">
       <DetailsHeader title="Profile" />
       <ScrollView showsVerticalScrollIndicator={false}>
         <ProfileCard isEdit={true} />
@@ -142,7 +170,8 @@ const EditProfile = () => {
           </View>
         </View>
       </ScrollView>
-    </View>
+      {recaptcha}
+    </KeyboardAvoidingView>
   );
 };
 

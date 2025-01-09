@@ -19,30 +19,23 @@ import OTPInput from '@/components/OTPInput';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useOTP } from '@/hooks/useOTPHook';
 import { showErrorMessage, showSuccessMessage } from '@/utils/helper';
-import { createUser } from '@/services/db';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '@/redux/loadingSlice';
 import { userAppColor } from '@/hooks/useAppColor';
 import { userTypeSelector } from '@/redux/selector';
+import { updateProfile } from '@/services/db';
+import { updateUserPhone } from '@/services/auth';
 
-const Otp = () => {
+const OtpVerification = () => {
   const [otp, setOtp] = useState('');
 
   const disptach = useDispatch();
-  const {
-    verification,
-    phone,
-    email,
-    fullName,
-    isLogin = '0',
-  } = useLocalSearchParams<{
+  const { verification, phone, data } = useLocalSearchParams<{
     verification: string;
     phone: string;
-    email: string;
-    fullName: string;
-    isLogin: string;
+    data: any;
   }>();
-  const { sendOTP, verifyOTP, recaptcha } = useOTP();
+  const { sendOTP, recaptcha } = useOTP();
   const color = userAppColor();
   const userType = userTypeSelector();
   const [verificationId, setVerificationId] = useState(verification);
@@ -59,16 +52,15 @@ const Otp = () => {
       return;
     }
     disptach(setLoading(true));
-    const res = await verifyOTP(verificationId, otp);
-    disptach(setLoading(false));
+    const res = await updateUserPhone(verificationId, otp);
     if (res) {
-      if (isLogin !== '1') {
-        const response = await createUser('+91' + phone, email, fullName);
-        if (response) {
-          router.replace('/(home)/(tabs)/home');
-        }
-      } else {
-        router.replace('/(home)/(tabs)/home');
+      const res = await updateProfile({
+        ...JSON.parse(data),
+      });
+      disptach(setLoading(false));
+      if (res) {
+        router.navigate('/(home)/profile');
+        showSuccessMessage('Profile updated successfully');
       }
     }
   };
@@ -89,7 +81,7 @@ const Otp = () => {
    * @returns {Promise<void>} A promise that resolves when the OTP is successfully resent.
    */
   const onResend = async () => {
-    const res = await sendOTP('+91' + phone);
+    const res = await sendOTP(phone);
     if (res) {
       setVerificationId(res);
       showSuccessMessage('OTP Re-sent successfully');
@@ -169,4 +161,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Otp;
+export default OtpVerification;

@@ -197,10 +197,8 @@ const Home = () => {
             <Text style={styles.label}>
               {userType == 'user' ? 'Top Astrologers' : 'Users Request'}
             </Text>
-            <TouchableOpacity>
-              <Text onPress={onViewAll} style={styles.viewAll}>
-                View All
-              </Text>
+            <TouchableOpacity onPress={onViewAll}>
+              <Text style={styles.viewAll}>View All</Text>
             </TouchableOpacity>
           </View>
           {userType == 'user' ? (
