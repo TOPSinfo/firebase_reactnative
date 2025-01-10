@@ -110,7 +110,7 @@ const Wallet = () => {
       <ScrollView
         contentContainerStyle={{ paddingBottom: horizontalScale(150) }}
         showsVerticalScrollIndicator={false}>
-        <View style={{ paddingHorizontal: horizontalScale(25) }}>
+        <View style={{ paddingHorizontal: horizontalScale(20) }}>
           <View>
             <SvgImage
               url={Images.wallet_card}

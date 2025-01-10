@@ -133,12 +133,14 @@ const styles = StyleSheet.create({
     padding: horizontalScale(10),
   },
   name: {
-    fontSize: horizontalScale(12),
+    fontSize: moderateScale(12),
+    lineHeight: moderateScale(16),
     fontFamily: Fonts.PoppinsMedium,
     color: Colors.black1,
   },
   skills: {
-    fontSize: horizontalScale(10),
+    fontSize: moderateScale(10),
+    lineHeight: moderateScale(14),
     fontFamily: Fonts.PoppinsRegular,
     color: Colors.grey,
   },

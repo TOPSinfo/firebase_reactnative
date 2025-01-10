@@ -5,6 +5,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import Button from '@/components/Button';
 import DateTimePicker from '@/components/DateTimePicker';
@@ -21,7 +22,7 @@ import moment from 'moment';
 import { userSelector } from '@/redux/selector';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '@/redux/loadingSlice';
-import { updateProfile } from '@/services/db';
+import { getUser, updateProfile } from '@/services/db';
 import { useRouter } from 'expo-router';
 import { showSuccessMessage } from '@/utils/helper';
 import { useOTP } from '@/hooks/useOTPHook';
@@ -31,7 +32,11 @@ const EditProfile = () => {
   const user = userSelector();
   const router = useRouter();
   const { sendOTP, recaptcha } = useOTP();
-  const { control, handleSubmit } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { isDirty },
+  } = useForm({
     defaultValues: {
       fullname: user?.fullname || '',
       phone: user?.phone || '',
@@ -72,12 +77,31 @@ const EditProfile = () => {
     }
   };
 
+  const onBack = () => {
+    if (isDirty || user.profileimage.includes('file://')) {
+      Alert.alert('Alert', 'Do you want to discard the changes?', [
+        {
+          text: 'Yes',
+          onPress: async () => {
+            await getUser();
+            router.back();
+          },
+        },
+        {
+          text: 'No',
+        },
+      ]);
+    } else {
+      router.back();
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
       enabled={Platform.OS == 'ios'}
       behavior="padding">
-      <DetailsHeader title="Profile" />
+      <DetailsHeader backPress={onBack} title="Profile" />
       <ScrollView showsVerticalScrollIndicator={false}>
         <ProfileCard isEdit={true} />
         <View style={{ paddingHorizontal: horizontalScale(25) }}>

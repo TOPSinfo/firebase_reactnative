@@ -18,11 +18,13 @@ const DetailsHeader = ({
   rightOption,
   isChat,
   profileImage,
+  backPress,
 }: {
   title: string;
   rightOption?: React.ReactNode;
   isChat?: boolean;
   profileImage?: string;
+  backPress?: () => void;
 }) => {
   const insets = useSafeAreaInsets();
   const frame = useSafeAreaFrame();
@@ -38,6 +40,10 @@ const DetailsHeader = ({
    * This function uses the router's `back` method to perform the navigation.
    */
   const onBack = () => {
+    if (backPress) {
+      backPress();
+      return;
+    }
     router.back();
   };
   return (

@@ -29,8 +29,10 @@ const Banner = () => {
         style={styles.banner}
       />
       <View style={styles.container}>
-        <Text style={styles.appointment}>Appointment</Text>
-        <Text style={styles.label}>
+        <Text maxFontSizeMultiplier={1.1} style={styles.appointment}>
+          Appointment
+        </Text>
+        <Text maxFontSizeMultiplier={1.1} style={styles.label}>
           {userType == 'user'
             ? 'Connect with astrologer by booking an appointment.'
             : 'Connect with users by accepting appointment request.'}

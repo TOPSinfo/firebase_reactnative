@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import Button from '@/components/Button';
 import DateTimePicker from '@/components/DateTimePicker';
@@ -27,11 +28,12 @@ import {
 } from '@/redux/selector';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '@/redux/loadingSlice';
-import { getAppointmentSlots, updateProfile } from '@/services/db';
+import { getAppointmentSlots, getUser, updateProfile } from '@/services/db';
 import { useRouter } from 'expo-router';
 import { showSuccessMessage } from '@/utils/helper';
 import AppointmentSlot from '@/components/AppointmentSlot';
 import MultiselectModal from '@/components/MultiselectModal';
+import { useOTP } from '@/hooks/useOTPHook';
 
 const EditAstroProfile = () => {
   const [languageModal, setLanguageModal] = useState(false);
@@ -40,10 +42,15 @@ const EditAstroProfile = () => {
   const dispatch = useDispatch();
   const user = userSelector();
   const router = useRouter();
+  const { sendOTP, recaptcha } = useOTP();
 
   const languageList = languageListSelector();
   const specialityList = specialityListSelector();
-  const { control, handleSubmit } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { isDirty },
+  } = useForm({
     defaultValues: {
       fullname: user?.fullname || '',
       phone: user?.phone || '',
@@ -67,13 +74,31 @@ const EditAstroProfile = () => {
 
   const onSubmit = async (data: any) => {
     dispatch(setLoading(true));
-    const res = await updateProfile({
-      ...data,
-      profileimage: user.profileimage,
-    });
-    if (res) {
-      showSuccessMessage('Profile updated successfully');
-      router.back();
+    if (data.phone !== user.phone) {
+      const res = await sendOTP(data.phone);
+      if (res) {
+        dispatch(setLoading(false));
+        router.navigate({
+          pathname: '/otpverification',
+          params: {
+            verification: res,
+            phone: data.phone,
+            data: JSON.stringify({
+              ...data,
+              profileimage: encodeURIComponent(user.profileimage),
+            }),
+          },
+        });
+      }
+    } else {
+      const res = await updateProfile({
+        ...data,
+        profileimage: user.profileimage,
+      });
+      if (res) {
+        showSuccessMessage('Profile updated successfully');
+        router.back();
+      }
     }
   };
 
@@ -127,12 +152,35 @@ const EditAstroProfile = () => {
     );
   };
 
+  const onBack = () => {
+    if (isDirty || user.profileimage.includes('file://')) {
+      Alert.alert('Alert', 'Do you want to discard the changes?', [
+        {
+          text: 'Yes',
+          onPress: async () => {
+            await getUser();
+            router.back();
+          },
+        },
+        {
+          text: 'No',
+        },
+      ]);
+    } else {
+      router.back();
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
       enabled={Platform.OS == 'ios'}
       behavior="padding">
-      <DetailsHeader title="Profile" rightOption={renderRight()} />
+      <DetailsHeader
+        backPress={onBack}
+        title="Profile"
+        rightOption={renderRight()}
+      />
       <ScrollView showsVerticalScrollIndicator={false}>
         <ProfileCard isEdit={true} />
         <View style={{ padding: horizontalScale(25) }}>
@@ -321,6 +369,7 @@ const EditAstroProfile = () => {
           </View>
         </View>
       </ScrollView>
+      {recaptcha}
     </KeyboardAvoidingView>
   );
 };

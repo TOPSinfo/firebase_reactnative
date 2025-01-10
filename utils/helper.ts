@@ -5,6 +5,8 @@ import { showMessage } from 'react-native-flash-message';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import { MessageType } from 'react-native-flash-message';
+
 const sunSignData = [
   {
     name: 'Aries',
@@ -65,8 +67,6 @@ export const showSuccessMessage = (message: string, title = 'Success') => {
     statusBarHeight: StatusBar.currentHeight,
   });
 };
-
-import { MessageType } from 'react-native-flash-message';
 
 export const showErrorMessage = (message: string) => {
   showMessage({
