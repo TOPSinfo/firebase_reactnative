@@ -57,7 +57,7 @@ export const createUser = async (
   try {
     store.dispatch(setLoading(true));
     const usertype = store.getState().user.userType;
-    const usersRef = collection(db, 'users');
+    const usersRef = collection(db, 'user');
     const userData: any = {
       phone,
       email,
@@ -69,6 +69,8 @@ export const createUser = async (
       devicedetails: Device.modelName || '',
       token: '',
       isOnline: false,
+      socialid: '',
+      socialtype: '',
       lastupdatetime: serverTimestamp(),
       createdat: serverTimestamp(),
     };
@@ -98,7 +100,7 @@ export const createUser = async (
 export const isUserExist = async (phone: string) => {
   try {
     const q = query(
-      collection(db, 'users'),
+      collection(db, 'user'),
       where('phone', '==', phone),
       where('usertype', '==', store.getState().user.userType)
     );
@@ -117,7 +119,7 @@ export const isUserExist = async (phone: string) => {
 
 export const getUser = async () => {
   try {
-    const usersRef = collection(db, 'users');
+    const usersRef = collection(db, 'user');
     const docRef = doc(usersRef, auth.currentUser?.uid);
     const querySnapshot = await getDoc(docRef);
     if (!querySnapshot.exists()) {
@@ -135,7 +137,7 @@ export const getUser = async () => {
 export const getAstrologers = async () => {
   try {
     const astrologersRef = query(
-      collection(db, 'users'),
+      collection(db, 'user'),
       where('usertype', '==', 'astrologer')
     );
     const querySnapshot = await getDocs(astrologersRef);
@@ -151,7 +153,7 @@ export const getAstrologers = async () => {
 
 export const getAstrologer = async (id: string) => {
   try {
-    const astrologersRef = collection(db, 'users');
+    const astrologersRef = collection(db, 'user');
     const docRef = doc(astrologersRef, id);
     const reviewRef = collection(docRef, 'rating');
     const [astrologer, reviews] = await Promise.all([
@@ -284,7 +286,7 @@ export const deductWalletBalance = async (amount: number) => {
     if (!uid) {
       throw new Error('User is not authenticated');
     }
-    const userRef = doc(db, 'users', uid);
+    const userRef = doc(db, 'user', uid);
     await updateDoc(userRef, { walletbalance: increment(-amount) });
     await getUser();
     return true;
@@ -300,7 +302,7 @@ export const topupWallet = async (data: any) => {
     if (!uid) {
       throw new Error('User is not authenticated');
     }
-    const userRef = doc(db, 'users', uid);
+    const userRef = doc(db, 'user', uid);
     await updateDoc(userRef, { walletbalance: increment(data.amount) });
     await getUser();
     addTransaction(data);
@@ -381,7 +383,7 @@ export const updateProfile = async (data: any) => {
       }
     };
     await uploadIfNeeded('profileimage');
-    const userRef = doc(db, 'users', uid);
+    const userRef = doc(db, 'user', uid);
     await updateDoc(userRef, {
       ...data,
       lastupdatetime: serverTimestamp(),
@@ -400,7 +402,7 @@ export const updateDeviceToken = async (token: string) => {
     if (!uid) {
       throw new Error('User is not authenticated');
     }
-    const userRef = doc(db, 'users', uid);
+    const userRef = doc(db, 'user', uid);
     const devicedetails = Device.modelName || '';
     await updateDoc(userRef, { token, devicedetails });
     return true;
@@ -423,7 +425,7 @@ export const updateEventStatus = async (id: string, status: string) => {
 
 export const getUserPhoneNumber = async (id: string) => {
   try {
-    const userRef = doc(db, 'users', id);
+    const userRef = doc(db, 'user', id);
     const querySnapshot = await getDoc(userRef);
     if (querySnapshot.exists()) {
       store.dispatch(updateSelectedEvent(querySnapshot.data().phone));
@@ -464,9 +466,9 @@ export const saveAppointmentSlot = async (data: any) => {
     if (!uid) {
       throw new Error('User is not authenticated');
     }
-    const appointmentSlotRef = doc(collection(db, 'users', uid, 'timeslot'));
+    const appointmentSlotRef = doc(collection(db, 'user', uid, 'timeslot'));
     if (data.timeslotid) {
-      const timeslotRef = doc(db, 'users', uid, 'timeslot', data.timeslotid);
+      const timeslotRef = doc(db, 'user', uid, 'timeslot', data.timeslotid);
       await updateDoc(timeslotRef, {
         ...data,
       });
@@ -492,7 +494,7 @@ export const getAppointmentSlots = async () => {
     if (!uid) {
       throw new Error('User is not authenticated');
     }
-    const q = query(collection(db, 'users', uid, 'timeslot'));
+    const q = query(collection(db, 'user', uid, 'timeslot'));
     const querySnapshot = await getDocs(q);
     const appointmentSlots: any = [];
     querySnapshot.forEach(doc => {
@@ -511,7 +513,7 @@ export const deleteAppointmentSlot = async (id: string) => {
     if (!uid) {
       throw new Error('User is not authenticated');
     }
-    const appointmentSlotRef = doc(db, 'users', uid, 'timeslot', id);
+    const appointmentSlotRef = doc(db, 'user', uid, 'timeslot', id);
     await deleteDoc(appointmentSlotRef);
     await getAppointmentSlots();
     store.dispatch(setLoading(false));
@@ -529,7 +531,7 @@ export const addTransaction = async (data: any) => {
       throw new Error('User is not authenticated');
     }
     const transactionRef = doc(
-      collection(db, 'users', uid, 'transactionhistory')
+      collection(db, 'user', uid, 'transactionhistory')
     );
     await setDoc(transactionRef, {
       amount: data.amount,
@@ -561,7 +563,7 @@ export const getTransactionHistory = async () => {
     }
     store.dispatch(setLoading(true));
     const q = query(
-      collection(db, 'users', uid, 'transactionhistory'),
+      collection(db, 'user', uid, 'transactionhistory'),
       orderBy('createdat', 'desc')
     );
     const querySnapshot = await getDocs(q);
@@ -602,7 +604,7 @@ export const sendMessage = async (
       ...data,
       timestamp: serverTimestamp(),
     });
-    const receiverDoc = doc(db, 'users', data.receiverid);
+    const receiverDoc = doc(db, 'user', data.receiverid);
     const receiver = await getDoc(receiverDoc);
     if (receiver.exists()) {
       const receiverData = receiver.data();

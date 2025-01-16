@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  BackHandler,
 } from 'react-native';
 import Button from '@/components/Button';
 import DateTimePicker from '@/components/DateTimePicker';
@@ -22,8 +23,8 @@ import moment from 'moment';
 import { userSelector } from '@/redux/selector';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '@/redux/loadingSlice';
-import { getUser, updateProfile } from '@/services/db';
-import { useRouter } from 'expo-router';
+import { updateProfile } from '@/services/db';
+import { useNavigation, useRouter } from 'expo-router';
 import { showSuccessMessage } from '@/utils/helper';
 import { useOTP } from '@/hooks/useOTPHook';
 
@@ -44,8 +45,23 @@ const EditProfile = () => {
       birthdate: user?.birthdate || '',
       birthtime: user?.birthtime || '',
       birthplace: user?.birthplace || '',
+      profileimage: user?.profileimage || '',
     },
   });
+
+  useEffect(() => {
+    const backAction = () => {
+      onBack();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [isDirty]);
 
   const onSubmit = async (data: any) => {
     dispatch(setLoading(true));
@@ -60,7 +76,7 @@ const EditProfile = () => {
             phone: data.phone,
             data: JSON.stringify({
               ...data,
-              profileimage: encodeURIComponent(user.profileimage),
+              profileimage: encodeURIComponent(data.profileimage),
             }),
           },
         });
@@ -68,7 +84,7 @@ const EditProfile = () => {
     } else {
       const res = await updateProfile({
         ...data,
-        profileimage: user.profileimage,
+        profileimage: data.profileimage,
       });
       if (res) {
         showSuccessMessage('Profile updated successfully');
@@ -78,12 +94,11 @@ const EditProfile = () => {
   };
 
   const onBack = () => {
-    if (isDirty || user.profileimage.includes('file://')) {
+    if (isDirty) {
       Alert.alert('Alert', 'Do you want to discard the changes?', [
         {
           text: 'Yes',
-          onPress: async () => {
-            await getUser();
+          onPress: () => {
             router.back();
           },
         },
@@ -103,7 +118,13 @@ const EditProfile = () => {
       behavior="padding">
       <DetailsHeader backPress={onBack} title="Profile" />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <ProfileCard isEdit={true} />
+        <Controller
+          control={control}
+          name="profileimage"
+          render={({ field: { onChange, value } }) => (
+            <ProfileCard isEdit={true} profile={value} onChange={onChange} />
+          )}
+        />
         <View style={{ paddingHorizontal: horizontalScale(25) }}>
           <Textinput
             control={control}

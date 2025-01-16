@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  BackHandler,
 } from 'react-native';
 import Button from '@/components/Button';
 import DateTimePicker from '@/components/DateTimePicker';
@@ -28,7 +29,7 @@ import {
 } from '@/redux/selector';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '@/redux/loadingSlice';
-import { getAppointmentSlots, getUser, updateProfile } from '@/services/db';
+import { getAppointmentSlots, updateProfile } from '@/services/db';
 import { useRouter } from 'expo-router';
 import { showSuccessMessage } from '@/utils/helper';
 import AppointmentSlot from '@/components/AppointmentSlot';
@@ -61,6 +62,7 @@ const EditAstroProfile = () => {
       price: user?.price || '',
       experience: user?.experience || '',
       aboutyou: user?.aboutyou || '',
+      profileimage: user?.profileimage || '',
     },
   });
 
@@ -71,6 +73,20 @@ const EditAstroProfile = () => {
   useEffect(() => {
     fetchAppointmentSlots();
   }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      onBack();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [isDirty]);
 
   const onSubmit = async (data: any) => {
     dispatch(setLoading(true));
@@ -85,7 +101,7 @@ const EditAstroProfile = () => {
             phone: data.phone,
             data: JSON.stringify({
               ...data,
-              profileimage: encodeURIComponent(user.profileimage),
+              profileimage: encodeURIComponent(data.profileimage),
             }),
           },
         });
@@ -93,7 +109,7 @@ const EditAstroProfile = () => {
     } else {
       const res = await updateProfile({
         ...data,
-        profileimage: user.profileimage,
+        profileimage: data.profileimage,
       });
       if (res) {
         showSuccessMessage('Profile updated successfully');
@@ -153,12 +169,11 @@ const EditAstroProfile = () => {
   };
 
   const onBack = () => {
-    if (isDirty || user.profileimage.includes('file://')) {
+    if (isDirty) {
       Alert.alert('Alert', 'Do you want to discard the changes?', [
         {
           text: 'Yes',
-          onPress: async () => {
-            await getUser();
+          onPress: () => {
             router.back();
           },
         },
@@ -182,7 +197,13 @@ const EditAstroProfile = () => {
         rightOption={renderRight()}
       />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <ProfileCard isEdit={true} />
+        <Controller
+          control={control}
+          name="profileimage"
+          render={({ field: { onChange, value } }) => (
+            <ProfileCard isEdit={true} profile={value} onChange={onChange} />
+          )}
+        />
         <View style={{ padding: horizontalScale(25) }}>
           <Text
             style={{

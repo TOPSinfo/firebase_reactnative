@@ -9,14 +9,19 @@ import { Fonts } from '@/constants/Fonts';
 import { getSunSign } from '@/utils/helper';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import { useDispatch } from 'react-redux';
-import { updateProfileImage } from '@/redux/userSlice';
 import { userAppColor } from '@/hooks/useAppColor';
 
-const ProfileCard = ({ isEdit = false }) => {
+const ProfileCard = ({
+  isEdit = false,
+  profile,
+  onChange,
+}: {
+  isEdit?: boolean;
+  profile: string;
+  onChange?: (url: string) => void;
+}) => {
   const router = useRouter();
   const user = userSelector();
-  const dispatch = useDispatch();
 
   const sunSign = getSunSign(user?.fullname);
   const userType = userTypeSelector();
@@ -32,7 +37,7 @@ const ProfileCard = ({ isEdit = false }) => {
       });
 
       if (!result.canceled) {
-        dispatch(updateProfileImage({ profileimage: result.assets[0].uri }));
+        onChange && onChange(result.assets[0].uri);
       }
     } else {
       if (userType == 'user') {
@@ -108,9 +113,9 @@ const ProfileCard = ({ isEdit = false }) => {
       ]}>
       <View style={[styles.profileContainer]}>
         <View style={styles.profile}>
-          {user.profileimage ? (
+          {profile ? (
             <SvgImage
-              url={user.profileimage}
+              url={profile}
               style={{
                 height: verticalScale(105),
                 width: verticalScale(105),

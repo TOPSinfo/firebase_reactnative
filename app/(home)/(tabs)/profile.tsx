@@ -20,7 +20,7 @@ import * as Application from 'expo-application';
 import { useDispatch } from 'react-redux';
 import { setUser } from '@/redux/userSlice';
 import { userAppColor } from '@/hooks/useAppColor';
-import { userTypeSelector } from '@/redux/selector';
+import { userSelector, userTypeSelector } from '@/redux/selector';
 import { updateDeviceToken } from '@/services/db';
 
 const Option = ({
@@ -53,6 +53,7 @@ const Option = ({
 const Profile = () => {
   const dispatch = useDispatch();
   const userType = userTypeSelector();
+  const user = userSelector();
   const onLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       {
@@ -90,7 +91,7 @@ const Profile = () => {
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <ProfileCard />
+        <ProfileCard profile={user?.profileimage || ''} />
         <View style={{ padding: horizontalScale(25) }}>
           <View style={styles.optionContainer}>
             <Option
