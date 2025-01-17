@@ -10,7 +10,6 @@ import FlashMessage from 'react-native-flash-message';
 import 'react-native-reanimated';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import { useNetInfo } from '@react-native-community/netinfo';
 import Nointernet from './nointernet';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -18,8 +17,6 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFontsHook();
-
-  const { isConnected } = useNetInfo();
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -30,14 +27,7 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) {
     return null;
   }
-  if (!isConnected) {
-    return (
-      <View style={{ flex: 1 }}>
-        <Nointernet />
-        <StatusBar style="dark" translucent={true} />
-      </View>
-    );
-  }
+
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
@@ -48,6 +38,7 @@ export default function RootLayout() {
         </Stack>
         <Loading />
         <FlashMessage position="top" />
+        <Nointernet />
         <StatusBar style="dark" translucent={true} />
       </PersistGate>
     </Provider>

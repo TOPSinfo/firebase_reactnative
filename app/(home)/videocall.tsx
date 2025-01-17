@@ -22,7 +22,7 @@ import {
 import RazorpayCheckout from 'react-native-razorpay';
 import { Colors } from '@/constants/Colors';
 
-const videocall = () => {
+const Videocall = () => {
   const [callId, setCallId] = useState<string | null>(null);
   const [notificationId, setNotificationId] = useState<string | null>(null);
   const jitsiMeeting = useRef(null);
@@ -221,4 +221,4 @@ const videocall = () => {
   );
 };
 
-export default videocall;
+export default Videocall;

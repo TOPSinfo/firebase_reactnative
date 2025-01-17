@@ -42,7 +42,7 @@ import { Fonts } from '@/constants/Fonts';
 import * as ImagePicker from 'expo-image-picker';
 import * as Notifications from 'expo-notifications';
 import { StatusBar } from 'expo-status-bar';
-const chat = () => {
+const Chat = () => {
   const [messageText, setmessageText] = useState('');
   const [loadMore, setLoadMore] = useState(false);
   const { boookingid, username, profileimage, receiverid, status } =
@@ -417,4 +417,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default chat;
+export default Chat;

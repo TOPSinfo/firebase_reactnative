@@ -5,7 +5,7 @@ import TransactionHistory from '@/components/TransactionHistory';
 import { Colors } from '@/constants/Colors';
 import { getTransactionHistory } from '@/services/db';
 
-const transactionshistory = () => {
+const Transactionshistory = () => {
   const fetchTransactionHistory = async () => {
     await getTransactionHistory();
   };
@@ -22,4 +22,4 @@ const transactionshistory = () => {
   );
 };
 
-export default transactionshistory;
+export default Transactionshistory;

@@ -35,6 +35,7 @@ import { setLoading } from '@/redux/loadingSlice';
 import { registerForPushNotificationsAsync } from '@/utils/helper';
 import * as Notifications from 'expo-notifications';
 import { setDeviceToken } from '@/redux/appSlice';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({

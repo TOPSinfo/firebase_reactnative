@@ -16,7 +16,7 @@ import { updateBookingStatus } from '@/redux/userSlice';
 import { showSuccessMessage } from '@/utils/helper';
 import { router } from 'expo-router';
 
-const requestdetails = () => {
+const Requestdetails = () => {
   const dispatch = useDispatch();
   const selectedEvent = selectedEventSelector();
 
@@ -224,4 +224,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default requestdetails;
+export default Requestdetails;
