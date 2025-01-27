@@ -28,6 +28,14 @@ const AstrologerCard = ({
 }: AstrologerCardProps) => {
   const specialities = useSpeciality(skills);
 
+  /**
+   * Navigates to the details page with the given astrologer's ID.
+   *
+   * This function uses the router to push a new route to the details page,
+   * passing the astrologer's ID as a parameter.
+   *
+   * @function
+   */
   const onBookNow = () => {
     router.push({ pathname: '/(home)/details', params: { id } });
   };

@@ -17,6 +17,7 @@ const AppointmentSlot = () => {
 
   const dispatch = useDispatch();
 
+  // Function to handle the press event for adding a new appointment slot
   const onAddPress = () => {
     router.navigate('/(home)/appointmentslot');
   };
@@ -30,17 +31,37 @@ const AppointmentSlot = () => {
     );
   };
 
+  /**
+   * Handles the press event for editing an appointment slot.
+   * Dispatches an action to set the selected slot and navigates to the appointment slot page.
+   *
+   * @param {any} slot - The appointment slot to be edited.
+   */
   const onEditPress = (slot: any) => {
     dispatch(setSelectedSlot(slot));
     router.navigate('/(home)/appointmentslot');
   };
 
+  /**
+   * Deletes an appointment slot by its ID and shows a success message if the deletion is successful.
+   *
+   * @param {string} id - The ID of the appointment slot to delete.
+   * @returns {Promise<void>} A promise that resolves when the deletion is complete.
+   */
   const onDelete = async (id: string) => {
     const res = await deleteAppointmentSlot(id);
     if (res) {
       showSuccessMessage('Appointment Slot deleted successfully');
     }
   };
+
+  /**
+   * Handles the delete button press event for an appointment slot.
+   * Displays a confirmation alert before proceeding with the deletion.
+   *
+   * @param {string} id - The unique identifier of the appointment slot to be deleted.
+   * @returns {Promise<void>} A promise that resolves when the alert is dismissed.
+   */
   const onDeletePress = async (id: string) => {
     Alert.alert(
       'Delete Appointment Slot',
@@ -58,6 +79,16 @@ const AppointmentSlot = () => {
     );
   };
 
+  /**
+   * Renders the day or range of days for a given appointment slot.
+   *
+   * @param {any} slot - The appointment slot object. It can have different types:
+   *   - If the slot type is 'Custom', it returns the start date.
+   *   - If the slot type is 'Repeat', it returns a string with the start date and end date.
+   *   - Otherwise, it returns a comma-separated string of repeat days.
+   *
+   * @returns {string} - The formatted date or range of dates for the appointment slot.
+   */
   const renderSlotDay = (slot: any) => {
     if (slot.type == 'Custom') return slot.startdate;
     if (slot.type == 'Repeat') return slot.startdate + ' to ' + slot.enddate;

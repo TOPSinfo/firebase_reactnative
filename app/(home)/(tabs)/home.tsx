@@ -54,6 +54,20 @@ const Home = () => {
   const deviceToken = deviceTokenSelector();
   const dispatch = useDispatch();
 
+  /**
+   * Handles incoming notifications and navigates to the chat screen if the notification type is 'chat'.
+   *
+   * @param {any} data - The notification data.
+   * @returns {Promise<void>} - A promise that resolves when the notification handling is complete.
+   *
+   * The function performs the following steps:
+   * 1. Logs the notification data to the console.
+   * 2. Checks if the notification type is 'chat'.
+   * 3. If the type is 'chat', it fetches the booking details using the booking ID from the notification data.
+   * 4. Finds the astrologer associated with the booking.
+   * 5. Constructs the chat data based on the user type (either 'user' or 'astrologer').
+   * 6. Navigates to the chat screen with the constructed chat data as parameters.
+   */
   const handleNotification = async (data: any) => {
     console.log('Notification data', data);
     if (data.type === 'chat') {
@@ -84,6 +98,15 @@ const Home = () => {
     }
   };
 
+  /**
+   * Retrieves the initial notification response asynchronously.
+   * If a notification response is found, logs the notification content
+   * and handles the notification data if available.
+   *
+   * @async
+   * @function getInitialNotification
+   * @returns {Promise<void>} A promise that resolves when the notification response is processed.
+   */
   const getInitialNotification = async () => {
     const response = await Notifications.getLastNotificationResponseAsync();
     if (response) {

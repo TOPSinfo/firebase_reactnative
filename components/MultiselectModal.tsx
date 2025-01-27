@@ -32,6 +32,12 @@ const MultiselectModal = ({
     setSelected(value);
   }, [visible]);
 
+  /**
+   * Handles the selection of an item. If the item is not already selected, it adds the item's id to the selected list.
+   * If the item is already selected, it removes the item's id from the selected list.
+   *
+   * @param {any} item - The item to be selected or deselected. The item is expected to have an `id` property.
+   */
   const onSelect = (item: any) => {
     const index = selected.findIndex(i => i === item.id);
     if (index === -1) {
@@ -41,11 +47,19 @@ const MultiselectModal = ({
     }
   };
 
+  /**
+   * Handles the cancel button press event.
+   * Clears the selected items and closes the modal.
+   */
   const onCancelPress = () => {
     setSelected([]);
     onClose();
   };
 
+  /**
+   * Handles the submit button press event.
+   * Calls the `onSubmit` function with the selected items and then closes the modal.
+   */
   const onSubmitPress = () => {
     onSubmit(selected);
     onClose();

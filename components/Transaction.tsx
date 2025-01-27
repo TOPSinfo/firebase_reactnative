@@ -10,6 +10,11 @@ import moment from 'moment';
 const Transaction = ({ transaction }: { transaction: any }) => {
   const isDebit = transaction.transactiontype == 'debit';
 
+  /**
+   * Renders the transaction type based on the transaction's type.
+   *
+   * @returns {string} A string indicating whether the transaction is a debit or credit.
+   */
   const renderTransactionType = () => {
     if (transaction.transactiontype === 'debit') {
       return `Sent from`;
@@ -18,6 +23,11 @@ const Transaction = ({ transaction }: { transaction: any }) => {
     }
   };
 
+  /**
+   * Renders the appropriate icon based on the transaction type and payment type.
+   *
+   * @returns {string} The URL of the icon image.
+   */
   const renderIcon = () => {
     if (isDebit) {
       if (transaction.paymenttype === 'wallet') {

@@ -106,6 +106,15 @@ const Chat = () => {
     }
   }, []);
 
+  /**
+   * Handles sending messages.
+   *
+   * @param {any} messages - The messages to be sent. Expects an array with at least one message object.
+   * @returns {Promise<void>} - A promise that resolves when the message is sent.
+   *
+   * The function constructs a data object from the first message in the array and additional user and receiver information.
+   * It then logs the data object to the console and sends the message using the sendMessage function.
+   */
   const onSend = async (messages: any) => {
     if (messages.length > 0) {
       const data = {
@@ -191,10 +200,23 @@ const Chat = () => {
     );
   };
 
+  /**
+   * Navigates the user to the video call page when called.
+   *
+   * This function uses the router to navigate to the '/(home)/videocall' route.
+   */
   const onCallPress = () => {
     router.navigate('/(home)/videocall');
   };
 
+  /**
+   * Ends the chat session by calling the `endChat` function with the booking ID.
+   * If the chat session is successfully ended, navigates to the my bookings page.
+   *
+   * @async
+   * @function endChatSession
+   * @returns {Promise<void>} A promise that resolves when the chat session is ended and the navigation is complete.
+   */
   const endChatSession = async () => {
     const res = await endChat(boookingid);
     if (res) {
@@ -202,6 +224,11 @@ const Chat = () => {
     }
   };
 
+  /**
+   * Handles the end chat button press event.
+   * Displays a confirmation alert to the user.
+   * If the user confirms, the chat session is ended.
+   */
   const onEndPress = async () => {
     Alert.alert('End Chat', 'Are you sure you want to end chat?', [
       {
@@ -250,6 +277,15 @@ const Chat = () => {
     );
   };
 
+  /**
+   * Handles the attachment button press event.
+   * Launches the image library for the user to pick an image.
+   * If an image is selected, sends the image as a message.
+   *
+   * @async
+   * @function onPressAttachment
+   * @returns {Promise<void>} A promise that resolves when the image is sent as a message.
+   */
   const onPressAttachment = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -310,6 +346,14 @@ const Chat = () => {
     );
   };
 
+  /**
+   * Loads more messages by calling the `getMoreMessages` function with the sender and receiver IDs.
+   * Updates the state with the result of the call.
+   *
+   * @async
+   * @function onLoadMore
+   * @returns {Promise<void>} A promise that resolves when the messages are loaded and the state is updated.
+   */
   const onLoadMore = async () => {
     const res = await getMoreMessages({
       senderid: userdata.uid,

@@ -37,20 +37,38 @@ const DateTimePicker = ({
 }: DateTimePickerProps) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
+  /**
+   * Function to show the date picker by setting its visibility to true.
+   */
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
 
+  /**
+   * Hides the date picker by setting its visibility state to false.
+   */
   const hideDatePicker = () => {
     setDatePickerVisibility(false);
   };
 
+  /**
+   * Handles the confirmation of the date picker.
+   *
+   * @param date - The selected date.
+   */
   const handleConfirm = (date: Date) => {
     console.log('A date has been picked: ', date);
     onSelect(date);
     hideDatePicker();
   };
 
+  /**
+   * Determines the minimum date for the date picker.
+   * If the current value is less than the minimum date, it returns the current value.
+   * Otherwise, it returns the minimum date.
+   *
+   * @returns The minimum date for the date picker.
+   */
   const handleMinimumDate = () => {
     if (minDate && value && moment(value, 'DD MMM YYYY').toDate() < minDate)
       return moment(value, 'DD MMM YYYY').toDate();

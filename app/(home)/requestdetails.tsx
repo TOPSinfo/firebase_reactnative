@@ -20,6 +20,14 @@ const Requestdetails = () => {
   const dispatch = useDispatch();
   const selectedEvent = selectedEventSelector();
 
+  /**
+   * Fetches the user's phone number based on the selected event's UID.
+   * Dispatches a loading state before making the request.
+   *
+   * @async
+   * @function fetchUserPhone
+   * @returns {Promise<void>} A promise that resolves when the phone number is fetched.
+   */
   const fetchUserPhone = async () => {
     dispatch(setLoading(true));
     await getUserPhoneNumber(selectedEvent.uid);
@@ -32,6 +40,17 @@ const Requestdetails = () => {
     };
   }, []);
 
+  /**
+   * Handles the acceptance of a request.
+   *
+   * This function updates the status of the selected event to 'approved' by calling the `updateEventStatus` function.
+   * If the update is successful, it dispatches an action to update the booking status in the state,
+   * shows a success message, and navigates back to the previous page.
+   *
+   * @async
+   * @function onAccept
+   * @returns {Promise<void>} A promise that resolves when the request has been processed.
+   */
   const onAccept = async () => {
     const res = await updateEventStatus(selectedEvent.id, 'approved');
     if (res) {
@@ -43,6 +62,17 @@ const Requestdetails = () => {
     }
   };
 
+  /**
+   * Handles the rejection of an event request.
+   *
+   * This function updates the status of the selected event to 'rejected' by calling the `updateEventStatus` function.
+   * If the status update is successful, it dispatches an action to update the booking status in the state,
+   * shows a success message, and navigates back to the previous page.
+   *
+   * @async
+   * @function onReject
+   * @returns {Promise<void>} A promise that resolves when the rejection process is complete.
+   */
   const onReject = async () => {
     const res = await updateEventStatus(selectedEvent.id, 'rejected');
     if (res) {

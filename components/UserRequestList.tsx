@@ -13,6 +13,12 @@ const UserRequestList = ({ scrollable = false }: { scrollable?: boolean }) => {
   const dispatch = useDispatch();
   const myBookings = myBookingsSelector();
 
+  /**
+   * Handles the press event on a user request item.
+   *
+   * @param {any} item - The user request item that was pressed.
+   * @returns {void}
+   */
   const onRequestPress = (item: any) => {
     dispatch(setSelectedEvent(item));
     router.navigate('/(home)/requestdetails');

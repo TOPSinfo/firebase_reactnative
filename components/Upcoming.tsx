@@ -12,6 +12,11 @@ type UpcomingProps = {
 
 const Upcoming = ({ logo, title, color }: UpcomingProps) => {
   const router = useRouter();
+
+  /**
+   * Navigates to the "coming soon" page when called.
+   * This function uses the router to push the user to the specified path.
+   */
   const onPress = () => {
     router.push('/(home)/comingsoon');
   };

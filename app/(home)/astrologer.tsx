@@ -16,10 +16,19 @@ const SelectAstrologer = () => {
 
   const [astrologersList, setAstrologersList] = useState(astrologers);
 
+  /**
+   * Handles the filter action by setting the filter visibility to true.
+   * This function is typically called when the user wants to apply a filter.
+   */
   const onFilter = () => {
     setFilterVisible(true);
   };
 
+  /**
+   * Resets the filter visibility and restores the astrologers list to its original state.
+   *
+   * This function is typically used to clear any applied filters and display the full list of astrologers.
+   */
   const onReset = () => {
     setFilterVisible(false);
     setAstrologersList(astrologers);

@@ -14,6 +14,7 @@ const Banner = () => {
   const userType = userTypeSelector();
   const color = userAppColor();
 
+  // Function to handle button press based on user type
   const onPress = () => {
     if (userType == 'user') {
       router.navigate('/(home)/astrologer');

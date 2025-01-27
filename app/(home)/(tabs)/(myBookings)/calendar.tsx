@@ -68,14 +68,35 @@ const Calendar = () => {
     setTime(bookingTime);
   }, [date, bookings]);
 
+  /**
+   * Handles the press event on the calendar.
+   * Navigates back to the previous route using the router.
+   */
   const onCalendarPress = () => {
     router.back();
   };
 
+  /**
+   * Handles the press event for adding a new booking.
+   * Navigates to the astrologer screen using the router.
+   */
   const onAddPress = () => {
     router.navigate('/(home)/astrologer');
   };
 
+  /**
+   * Returns the color corresponding to the given status.
+   *
+   * @param {string} status - The status of the booking.
+   * @returns {string} - The color associated with the given status.
+   *
+   * Possible status values and their corresponding colors:
+   * - 'approved': Colors.blue
+   * - 'waiting': Colors.yellow
+   * - 'rejected': Colors.orange
+   * - 'deleted': Colors.red1
+   * - default: Colors.green
+   */
   const getColor = (status: string) => {
     switch (status) {
       case 'approved':
@@ -91,6 +112,19 @@ const Calendar = () => {
     }
   };
 
+  /**
+   * Returns the appropriate icon based on the given status.
+   *
+   * @param {string} status - The status of the booking.
+   * @returns {ImageSource} - The corresponding icon for the given status.
+   *
+   * Possible status values:
+   * - 'approved': Returns the check icon.
+   * - 'waiting': Returns the clock icon.
+   * - 'rejected': Returns the close icon.
+   * - 'deleted': Returns the delete icon.
+   * - Any other value: Returns the double check icon.
+   */
   const getIcon = (status: string) => {
     switch (status) {
       case 'approved':
@@ -145,6 +179,12 @@ const Calendar = () => {
     );
   };
 
+  /**
+   * Handles the press event for a booking.
+   * Dispatches the selected event to the Redux store and navigates to the event screen.
+   *
+   * @param {Object} booking - The booking object that was pressed.
+   */
   const onEventPress = (booking: any) => {
     dispatch(setSelectedEvent(booking));
     router.navigate('/(home)/eventscreen');

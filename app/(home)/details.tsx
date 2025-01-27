@@ -100,6 +100,15 @@ const Details = () => {
     setShowReadMore(false);
   };
 
+  /**
+   * Handles the "Book Now" button click event.
+   * Dispatches an action to update event data with the selected astrologer's details
+   * and navigates to the event screen.
+   *
+   * @async
+   * @function onBookNow
+   * @returns {Promise<void>} A promise that resolves when the action is dispatched and navigation is complete.
+   */
   const onBookNow = async () => {
     disptach(
       onChangeEventData({
@@ -116,10 +125,21 @@ const Details = () => {
     return <ReviewCard key={item.id} item={item} />;
   };
 
+  /**
+   * Handles the "Next" button click event.
+   * Updates the state to the next day's date.
+   */
   const onNext = () => {
     setDate(moment(date, 'DD MMM').add(1, 'days').format('DD MMM YYYY'));
   };
 
+  /**
+   * Handles the action to go to the previous date.
+   * If the current date is the same as today's date, the function will return without making any changes.
+   * Otherwise, it will set the date to the previous day.
+   *
+   * @returns {void}
+   */
   const onPrev = () => {
     if (
       moment(date, 'DD MMM YYYY').format('DD MMM YYYY') ==

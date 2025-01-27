@@ -63,6 +63,20 @@ const EditProfile = () => {
     return () => backHandler.remove();
   }, [isDirty]);
 
+  /**
+   * Handles the form submission for updating the user profile.
+   *
+   * @param {any} data - The form data containing user profile information.
+   * @returns {Promise<void>} - A promise that resolves when the submission is complete.
+   *
+   * The function performs the following steps:
+   * 1. Dispatches an action to set the loading state to true.
+   * 2. Checks if the phone number in the form data is different from the user's current phone number.
+   *    - If different, sends an OTP to the new phone number.
+   *    - If the OTP is sent successfully, navigates to the OTP verification page with the necessary parameters.
+   * 3. If the phone number is the same, updates the user profile with the provided data.
+   *    - If the profile update is successful, shows a success message and navigates back to the previous page.
+   */
   const onSubmit = async (data: any) => {
     dispatch(setLoading(true));
     if (data.phone !== user.phone) {
@@ -93,6 +107,12 @@ const EditProfile = () => {
     }
   };
 
+  /**
+   * Handles the back navigation action.
+   * If there are unsaved changes (isDirty is true), it shows an alert to confirm
+   * whether the user wants to discard the changes. If the user confirms, it navigates back.
+   * If there are no unsaved changes, it directly navigates back.
+   */
   const onBack = () => {
     if (isDirty) {
       Alert.alert('Alert', 'Do you want to discard the changes?', [

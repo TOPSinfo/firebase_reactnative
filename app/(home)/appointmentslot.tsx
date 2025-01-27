@@ -77,11 +77,32 @@ const AppointmentSlot = () => {
 
   const selectedSlot = selectedSlotSelector();
   const dispatch = useDispatch();
+
+  /**
+   * Handles the closing of the appointment slot modal.
+   * Dispatches an action to reset the selected slot and navigates back to the previous page.
+   *
+   * @returns {void}
+   */
   const onClose = () => {
     dispatch(resetSelectedSlot());
     router.back();
   };
 
+  /**
+   * Handles the save operation for an appointment slot.
+   *
+   * This function performs validation checks based on the type of the selected slot
+   * (Repeat, Weekly, or Custom) and ensures that all required fields are filled and
+   * logically correct (e.g., start date is before end date, start time is before end time).
+   * If any validation fails, an error message is shown.
+   *
+   * If all validations pass, the appointment slot is saved and the selected slot is reset.
+   *
+   * @async
+   * @function onSave
+   * @returns {Promise<void>} A promise that resolves when the save operation is complete.
+   */
   const onSave = async () => {
     if (selectedSlot.type == 'Repeat') {
       if (!selectedSlot.startdate || !selectedSlot.enddate) {
@@ -146,10 +167,23 @@ const AppointmentSlot = () => {
     );
   };
 
+  /**
+   * Closes the slot option modal by setting the state to false.
+   *
+   * This function is typically called when the user wants to close the modal
+   * that displays slot options. It updates the state to ensure the modal is
+   * no longer visible.
+   */
   const onSlotOptionModalClose = () => {
     setSlotOptionModal(false);
   };
 
+  /**
+   * Handles the selection of a slot option.
+   *
+   * @param {string} type - The type of slot selected.
+   * @returns {void}
+   */
   const onSlotOptionSelect = (type: string) => {
     dispatch(setSelectedSlot({ ...selectedSlot, type }));
     onSlotOptionModalClose();
@@ -181,10 +215,20 @@ const AppointmentSlot = () => {
     );
   };
 
+  /**
+   * Handles the press event for the slot option.
+   * When called, it sets the state to show the slot option modal.
+   */
   const onSlotOptionPress = () => {
     setSlotOptionModal(true);
   };
 
+  /**
+   * Handles the selection of a start date for an appointment slot.
+   *
+   * @param {Date} date - The selected start date.
+   * @returns {void}
+   */
   const onSelectStartDate = (date: Date) => {
     dispatch(
       setSelectedSlot({
@@ -194,6 +238,12 @@ const AppointmentSlot = () => {
     );
   };
 
+  /**
+   * Handles the selection of the end date for an appointment slot.
+   *
+   * @param {Date} date - The selected end date.
+   * @returns {void}
+   */
   const onSelectEndDate = (date: Date) => {
     dispatch(
       setSelectedSlot({
@@ -203,6 +253,12 @@ const AppointmentSlot = () => {
     );
   };
 
+  /**
+   * Handles the selection of a start time for an appointment slot.
+   *
+   * @param {Date} date - The selected start time as a Date object.
+   * @returns {void}
+   */
   const onSelectStartTime = (date: Date) => {
     dispatch(
       setSelectedSlot({
@@ -212,6 +268,12 @@ const AppointmentSlot = () => {
     );
   };
 
+  /**
+   * Handles the selection of the end time for an appointment slot.
+   *
+   * @param {Date} date - The selected end time as a Date object.
+   * @returns {void}
+   */
   const onSelectEndTime = (date: Date) => {
     dispatch(
       setSelectedSlot({
@@ -221,6 +283,14 @@ const AppointmentSlot = () => {
     );
   };
 
+  /**
+   * Handles the event when a day is pressed.
+   * Toggles the presence of the given day in the `repeatdays` array of the selected slot.
+   * If the day is already in the array, it removes it; otherwise, it adds it.
+   * Dispatches an action to update the selected slot with the new `repeatdays` array.
+   *
+   * @param day - The day to be toggled in the `repeatdays` array.
+   */
   const onDayPress = (day: string) => {
     const repeatdays = selectedSlot.repeatdays.includes(day)
       ? selectedSlot.repeatdays.filter((item: string) => item !== day)

@@ -90,10 +90,18 @@ const AstrologerEvent = () => {
     };
   }, []);
 
+  /**
+   * Handles the close event by navigating back to the previous page.
+   * This function is typically used to close a modal or a popup.
+   */
   const onClose = () => {
     router.back();
   };
 
+  /**
+   * Handles the press event for editing.
+   * Sets the editable state to true.
+   */
   const onEditPress = () => {
     setEditable(true);
   };
@@ -145,6 +153,20 @@ const AstrologerEvent = () => {
     }
   };
 
+  /**
+   * Handles the update of the selected event status.
+   *
+   * This function performs the following steps:
+   * 1. Checks if the selected event status is 'waiting'. If so, it shows an error message and returns early.
+   * 2. Dispatches an action to set the loading state to true.
+   * 3. Calls the `updateEventStatus` function to update the status of the selected event.
+   * 4. If the status update is successful, it fetches the updated bookings, sets the loading state to false,
+   *    shows a success message, and closes the modal.
+   *
+   * @async
+   * @function onUpdate
+   * @returns {Promise<void>} A promise that resolves when the update process is complete.
+   */
   const onUpdate = async () => {
     if (selectedEvent.status == 'waiting') {
       showErrorMessage('Please update pending approval status.');
@@ -161,14 +183,27 @@ const AstrologerEvent = () => {
     }
   };
 
+  /**
+   * Handles the selection of a pending status.
+   * This function sets the modal state to true, indicating that the modal should be displayed.
+   */
   const onSelectPendingStatus = () => {
     setModal(true);
   };
 
+  /**
+   * Handles the closing of the accept/reject modal by setting the modal state to false.
+   */
   const onAcceptRejectModalClose = () => {
     setModal(false);
   };
 
+  /**
+   * Handles the selection of a status and updates the event data accordingly.
+   *
+   * @param {string} status - The selected status to be set for the event.
+   * @returns {void}
+   */
   const onStatusSelect = (status: string) => {
     dispatch(onChangeEventData({ status }));
     setModal(false);
@@ -201,22 +236,57 @@ const AstrologerEvent = () => {
     );
   };
 
+  /**
+   * Handles the change event for the details input field.
+   *
+   * @param text - The new text value for the description.
+   */
   const onChangeDetails = (text: string) => {
     dispatch(onChangeEventData({ description: text }));
   };
 
+  /**
+   * Handles the selection of a date and dispatches an action to update the event data with the selected date.
+   *
+   * @param {Date} date - The selected date.
+   */
   const onSelectDate = (date: Date) => {
     dispatch(onChangeEventData({ date: moment(date).format('DD MMM YYYY') }));
   };
 
+  /**
+   * Handles the selection of the start time for an event.
+   *
+   * @param date - The selected date and time.
+   */
   const onSelectStartTime = (date: Date) => {
     dispatch(onChangeEventData({ startTime: moment(date).format('hh:mm A') }));
   };
 
+  /**
+   * Handles the selection of the end time for an event.
+   *
+   * @param date - The selected end time as a Date object.
+   */
   const onSelectEndTime = (date: Date) => {
     dispatch(onChangeEventData({ endTime: moment(date).format('hh:mm A') }));
   };
 
+  /**
+   * Navigates to the chat page with the selected event's details as query parameters.
+   *
+   * @function
+   * @name onJoinCallorChat
+   * @returns {void}
+   *
+   * @description
+   * This function uses the Next.js router to navigate to the '/chat' page. It passes the following parameters:
+   * - `username`: The username of the selected event.
+   * - `profileimage`: The URL-encoded profile image of the selected event's user.
+   * - `receiverid`: The unique ID of the selected event's user.
+   * - `boookingid`: The booking ID of the selected event (optional).
+   * - `status`: The status of the selected event (optional).
+   */
   const onJoinCallorChat = () => {
     router.push({
       pathname: '/chat',
@@ -230,6 +300,18 @@ const AstrologerEvent = () => {
     });
   };
 
+  /**
+   * Returns the color corresponding to the status of the selected event.
+   *
+   * @returns {string} The color associated with the event status.
+   *
+   * The possible statuses and their corresponding colors are:
+   * - 'approved': Colors.blue
+   * - 'waiting': Colors.yellow
+   * - 'rejected': Colors.orange
+   * - 'deleted': Colors.red1
+   * - default: Colors.green
+   */
   const getColor = () => {
     switch (selectedEvent.status) {
       case 'approved':
@@ -245,6 +327,18 @@ const AstrologerEvent = () => {
     }
   };
 
+  /**
+   * Returns the icon corresponding to the status of the selected event.
+   *
+   * @returns {string} The icon associated with the event status.
+   *
+   * The possible statuses and their corresponding icons are:
+   * - 'approved': Images.check
+   * - 'waiting': Images.clock
+   * - 'rejected': Images.close
+   * - 'deleted': Images.delete
+   * - default: Images.double_check
+   */
   const getIcon = () => {
     switch (selectedEvent.status) {
       case 'approved':
@@ -260,6 +354,18 @@ const AstrologerEvent = () => {
     }
   };
 
+  /**
+   * Returns the label corresponding to the status of the selected event.
+   *
+   * @returns {string} The label associated with the event status.
+   *
+   * The possible statuses and their corresponding labels are:
+   * - 'approved': 'Approved'
+   * - 'waiting': 'Pending Approval'
+   * - 'rejected': 'Rejected'
+   * - 'deleted': 'Deleted'
+   * - default: 'Completed'
+   */
   const statusLabel = () => {
     switch (selectedEvent.status) {
       case 'approved':

@@ -92,6 +92,14 @@ const FilterModal = ({
   const statusBarHeight = insets.top;
   const defaultHeight = getDefaultHeaderHeight(frame, false, statusBarHeight);
 
+  /**
+   * Resets the filter options to their default state.
+   *
+   * This function updates the `options` state by mapping through each option and resetting
+   * the `selected` property. If `selectMultiple` is true, `selected` is set to an empty array.
+   * Otherwise, it is set to an empty string. After resetting the options, it calls the
+   * `onResetFilter` function to perform any additional reset actions.
+   */
   const onReset = () => {
     setOptions(
       options.map(option => ({
@@ -102,6 +110,19 @@ const FilterModal = ({
     onResetFilter();
   };
 
+  /**
+   * Handles the application of filters by extracting selected options and
+   * invoking the `onApplyFilter` function with the extracted values.
+   *
+   * @remarks
+   * The function assumes that `options` is an array where:
+   * - `options[0].selected` is a string representing the selected sort option.
+   * - `options[1].selected` is an array of strings representing the selected skills.
+   * - `options[2].selected` is an array of strings representing the selected languages.
+   * - `options[3].selected` is a string representing the selected gender.
+   *
+   * @returns void
+   */
   const onApply = () => {
     const sort = options[0].selected as string;
     const skills = options[1].selected as string[];
@@ -110,10 +131,22 @@ const FilterModal = ({
     onApplyFilter(sort, skills, language, gender);
   };
 
+  /**
+   * Handles the change of the selected option.
+   *
+   * @param index - The index of the newly selected option.
+   */
   const onChangeOption = (index: number) => {
     setCurrentOption(index);
   };
 
+  /**
+   * Handles the selection of an item. If the current option allows multiple selections,
+   * it will add or remove the item from the selected list. Otherwise, it will set the
+   * selected item to the provided item.
+   *
+   * @param item - The item to be selected or deselected. It contains an `id` property.
+   */
   const onSelect = (item: { id: string }) => {
     if (options[currentOption].selectMultiple) {
       const selected = options[currentOption].selected || [];

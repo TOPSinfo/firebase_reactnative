@@ -20,10 +20,12 @@ const Thankyou = () => {
   const statusBarHeight = insets.top;
   const defaultHeight = getDefaultHeaderHeight(frame, false, statusBarHeight);
 
+  // Function to handle the close button press, navigates back to the previous screen
   const onClose = () => {
     router.back();
   };
 
+  // Function to handle the home button press, navigates to the home screen
   const onHome = () => {
     router.navigate('/(home)/(tabs)/home');
   };

@@ -37,6 +37,17 @@ const UserRequestCard = ({
     onPress && onPress();
   };
 
+  /**
+   * Handles the acceptance of a user request.
+   *
+   * This function updates the event status to 'approved' and, if successful,
+   * dispatches an action to update the booking status in the state and shows
+   * a success message.
+   *
+   * @async
+   * @function onAccept
+   * @returns {Promise<void>} A promise that resolves when the operation is complete.
+   */
   const onAccept = async () => {
     const res = await updateEventStatus(id, 'approved');
     if (res) {
@@ -45,6 +56,17 @@ const UserRequestCard = ({
     }
   };
 
+  /**
+   * Handles the rejection of a user request.
+   *
+   * This function updates the event status to 'rejected' and, if successful,
+   * dispatches an action to update the booking status in the state and shows
+   * a success message to the user.
+   *
+   * @async
+   * @function onReject
+   * @returns {Promise<void>} A promise that resolves when the operation is complete.
+   */
   const onReject = async () => {
     const res = await updateEventStatus(id, 'rejected');
     if (res) {

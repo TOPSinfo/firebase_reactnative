@@ -27,6 +27,18 @@ const ProfileCard = ({
   const userType = userTypeSelector();
   const color = userAppColor();
 
+  /**
+   * Handles the edit button press event.
+   *
+   * If `isEdit` is true, it opens the image library for the user to pick an image.
+   * If an image is selected and not canceled, it triggers the `onChange` callback with the selected image URI.
+   *
+   * If `isEdit` is false, it navigates to the appropriate edit profile page based on the `userType`.
+   *
+   * @async
+   * @function onEditPress
+   * @returns {Promise<void>}
+   */
   const onEditPress = async () => {
     if (isEdit) {
       let result = await ImagePicker.launchImageLibraryAsync({

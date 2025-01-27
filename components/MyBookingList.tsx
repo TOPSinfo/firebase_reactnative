@@ -24,6 +24,8 @@ const MyBookingList = () => {
   const color = userAppColor();
 
   const dispatch = useDispatch();
+
+  // Function to fetch bookings from the database and update the loading state
   const fetchBookings = async () => {
     dispatch(setLoading(true));
     const res = await getMyBookings();
@@ -40,6 +42,11 @@ const MyBookingList = () => {
     }, [])
   );
 
+  /**
+   * Handles the tab press event and updates the current tab index.
+   *
+   * @param index - The index of the tab that was pressed.
+   */
   const onTabPress = (index: number) => {
     setTab(index);
   };

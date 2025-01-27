@@ -34,6 +34,7 @@ const Videocall = () => {
 
   console.log('Selected Event', selectedEvent);
 
+  // Function to end the call and update the call log
   const endCall = async () => {
     if (callId) {
       await updateCallLog(callId, selectedEvent.bookingid);
@@ -56,6 +57,22 @@ const Videocall = () => {
     };
   }, []);
 
+  /**
+   * Handles the payment process by opening the Razorpay checkout with the specified options.
+   *
+   * @param {number} amount - The amount to be paid in INR.
+   * @returns {Promise<any>} - A promise that resolves when the Razorpay checkout is completed.
+   *
+   * The options object includes:
+   * - description: A description of the service.
+   * - image: A URL to the logo image.
+   * - currency: The currency code (INR).
+   * - key: The Razorpay API key.
+   * - amount: The amount to be paid in paise (amount * 100).
+   * - name: The name of the service provider.
+   * - prefill: An object containing pre-filled user details (email, contact, name).
+   * - theme: An object containing theme customization options (color).
+   */
   const handlePayment = async (amount: number) => {
     var options: any = {
       description: 'Asrtology Service',
@@ -75,6 +92,21 @@ const Videocall = () => {
     return RazorpayCheckout.open(options);
   };
 
+  /**
+   * Processes the payment for a selected event.
+   *
+   * @param {string} docId - The document ID associated with the event.
+   * @returns {Promise<void>} - A promise that resolves when the payment process is complete.
+   *
+   * @throws Will log an error and show an error message if the payment process fails.
+   *
+   * The function performs the following steps:
+   * 1. Calculates the payment amount based on the astrologer's charge.
+   * 2. Initiates the payment process using the calculated amount.
+   * 3. Constructs a data object with payment details and user information.
+   * 4. Extends the call log with the payment details.
+   * 5. Registers a timer for the call duration.
+   */
   const processPayment = async (docId: string) => {
     try {
       const amount = selectedEvent.astrologercharge * 15;
@@ -104,6 +136,15 @@ const Videocall = () => {
     console.log('You got a message!');
   }, []);
 
+  /**
+   * Registers a timer to end the video call after a specified duration.
+   *
+   * If the `userType` is 'user', this function sets a timeout to close the
+   * Jitsi meeting and navigate back to the previous page after 10 minutes (600 seconds).
+   *
+   * @remarks
+   * This function relies on the `jitsiMeeting` reference and `router` for navigation.
+   */
   const registerEndTimer = () => {
     if (userType == 'user') {
       setTimeout(() => {
@@ -113,6 +154,14 @@ const Videocall = () => {
     }
   };
 
+  /**
+   * Registers a timer that triggers an alert to remind the user that their meeting is about to end.
+   * If the user chooses to extend the meeting, a payment process is initiated.
+   * If the user chooses to close the alert, the end timer is registered.
+   *
+   * @param {string} docId - The document ID associated with the meeting.
+   * @param {number} [time] - Optional time in minutes before the end of the meeting to trigger the reminder. Defaults to 10 minutes before the end.
+   */
   const registerTimer = (docId: string, time?: number) => {
     if (userType == 'user') {
       const totalTime = calculateMinutes(

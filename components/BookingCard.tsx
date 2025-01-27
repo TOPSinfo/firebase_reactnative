@@ -27,6 +27,15 @@ const BookingCard = ({ data }: any) => {
     }
   }, [data.status]);
 
+  /**
+   * Handles the event press action.
+   * Dispatches the selected event data to the store and navigates to the event screen.
+   *
+   * @remarks
+   * This function is triggered when an event is pressed.
+   *
+   * @returns {void}
+   */
   const onEventPress = () => {
     dispatch(setSelectedEvent(data));
     router.navigate('/(home)/eventscreen');

@@ -50,18 +50,53 @@ const Wallet = () => {
     }, [])
   );
 
+  /**
+   * Handles the press event for an option and sets the selected amount.
+   *
+   * @param {string} value - The value of the selected option.
+   */
   const onOptionPress = (value: string) => {
     setAmount(value);
   };
 
+  /**
+   * Event handler for the focus event.
+   * Sets the `isFocused` state to `true` when the element gains focus.
+   */
   const onFocus = () => {
     setIsFocused(true);
   };
 
+  /**
+   * Event handler for the blur event.
+   * This function is called when the input field loses focus.
+   * It sets the `isFocused` state to `false`.
+   */
   const onBlur = () => {
     setIsFocused(false);
   };
 
+  /**
+   * Handles the payment process using Razorpay.
+   *
+   * This function sets up the payment options and opens the Razorpay checkout interface.
+   *
+   * @async
+   * @function handlePayment
+   * @returns {Promise<void>} A promise that resolves when the Razorpay checkout is opened.
+   *
+   * @description The payment options include details such as the description, image, currency, API key, amount,
+   * user details (email, contact, name), and theme color. The amount is multiplied by 100 to convert it to the smallest currency unit.
+   *
+   * @example
+   * ```typescript
+   * handlePayment().then(() => {
+   *   console.log('Payment process initiated');
+   * }).catch((error) => {
+   *   console.error('Error initiating payment:', error);
+   * });
+   * ```
+   */
   const handlePayment = async () => {
     var options: any = {
       description: 'Wallet Topup',
@@ -81,6 +116,19 @@ const Wallet = () => {
     return RazorpayCheckout.open(options);
   };
 
+  /**
+   * Handles the top-up button press event.
+   *
+   * This function validates the entered amount, initiates the payment process,
+   * and updates the wallet balance upon successful payment. If the payment is
+   * unsuccessful, it displays an error message.
+   *
+   * @async
+   * @function onTopupPress
+   * @returns {Promise<void>} A promise that resolves when the top-up process is complete.
+   *
+   * @throws Will throw an error if the payment process fails.
+   */
   const onTopupPress = async () => {
     if (!/^\d+(\.\d+)?$/.test(amount)) {
       showErrorMessage('Please enter valid amount');

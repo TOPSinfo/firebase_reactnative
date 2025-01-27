@@ -20,6 +20,11 @@ const RadioOpion = ({
 }) => {
   const userType = userTypeSelector();
 
+  /**
+   * Returns the appropriate image based on the selection state, user type, and whether multiple selections are allowed.
+   *
+   * @returns {string} The image path corresponding to the current state.
+   */
   const returnImage = () => {
     if (isSelected) {
       if (userType == 'user') {

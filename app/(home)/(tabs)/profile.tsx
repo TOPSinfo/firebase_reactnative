@@ -54,6 +54,15 @@ const Profile = () => {
   const dispatch = useDispatch();
   const userType = userTypeSelector();
   const user = userSelector();
+
+  /**
+   * Handles the logout process by displaying a confirmation alert.
+   * If the user confirms, it performs the following actions:
+   * - Clears the device token.
+   * - Signs out the user from the authentication service.
+   * - Redirects the user to the authentication screen.
+   * - Dispatches an action to clear the user state in the Redux store.
+   */
   const onLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       {
@@ -71,10 +80,22 @@ const Profile = () => {
     ]);
   };
 
+  /**
+   * Navigates the user to the booking history page.
+   *
+   * This function uses the router to navigate to the booking history page
+   * within the home section of the application.
+   */
   const onBookingHistory = () => {
     router.navigate('/(home)/bookinghistory');
   };
 
+  /**
+   * Navigates the user to the transaction history page.
+   *
+   * This function uses the router to navigate to the transaction history page
+   * located at '/(home)/transactionshistory'.
+   */
   const onTransactionHistory = () => {
     router.navigate('/(home)/transactionshistory');
   };

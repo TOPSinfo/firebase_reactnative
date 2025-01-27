@@ -108,6 +108,14 @@ const Event = () => {
     }
   }, []);
 
+  /**
+   * Checks if a slot is available for the selected event.
+   *
+   * This function checks if the `selectedEvent` has a `date`, `starttime`, and `endtime` defined.
+   * If all these properties are present, it calls the `checkDateAndTimeSlot` function with the `selectedEvent` as an argument.
+   *
+   * @returns {Promise<void>} A promise that resolves when the slot availability check is complete.
+   */
   const checkSlotAvailable = async () => {
     if (selectedEvent.date && selectedEvent.starttime && selectedEvent.endtime)
       await checkDateAndTimeSlot(selectedEvent);
@@ -125,14 +133,33 @@ const Event = () => {
     );
   }, [selectedEvent.starttime, selectedEvent.endtime]);
 
+  /**
+   * Handles the close event by navigating back to the previous page.
+   * Utilizes the router's back method to achieve this.
+   */
   const onClose = () => {
     router.back();
   };
 
+  /**
+   * Handles the press event for editing.
+   * Sets the editable state to true.
+   */
   const onEditPress = () => {
     setEditable(true);
   };
 
+  /**
+   * Handles the deletion of a booking event.
+   *
+   * This function dispatches a loading state, attempts to delete the booking
+   * associated with the selected event, and upon successful deletion, it
+   * dispatches the loading state off, shows a success message, and closes the event.
+   *
+   * @async
+   * @function onDelete
+   * @returns {Promise<void>} A promise that resolves when the booking deletion process is complete.
+   */
   const onDelete = async () => {
     dispatch(setLoading(true));
     const res = await deleteBooking(selectedEvent.bookingid);
@@ -143,6 +170,12 @@ const Event = () => {
     }
   };
 
+  /**
+   * Handles the press event for deleting a booking.
+   *
+   * This function displays an alert to confirm the deletion of the booking request.
+   * If the user confirms, it calls the `onDelete` function to proceed with the deletion.
+   */
   const onDeletePress = () => {
     Alert.alert(
       'Delete',
@@ -248,6 +281,29 @@ const Event = () => {
     );
   };
 
+  /**
+   * Handles the payment process using Razorpay.
+   *
+   * @param {number} amount - The amount to be paid in INR.
+   * @returns {Promise<any>} - A promise that resolves when the Razorpay checkout is completed.
+   *
+   * @description
+   * This function initializes the Razorpay payment options and opens the Razorpay checkout.
+   * The payment options include details such as description, image, currency, API key, amount,
+   * user details (email, contact, name), and theme color.
+   *
+   * @example
+   * ```typescript
+   * const amountToPay = 500;
+   * handlePayment(amountToPay)
+   *   .then((response) => {
+   *     console.log('Payment successful:', response);
+   *   })
+   *   .catch((error) => {
+   *     console.error('Payment failed:', error);
+   *   });
+   * ```
+   */
   const handlePayment = async (amount: number) => {
     var options: any = {
       description: 'Asrtology Service',
@@ -267,6 +323,25 @@ const Event = () => {
     return RazorpayCheckout.open(options);
   };
 
+  /**
+   * Handles the booking process for an event. It validates the selected event details,
+   * checks for slot availability, and processes the payment if required. Depending on
+   * the `isUpdate` flag, it either updates an existing booking or creates a new one.
+   *
+   * @param {boolean} [isUpdate=false] - Indicates whether the booking is an update or a new booking.
+   * @returns {Promise<void>} - A promise that resolves when the booking process is complete.
+   *
+   * @throws Will show an error message if any required field is missing, if the start time is not less than the end time,
+   * if the astrologer is not available, or if the payment mode is not selected when the amount is greater than zero.
+   *
+   * @example
+   * // To create a new booking
+   * onBookNow();
+   *
+   * @example
+   * // To update an existing booking
+   * onBookNow(true);
+   */
   const onBookNow = async (isUpdate = false) => {
     if (
       !selectedEvent.date ||
@@ -375,14 +450,27 @@ const Event = () => {
     }
   };
 
+  /**
+   * Handles the selection of a notification.
+   * Sets the state to display the notification modal.
+   */
   const onSelectNotification = () => {
     setNotificationModal(true);
   };
 
+  /**
+   * Closes the notification modal by setting the state to false.
+   */
   const onNotificaitonModalClose = () => {
     setNotificationModal(false);
   };
 
+  /**
+   * Handles the selection of a notification option.
+   *
+   * @param {string} notify - The type of notification selected.
+   * @param {string} notificationmin - The time in minutes for the notification.
+   */
   const onNotificationSelect = (notify: string, notificationmin: string) => {
     dispatch(onChangeEventData({ notify, notificationmin }));
     setNotificationModal(false);
@@ -435,14 +523,30 @@ const Event = () => {
     );
   };
 
+  /**
+   * Handles the selection of a payment mode by setting the state to show the payment mode modal.
+   * @function
+   */
   const onPaymentModeSelect = () => {
     setPaymentModeModal(true);
   };
 
+  /**
+   * Closes the payment mode modal by setting the state to false.
+   */
   const onPaymentModeClose = () => {
     setPaymentModeModal(false);
   };
 
+  /**
+   * Handles the selection of a payment mode.
+   *
+   * This function checks if the selected payment mode is 'wallet' and if the user's wallet balance is sufficient.
+   * If the balance is insufficient, it closes the payment mode modal and shows an error message.
+   * Otherwise, it dispatches the selected payment mode and closes the modal.
+   *
+   * @param {string} paymenttype - The selected payment mode.
+   */
   const onSelectPaymentMode = (paymenttype: string) => {
     if (paymenttype == 'wallet' && amount > userdata.walletbalance) {
       setPaymentModeModal(false);
@@ -480,6 +584,15 @@ const Event = () => {
     );
   };
 
+  /**
+   * Handles the photo upload process by launching the image library,
+   * allowing the user to select and edit an image, and then dispatching
+   * an action to update the event data with the selected photo's URI.
+   *
+   * @async
+   * @function onUploadPhoto
+   * @returns {Promise<void>} A promise that resolves when the photo upload process is complete.
+   */
   const onUploadPhoto = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -495,6 +608,15 @@ const Event = () => {
     }
   };
 
+  /**
+   * Handles the upload of a Kundali image by opening the image library,
+   * allowing the user to select and edit an image, and then dispatching
+   * an action to update the event data with the selected image URI.
+   *
+   * @async
+   * @function onUploadKundali
+   * @returns {Promise<void>} A promise that resolves when the image has been selected and the event data has been updated.
+   */
   const onUploadKundali = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -510,40 +632,94 @@ const Event = () => {
     }
   };
 
+  /**
+   * Handles the change event for the event details input.
+   *
+   * @param text - The new description text for the event.
+   */
   const onChangeDetails = (text: string) => {
     dispatch(onChangeEventData({ description: text }));
   };
 
+  /**
+   * Handles the selection of a date and dispatches an action to update the event data with the selected date.
+   *
+   * @param {Date} date - The selected date.
+   */
   const onSelectDate = (date: Date) => {
     dispatch(onChangeEventData({ date: moment(date).format('DD MMM YYYY') }));
   };
 
+  /**
+   * Handles the selection of the start time for an event.
+   *
+   * @param date - The selected date object.
+   */
   const onSelectStartTime = (date: Date) => {
     dispatch(onChangeEventData({ starttime: moment(date).format('hh:mm A') }));
   };
 
+  /**
+   * Handles the selection of the end time for an event.
+   *
+   * @param {Date} date - The selected end time as a Date object.
+   * @returns {void}
+   */
   const onSelectEndTime = (date: Date) => {
     dispatch(onChangeEventData({ endtime: moment(date).format('hh:mm A') }));
   };
 
+  /**
+   * Handles the change event for the full name input field.
+   *
+   * @param text - The new full name entered by the user.
+   */
   const onChangeFullName = (text: string) => {
     dispatch(onChangeEventData({ fullname: text }));
   };
 
+  /**
+   * Handles the selection of a date of birth.
+   *
+   * @param date - The selected date of birth.
+   */
   const onSelectDateOfBirth = (date: Date) => {
     dispatch(
       onChangeEventData({ birthdate: moment(date).format('DD MMM YYYY') })
     );
   };
 
+  /**
+   * Handles the selection of the time of birth.
+   *
+   * @param date - The selected date object.
+   * @returns void
+   */
   const onSelectTimeOfBirth = (date: Date) => {
     dispatch(onChangeEventData({ birthtime: moment(date).format('hh:mm A') }));
   };
 
+  /**
+   * Handles the change event for the place of birth input field.
+   *
+   * @param text - The new place of birth entered by the user.
+   */
   const onChangePlaceOfBirth = (text: string) => {
     dispatch(onChangeEventData({ birthplace: text }));
   };
 
+  /**
+   * Navigates to the chat screen with the selected event's astrologer details.
+   *
+   * @remarks
+   * This function is triggered when the call button is pressed. It uses the router
+   * to navigate to the chat screen, passing along necessary parameters such as
+   * the astrologer's username, profile image, receiver ID, booking ID, and status.
+   *
+   * @param {void}
+   *
+   * @returns {void}
+   */
   const onCallPress = () => {
     router.navigate({
       pathname: '/(home)/chat',
@@ -570,6 +746,11 @@ const Event = () => {
     });
   };
 
+  /**
+   * Returns the color associated with the current status of the selected event.
+   *
+   * @returns {string} The color corresponding to the event status.
+   */
   const getColor = () => {
     switch (selectedEvent.status) {
       case 'approved':
@@ -585,6 +766,11 @@ const Event = () => {
     }
   };
 
+  /**
+   * Returns the icon associated with the current status of the selected event.
+   *
+   * @returns {string} The icon corresponding to the event status.
+   */
   const getIcon = () => {
     switch (selectedEvent.status) {
       case 'approved':
@@ -600,6 +786,11 @@ const Event = () => {
     }
   };
 
+  /**
+   * Returns the label associated with the current status of the selected event.
+   *
+   * @returns {string} The label corresponding to the event status.
+   */
   const statusLabel = () => {
     switch (selectedEvent.status) {
       case 'approved':

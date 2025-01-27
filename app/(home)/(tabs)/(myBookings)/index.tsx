@@ -13,10 +13,22 @@ const MyBookings = () => {
   const router = useRouter();
   const userType = userTypeSelector();
 
+  /**
+   * Navigates to the calendar page within the myBookings tab.
+   *
+   * This function uses the router to push a new route to the calendar page
+   * located at '/(home)/(tabs)/(myBookings)/calendar'.
+   */
   const onCalendarPress = () => {
     router.push('/(home)/(tabs)/(myBookings)/calendar');
   };
 
+  /**
+   * Navigates to the astrologer page when the add button is pressed.
+   *
+   * This function is triggered when the user presses the add button.
+   * It uses the router to navigate to the '/(home)/astrologer' route.
+   */
   const onAddPress = () => {
     router.navigate('/(home)/astrologer');
   };

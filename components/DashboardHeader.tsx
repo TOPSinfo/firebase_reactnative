@@ -24,6 +24,7 @@ const DashboardHeader = () => {
 
   const userData = userSelector();
 
+  // Function to handle notification button press
   const onNotificationPress = () => {
     router.navigate('/(home)/notifications');
   };
