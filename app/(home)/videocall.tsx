@@ -264,8 +264,9 @@ const Videocall = () => {
       }}
       room={'astro_appointment'}
       //serverURL={'https://meet.jit.si/'}
-      serverURL="https://meet.ffmuc.net/"
-      //serverURL="https://meet.guifi.net"
+      //serverURL="https://meet.ffmuc.net/"
+      // serverURL="https://meet.guifi.net"
+      serverURL="https://jitsi.topsdemo.in/"
     />
   );
 };

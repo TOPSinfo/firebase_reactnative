@@ -24,9 +24,9 @@ PODS:
     - ExpoModulesCore
   - Expo (51.0.39):
     - ExpoModulesCore
-  - ExpoAdapterGoogleSignIn (13.2.0):
+  - ExpoAdapterGoogleSignIn (10.1.0):
     - ExpoModulesCore
-    - GoogleSignIn (~> 7.1)
+    - GoogleSignIn (~> 7.0)
     - React-Core
   - ExpoAsset (10.0.10):
     - ExpoModulesCore
@@ -102,30 +102,11 @@ PODS:
     - Yoga
   - FBLazyVector (0.75.4)
   - fmt (9.1.0)
-  - Giphy (2.2.14):
+  - Giphy (2.2.4):
     - libwebp
-  - giphy-react-native-sdk (4.0.1):
-    - DoubleConversion
-    - Giphy (= 2.2.14)
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.01.01.00)
-    - RCTRequired
-    - RCTTypeSafety
+  - giphy-react-native-sdk (2.3.0):
+    - Giphy (= 2.2.4)
     - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
   - glog (0.3.5)
   - GoogleSignIn (7.1.0):
     - AppAuth (< 2.0, >= 1.7.3)
@@ -161,6 +142,9 @@ PODS:
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
   - ObjectiveDropboxOfficial (6.2.3)
+  - PromisesObjC (2.4.0)
+  - PromisesSwift (2.4.0):
+    - PromisesObjC (= 2.4.0)
   - razorpay-pod (1.4.0)
   - RCT-Folly (2024.01.01.00):
     - boost
@@ -1394,31 +1378,10 @@ PODS:
     - Yoga
   - react-native-background-timer (2.4.1):
     - React-Core
-  - react-native-get-random-values (1.11.0):
+  - react-native-get-random-values (1.9.0):
     - React-Core
   - react-native-keep-awake (4.0.0):
     - React
-  - react-native-keyboard-controller (1.17.0):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.01.01.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
   - react-native-netinfo (11.1.0):
     - React-Core
   - react-native-orientation-locker (1.6.0):
@@ -1444,7 +1407,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-performance (5.1.2):
+  - react-native-performance (5.0.0):
     - React-Core
   - react-native-razorpay (2.3.0):
     - razorpay-pod
@@ -1455,49 +1418,12 @@ PODS:
     - React-Core
   - react-native-splash-screen (3.3.0):
     - React-Core
-  - react-native-video (6.12.0):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.01.01.00)
-    - RCTRequired
-    - RCTTypeSafety
+  - react-native-video (6.0.0-alpha.11):
     - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - react-native-video/Video (= 6.12.0)
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
-  - react-native-video/Video (6.12.0):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.01.01.00)
-    - RCTRequired
-    - RCTTypeSafety
+    - react-native-video/Video (= 6.0.0-alpha.11)
+  - react-native-video/Video (6.0.0-alpha.11):
+    - PromisesSwift
     - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
   - react-native-webrtc (124.0.4):
     - JitsiWebRTC (~> 124.0.0)
     - React-Core
@@ -1784,7 +1710,7 @@ PODS:
     - React-utils (= 0.75.4)
   - RNCalendarEvents (2.2.0):
     - React
-  - RNCAsyncStorage (2.1.2):
+  - RNCAsyncStorage (1.23.1):
     - React-Core
   - RNCClipboard (1.14.1):
     - React-Core
@@ -1815,8 +1741,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNGoogleSignin (13.2.0):
-    - GoogleSignIn (~> 7.1)
+  - RNGoogleSignin (10.1.0):
+    - GoogleSignIn (~> 7.0)
     - React-Core
   - RNReanimated (3.15.5):
     - DoubleConversion
@@ -1991,7 +1917,6 @@ DEPENDENCIES:
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-keep-awake (from `../node_modules/react-native-keep-awake`)
-  - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-orientation-locker (from `../node_modules/react-native-orientation-locker`)
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
@@ -2058,6 +1983,8 @@ SPEC REPOS:
     - libdav1d
     - libwebp
     - ObjectiveDropboxOfficial
+    - PromisesObjC
+    - PromisesSwift
     - razorpay-pod
     - SDWebImage
     - SDWebImageAVIFCoder
@@ -2187,8 +2114,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-get-random-values"
   react-native-keep-awake:
     :path: "../node_modules/react-native-keep-awake"
-  react-native-keyboard-controller:
-    :path: "../node_modules/react-native-keyboard-controller"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-orientation-locker:
@@ -2304,7 +2229,7 @@ SPEC CHECKSUMS:
   EXImageLoader: ab589d67d6c5f2c33572afea9917304418566334
   EXNotifications: 85496c9fab09d759d0e4ff594bca078ab817c40c
   Expo: 8c995afb875c15bf8439af0b20bcb9ed8f90d0bd
-  ExpoAdapterGoogleSignIn: 2b9d8c002ae5d09042b2fc87448dfc070d0e7a08
+  ExpoAdapterGoogleSignIn: d20c9bd110725db21da6f4e188508bee352e86d8
   ExpoAsset: 323700f291684f110fb55f0d4022a3362ea9f875
   ExpoDevice: fc94f0e42ecdfd897e7590f2874fc64dfa7e9b1c
   ExpoDocumentPicker: a82eaccc62ecb62662d5a6ca7a8ef40b71daa521
@@ -2320,8 +2245,8 @@ SPEC CHECKSUMS:
   EXSplashScreen: 61cb393c55f1e72295e0bd819ff10ee72de4eb2f
   FBLazyVector: 430e10366de01d1e3d57374500b1b150fe482e6d
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  Giphy: 752cc6f52a8e5fe541c2cee42fa3256fec4d0ff9
-  giphy-react-native-sdk: 3f604eb25d96070530aa2a34c5041e0c97df6a74
+  Giphy: 6b5f6986c8df4f71e01a8ef86595f426b3439fb5
+  giphy-react-native-sdk: fcda9639f8ca2cc47e0517b6ef11c19359db5f5a
   glog: 69ef571f3de08433d766d614c73a9838a06bf7eb
   GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
@@ -2333,6 +2258,8 @@ SPEC CHECKSUMS:
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   ObjectiveDropboxOfficial: fe206ce8c0bc49976c249d472db7fdbc53ebbd53
+  PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   razorpay-pod: cb5b5439697bdda9c57d68a92b3e5b0ce1d2f2f3
   RCT-Folly: 4464f4d875961fce86008d45f4ecf6cef6de0740
   RCTDeprecation: 726d24248aeab6d7180dac71a936bbca6a994ed1
@@ -2364,18 +2291,17 @@ SPEC CHECKSUMS:
   React-Mapbuffer: b982d5bba94a8bc073bda48f0d27c9b28417fae3
   React-microtasksnativemodule: 2b73e68f0462f3175f98782db08896f8501afd20
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
-  react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
+  react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
   react-native-keep-awake: afad8a51dfef9fe9655a6344771be32c8596d774
-  react-native-keyboard-controller: b55d18246c0df1e505e28b5e47d2c72be9641fab
   react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
   react-native-orientation-locker: 4409c5b12b65f942e75449872b4f078b6f27af81
   react-native-pager-view: c476f76d54f946df5147645e902d3d7173688187
-  react-native-performance: ff93f8af3b2ee9519fd7879896aa9b8b8272691d
+  react-native-performance: 47ac22ebf2aa24f324a96a5825581f6ce18c09e8
   react-native-razorpay: 0272dd684bc9148828c54a72e05059e3e2e8b813
   react-native-safe-area-context: 142fade490cbebbe428640b8cbdb09daf17e8191
   react-native-slider: 1cdd6ba29675df21f30544253bf7351d3c2d68c4
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
-  react-native-video: aa877f1c18482eb8af9d9aa777e6de607edc0dfa
+  react-native-video: 472b7c366eaaaa0207e546d9a50410df89790bcf
   react-native-webrtc: 48295e7228279470c4f5acb38570e170723bd3b2
   react-native-webview: 60a96123ba2995dd4e98b0103a6f906a62a88f38
   React-nativeconfig: 8c83d992b9cc7d75b5abe262069eaeea4349f794
@@ -2405,13 +2331,13 @@ SPEC CHECKSUMS:
   ReactCodegen: 4bcb34e6b5ebf6eef5cee34f55aa39991ea1c1f1
   ReactCommon: 6a952e50c2a4b694731d7682aaa6c79bc156e4ad
   RNCalendarEvents: 7e65eb4a94f53c1744d1e275f7fafcfaa619f7a3
-  RNCAsyncStorage: addfc2cb6511dbe199c56c6b26ede383b6c38919
+  RNCAsyncStorage: 826b603ae9c0f88b5ac4e956801f755109fa4d5c
   RNCClipboard: 0a720adef5ec193aa0e3de24c3977222c7e52a37
   RNDateTimePicker: b6a9b35a785ecbe12b4e7d6de5439d0aa4614146
   RNDefaultPreference: 08bdb06cfa9188d5da97d4642dac745218d7fb31
   RNDeviceInfo: 02ea8b23e2280fa18e00a06d7e62804d74028579
   RNGestureHandler: 939f21fabf5d45a725c0bf175eb819dd25cf2e70
-  RNGoogleSignin: ee2938633d996756819e3212c8e0f7f696b380d0
+  RNGoogleSignin: a6a612cce56a45ab701c5c5c6e36f5390522d100
   RNReanimated: 625f9e7f53cba61d7b3436e8e6e209d1dd4e6e9b
   RNScreens: 00e01e05e3cf66bd701148c2531965437e9583e4
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
